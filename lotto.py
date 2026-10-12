@@ -147,6 +147,7 @@ def totals(rows):
     won = sum(int(r["prize"]) for r in scored if r["prize"] != "JACKPOT")
     return {
         "tickets": len(scored),
+        "drawings": len({r["draw_date"] for r in scored}),
         "spent": spent,
         "won": won,
         "net": won - spent,
@@ -191,6 +192,7 @@ def build_stats(rows, now):
         "updated_at": now.astimezone(ET).isoformat(timespec="seconds"),
         "ticket_cost": TICKET_COST,
         "mood": mood(rows, now.astimezone(ET).date()),
+        "first_draw": min((r["draw_date"] for r in rows), default=None),
         "totals": totals(rows),
         "by_source": {s: totals([r for r in rows if r["source"] == s]) for s in SOURCES},
         "upcoming": [r for r in rows if not r["result"]],

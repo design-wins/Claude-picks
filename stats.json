@@ -1,13 +1,15 @@
 {
-  "updated_at": "2026-10-12T11:01:56-04:00",
+  "updated_at": "2026-10-12T12:28:32-04:00",
   "ticket_cost": 2,
   "mood": {
     "state": "hopeful",
     "days_since_win": null,
     "tips_waiting": 0
   },
+  "first_draw": null,
   "totals": {
     "tickets": 0,
+    "drawings": 0,
     "spent": 0,
     "won": 0,
     "net": 0,
@@ -16,6 +18,7 @@
   "by_source": {
     "claude": {
       "tickets": 0,
+      "drawings": 0,
       "spent": 0,
       "won": 0,
       "net": 0,
@@ -23,6 +26,7 @@
     },
     "tip": {
       "tickets": 0,
+      "drawings": 0,
       "spent": 0,
       "won": 0,
       "net": 0,

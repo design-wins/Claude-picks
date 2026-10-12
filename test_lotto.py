@@ -150,8 +150,11 @@ class ScoreRowsAndTotals(unittest.TestCase):
     def test_totals_count_only_scored_tickets(self):
         rows = self.rows()
         lotto.score_rows(rows, {"2026-10-10": "01 04 19 33 51 | 15"})
-        self.assertEqual(lotto.totals(rows), {"tickets": 2, "spent": 4, "won": 4, "net": 0, "jackpots": 1})
+        self.assertEqual(
+            lotto.totals(rows), {"tickets": 2, "drawings": 1, "spent": 4, "won": 4, "net": 0, "jackpots": 1}
+        )
         stats = lotto.build_stats(rows, et(2026, 10, 12, 18))
+        self.assertEqual(stats["first_draw"], "2026-10-10")
         self.assertEqual(stats["by_source"]["claude"]["won"], 4)
         self.assertEqual(stats["by_source"]["tip"]["jackpots"], 1)
         self.assertEqual(len(stats["upcoming"]), 1)

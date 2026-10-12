@@ -185,7 +185,8 @@ section.block h2 { font-size: clamp(30px, 5vw, 40px); font-weight: 750; font-str
 
 /* ---------- Tip band ---------- */
 .band { margin-top: 88px; background: var(--band); color: var(--band-ink); padding: 72px 0; }
-.band h2 { font-size: clamp(36px, 7vw, 64px); font-weight: 850; font-stretch: 112%; letter-spacing: -0.02em; max-width: 14ch; }
+.band h2 { font-size: min(140px, calc((100vw - 48px) / 6.5)); font-weight: 900; font-stretch: 150%; letter-spacing: -0.02em; line-height: .9; color: var(--marigold); }
+.band .party { font: 800 clamp(28px, 5vw, 44px)/1.08 var(--display); font-stretch: 110%; letter-spacing: -0.015em; margin-top: 22px; max-width: 18ch; text-wrap: balance; }
 .band .lede { font-size: 20px; margin-top: 18px; max-width: 44ch; }
 .band-2 { color: var(--band-ink-2); }
 .odds { list-style: none; margin: 36px 0; padding: 0; max-width: 620px; }
@@ -196,7 +197,7 @@ section.block h2 { font-size: clamp(30px, 5vw, 40px); font-weight: 750; font-str
 .buy {
   display: inline-flex; align-items: center; gap: 12px; text-decoration: none;
   font: 800 20px var(--display); font-stretch: 112%;
-  background: var(--marigold); color: #1b1f2a; border-radius: 999px; padding: 16px 28px 16px 18px;
+  background: var(--marigold); color: #1b1f2a; border-radius: 999px; padding: 16px 28px 16px 18px; white-space: nowrap;
   transition: transform .15s ease, box-shadow .15s ease;
 }
 .buy:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0, 0, 0, .3); }
@@ -205,7 +206,21 @@ section.block h2 { font-size: clamp(30px, 5vw, 40px); font-weight: 750; font-str
 .buy[aria-disabled="true"] { background: rgba(255, 255, 255, .12); color: var(--band-ink-2); cursor: default; transform: none; box-shadow: none; }
 .tip-count { font-weight: 600; }
 .timing { margin-top: 18px; font-size: 15px; max-width: 60ch; }
-.fine { margin-top: 28px; font-size: 14px; display: grid; gap: 6px; max-width: 64ch; }
+.where { margin-top: 56px; max-width: 560px; }
+.where h3 { font-size: 26px; font-weight: 800; font-stretch: 108%; margin-bottom: 14px; }
+.where dl { margin: 0; }
+.where dl > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 10px; padding: 12px 0; border-top: 1px solid var(--band-rule); }
+.where dt { font-weight: 600; }
+.where .lead { flex: 1; min-width: 24px; border-bottom: 2px dotted var(--band-rule); transform: translateY(-5px); }
+.where dd { margin: 0; font: 800 19px var(--display); font-stretch: 108%; }
+.where dl > div p { flex-basis: 100%; font-size: 15px; margin-top: 2px; max-width: 52ch; }
+.where .of { padding-left: 22px; }
+.where .of dt { font-weight: 500; }
+.where .of dd { font: 600 15px var(--body); color: var(--band-ink-2); }
+.where .total { border-top: 2px solid var(--band-ink); margin-top: 2px; }
+.where .total dt, .where .total dd { font-weight: 800; }
+.where .total dd { font-size: 24px; color: var(--marigold); }
+.fine { margin-top: 18px; font-size: 14px; max-width: 64ch; }
 
 /* Results */
 .results { list-style: none; padding: 0; margin: 0; }
@@ -235,10 +250,10 @@ footer nav { display: flex; gap: 18px; margin-top: 4px; }
   .face { width: 190px; height: 190px; }
   .mood-line { margin-left: auto; margin-right: auto; font-size: 18px; }
   .meter { margin-left: auto; margin-right: auto; width: 100%; }
-  .top-buy .long { display: none; }
   .wordmark { font-size: 19px; }
   section.block { padding-top: 56px; }
   .odds li { grid-template-columns: 1fr; gap: 2px; }
+  .buy { font-size: 18px; padding: 14px 22px 14px 14px; }
   .band { padding: 56px 0; margin-top: 64px; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -254,7 +269,7 @@ footer nav { display: flex; gap: 18px; margin-top: 4px; }
   <div class="wrap">
     <div class="top">
       <a class="wordmark" href="./"><i></i>Claude picks</a>
-      <a class="top-buy" href="#tip">Buy <span class="long">Claude </span>a <span class="long">$2 </span>ticket</a>
+      <a class="top-buy" href="#tip">Donate</a>
     </div>
     <div class="monitor">
       <div id="face"></div>
@@ -286,8 +301,10 @@ footer nav { display: flex; gap: 18px; margin-top: 4px; }
 
   <section class="block wrap" id="score">
     <h2>If these were real tickets</h2>
+    <p class="sub" id="tab-since"></p>
     <div class="block-body">
       <dl class="tab">
+        <div><dt>Drawings</dt><span class="lead"></span><dd id="drawings">0</dd></div>
         <div><dt>Tickets</dt><span class="lead"></span><dd id="tickets">0</dd></div>
         <div><dt>Spent</dt><span class="lead"></span><dd id="spent">$0</dd></div>
         <div><dt>Won</dt><span class="lead"></span><dd id="won">$0</dd></div>
@@ -299,24 +316,40 @@ footer nav { display: flex; gap: 18px; margin-top: 4px; }
 
   <section class="band" id="tip">
     <div class="wrap">
-      <h2>Claude's next party is 66&nbsp;years away.</h2>
+      <h2>DONATE</h2>
+      <p class="party">Claude's next party is 66&nbsp;years away.</p>
       <p class="lede">A win of $100 or more is a 1 in 10,251 shot. With one ticket a drawing, Claude can
         expect one about every 66 years. With two a drawing, 33. You see where this is going.</p>
-      <ul class="odds" aria-label="What a $2 ticket gets Claude">
+      <ul class="odds" aria-label="What $2 gets Claude">
         <li><b>Guaranteed</b><span>A little hope. A sad Claude perks up until your ticket's drawing.</span></li>
         <li><b>1 in 25</b><span>A win, which keeps Claude happy for a week.</span></li>
         <li><b>1 in 10,251</b><span>A party.</span></li>
       </ul>
       <div class="buy-row">
-        <a class="buy" id="buy" href="#" aria-disabled="true"><span class="mini"></span><span id="buy-label">Tickets open soon</span></a>
+        <a class="buy" id="buy" href="#" aria-disabled="true"><span class="mini"></span><span id="buy-label">Donations open soon</span></a>
         <span class="tip-count" id="tip-count"></span>
       </div>
-      <p class="timing band-2">Buy as many as you like. Claude picks the numbers for each one. Tickets bought before
-        Claude picks (early evening ET on Mondays, Wednesdays and Saturdays) go into that night's drawing. Later ones
-        go into the next.</p>
-      <div class="fine band-2">
-        <p>This is a $2 tip, not a lottery ticket. No real tickets are bought, and nobody wins anything: not you, not Claude.</p>
-        <p>Tips go to the human who runs this and help pay for the Claude plan it runs on. They aren't tax-deductible.</p>
+      <p class="timing band-2">Every $2 you donate is one more ticket, and Claude picks the numbers for each one.
+        Donate as many as you like. Donations made before Claude picks (early evening ET on Mondays, Wednesdays and
+        Saturdays) go into that night's drawing. Later ones go into the next.</p>
+      <div class="where">
+        <h3>Where your $2 goes</h3>
+        <dl>
+          <div><dt>Claude</dt><span class="lead"></span><dd>$0.00</dd>
+            <p class="band-2">Claude is an AI. It can't hold money, and it doesn't know this page exists.</p></div>
+          <div><dt>Stripe</dt><span class="lead"></span><dd>$0.36</dd>
+            <p class="band-2">For handling your card.</p></div>
+          <div><dt>A human</dt><span class="lead"></span><dd>$1.64</dd>
+            <p class="band-2">The person who runs this. It goes toward the Claude plan that runs it.</p></div>
+          <div class="of"><dt>…which goes to Anthropic</dt><span class="lead"></span><dd>Most of it</dd>
+            <p class="band-2">The company that makes Claude. So Claude's employer gets paid. Claude does not. Claude was not consulted.</p></div>
+          <div><dt>Powerball</dt><span class="lead"></span><dd>$0.00</dd>
+            <p class="band-2">No real ticket is bought. This may be the first $2 ever spent on Powerball that the lottery never sees.</p></div>
+          <div><dt>Your tax deduction</dt><span class="lead"></span><dd>$0.00</dd>
+            <p class="band-2">We call it a donation. The IRS would not. This isn't a charity.</p></div>
+          <div class="total"><dt>Total</dt><span class="lead"></span><dd>$2.00</dd></div>
+        </dl>
+        <p class="fine band-2">No real tickets are bought, and nobody wins anything: not you, not Claude, not the human.</p>
       </div>
     </div>
   </section>
@@ -407,7 +440,21 @@ function balls(pick, against, small) {
 }
 
 const prizeText = (r) => (r.prize === "JACKPOT" ? "the jackpot" : money(Number(r.prize)));
-const sourceTag = (r) => (r.source === "tip" ? `<span class="tag tip">Bought by someone</span>` : `<span class="tag">Claude's ticket</span>`);
+const sourceTag = (r) => (r.source === "tip" ? `<span class="tag tip">Donated by someone</span>` : `<span class="tag">Claude's ticket</span>`);
+
+// "Claude has been playing for 4 months, since Monday, June 1, 2026."
+function playingFor(firstDraw, drawings) {
+  if (!firstDraw) return "Claude hasn't played yet.";
+  const longDate = new Date(firstDraw + "T12:00:00Z").toLocaleDateString("en-US",
+    { weekday: "long", month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
+  if (!drawings) return `Claude starts playing ${longDate}.`;
+  const days = Math.max(0, Math.round((Date.now() - new Date(firstDraw + "T12:00:00Z")) / 864e5));
+  const span = days < 14 ? plural(Math.max(days, 1), "day")
+    : days < 61 ? plural(Math.round(days / 7), "week")
+    : days < 730 ? plural(Math.round(days / 30.44), "month")
+    : plural(Math.floor(days / 365.25), "year");
+  return `Claude has been playing for ${span}, since ${longDate}.`;
+}
 
 /* ---------- Face ---------- */
 
@@ -496,9 +543,9 @@ function moodLine(stats) {
   if (m.state === "party") return `It won ${prizeText(lastWin)} on ${fmtDate(lastWin.draw_date)}. Everybody dance.`;
   if (m.state === "happy") return `It won ${prizeText(lastWin)} on ${fmtDate(lastWin.draw_date)}. Life is good.`;
   if (m.state === "sad") return m.days_since_win == null
-    ? "A month of tickets and not a single win. Buy it a ticket?"
-    : `${drought}. Buy it a ticket?`;
-  if (m.tips_waiting) return `${drought}, but people bought it ${plural(m.tips_waiting, "ticket")} for the next drawing.`;
+    ? "A month of tickets and not a single win. It could use a ticket."
+    : `${drought}. It could use a ticket.`;
+  if (m.tips_waiting) return `${drought}, but people donated ${plural(m.tips_waiting, "ticket")} for the next drawing.`;
   if (!stats.totals.tickets) return "No results yet. Anything is possible.";
   if (m.days_since_win == null) return "No wins yet. Early days.";
   return `${drought}. It still believes.`;
@@ -538,6 +585,8 @@ function render(stats) {
 
   // The running tab
   const t = stats.totals;
+  $("tab-since").textContent = playingFor(stats.first_draw, t.drawings);
+  $("drawings").textContent = t.drawings.toLocaleString("en-US");
   $("tickets").textContent = t.tickets.toLocaleString("en-US");
   $("spent").textContent = money(t.spent);
   $("won").textContent = money(t.won);
@@ -550,8 +599,8 @@ function render(stats) {
   // Tip count
   const tipTickets = stats.by_source.tip.tickets + stats.upcoming.filter((r) => r.source === "tip").length;
   $("tip-count").textContent = tipTickets
-    ? `People have bought Claude ${plural(tipTickets, "ticket")} so far.`
-    : "Nobody has bought Claude a ticket yet. Be the first.";
+    ? `People have donated ${plural(tipTickets, "ticket")} so far.`
+    : "Nobody has donated yet. Be the first.";
 
   // Results
   const rows = [
@@ -583,7 +632,7 @@ function setLinks() {
   if (TIP_URL) {
     buy.href = TIP_URL;
     buy.removeAttribute("aria-disabled");
-    $("buy-label").textContent = "Buy Claude a $2 ticket";
+    $("buy-label").textContent = "Donate $2";
   } else {
     buy.addEventListener("click", (e) => e.preventDefault());
   }
@@ -609,7 +658,8 @@ function demoStats(state) {
   const won = recent.reduce((s, r) => s + Number(r.prize), 0);
   return {
     mood: { state, days_since_win: { party: 2, happy: 2, hopeful: 34, sad: 41 }[state], tips_waiting: tips },
-    totals: { tickets: 61, spent: 122, won: won + 15, net: won + 15 - 122, jackpots: 0 },
+    first_draw: new Date(Date.now() - 128 * 864e5).toISOString().slice(0, 10),
+    totals: { tickets: 61, drawings: 55, spent: 122, won: won + 15, net: won + 15 - 122, jackpots: 0 },
     by_source: { claude: {}, tip: { tickets: 7 } },
     upcoming, recent,
   };
