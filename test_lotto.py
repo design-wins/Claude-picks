@@ -211,6 +211,24 @@ class Mood(unittest.TestCase):
         self.check([self.ticket("2026-11-15", "0"), self.ticket("2026-11-30", "0")], "hopeful", None)
 
 
+class FetchRetries(unittest.TestCase):
+    def test_retries_then_gives_up(self):
+        import urllib.error
+        calls = []
+
+        def failing_urlopen(*args, **kwargs):
+            calls.append(1)
+            raise urllib.error.URLError("bad certificate")
+
+        self.addCleanup(setattr, lotto.urllib.request, "urlopen", lotto.urllib.request.urlopen)
+        self.addCleanup(setattr, lotto, "sleep", lotto.sleep)
+        lotto.urllib.request.urlopen = failing_urlopen
+        lotto.sleep = lambda seconds: None
+        with self.assertRaises(urllib.error.URLError):
+            lotto.fetch_results("2026-10-01")
+        self.assertEqual(len(calls), 4)
+
+
 class LedgerFile(unittest.TestCase):
     def test_round_trip(self):
         self.addCleanup(setattr, lotto, "LEDGER", lotto.LEDGER)

@@ -11,7 +11,7 @@ import argparse
 import csv
 import json
 import sys
-import time
+from time import sleep
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -143,7 +143,7 @@ def fetch_results(since):
         except urllib.error.URLError:
             if attempt == 3:
                 raise
-            time.sleep(5 * (attempt + 1))
+            sleep(5 * (attempt + 1))
     results = {}
     for row in data:
         numbers = [int(n) for n in row["winning_numbers"].split()]
