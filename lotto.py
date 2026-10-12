@@ -11,6 +11,8 @@ import argparse
 import csv
 import json
 import sys
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import date, datetime, time, timedelta
@@ -132,8 +134,16 @@ def fetch_results(since):
         "$order": "draw_date",
         "$limit": 5000,
     })
-    with urllib.request.urlopen(f"{RESULTS_URL}?{query}", timeout=30) as resp:
-        data = json.load(resp)
+    # data.ny.gov sometimes serves another site's certificate; a retry usually lands on a good server.
+    for attempt in range(4):
+        try:
+            with urllib.request.urlopen(f"{RESULTS_URL}?{query}", timeout=30) as resp:
+                data = json.load(resp)
+            break
+        except urllib.error.URLError:
+            if attempt == 3:
+                raise
+            time.sleep(5 * (attempt + 1))
     results = {}
     for row in data:
         numbers = [int(n) for n in row["winning_numbers"].split()]
