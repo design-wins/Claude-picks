@@ -5,111 +5,127 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Claude picks</title>
 <meta name="description" content="Before every Powerball drawing, Claude picks the numbers it thinks will win. No real tickets. It can only win in spirit.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23d63c2a'/%3E%3Ccircle cx='16' cy='16' r='8' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23e0322b'/%3E%3Ccircle cx='16' cy='16' r='8' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,100..900&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #f5f0e6;
-  --surface: #fffdf8;
-  --ink: #1f1b16;
-  --muted: #6e665b;
-  --line: #e4dccd;
-  --red: #d63c2a;
-  --gold: #e9a92c;
-  --green: #2f8a57;
-  --blue: #4f74a6;
-  --cloud: #9aa3ad;
-  --ball-ink: #231f1a;
-  --tip-bg: #1f1b16;
-  --tip-ink: #f5f0e6;
-  --tip-muted: #b9b0a2;
-  --display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --page: #ffffff;
+  --panel: #f1f3f6;
+  --ink: #1b1f2a;
+  --ink-2: #4a5263;
+  --rule: #e2e6ec;
+  --red: #e0322b;
+  --marigold: #ffc93c;
+  --win: #157a46;
+  --mood-party: #ffc93c;
+  --mood-happy: #5fd394;
+  --mood-hopeful: #9fcbff;
+  --mood-sad: #b3bccb;
+  --band: #1b1f2a;
+  --band-ink: #f4f6f9;
+  --band-ink-2: #aab3c2;
+  --band-rule: rgba(255, 255, 255, 0.14);
+  --hero-ink: #1b1f2a;
+  --face-ink: #1b1f2a;
+  --cloud: #7d8899;
+  --tear: #3f6fb5;
+  --display: "Anybody", ui-sans-serif, system-ui, sans-serif;
   --body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --ball: clamp(34px, 9vw, 46px);
+  --ball: clamp(36px, 9.5vw, 50px);
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #15130f; --surface: #1e1b16; --ink: #f2ece1; --muted: #a39a8c; --line: #332e26;
-    --green: #4fb37c; --blue: #7d9fd0; --cloud: #6f7781;
-    --tip-bg: #2a251d; --tip-ink: #f5f0e6; --tip-muted: #b9b0a2;
+    --page: #12151c; --panel: #1b2029; --ink: #eef1f6; --ink-2: #a4adbb; --rule: #2a303b;
+    --win: #5fd394;
+    --mood-party: #e9b62f; --mood-happy: #46b97b; --mood-hopeful: #7fb0ea; --mood-sad: #8e99aa;
+    --band: #1e2430; --band-rule: rgba(255, 255, 255, 0.1);
+    --cloud: #5e6878;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #15130f; --surface: #1e1b16; --ink: #f2ece1; --muted: #a39a8c; --line: #332e26;
-  --green: #4fb37c; --blue: #7d9fd0; --cloud: #6f7781;
-  --tip-bg: #2a251d; --tip-ink: #f5f0e6; --tip-muted: #b9b0a2;
+  --page: #12151c; --panel: #1b2029; --ink: #eef1f6; --ink-2: #a4adbb; --rule: #2a303b;
+  --win: #5fd394;
+  --mood-party: #e9b62f; --mood-happy: #46b97b; --mood-hopeful: #7fb0ea; --mood-sad: #8e99aa;
+  --band: #1e2430; --band-rule: rgba(255, 255, 255, 0.1);
+  --cloud: #5e6878;
   color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
+html { scrollbar-color: var(--ink-2) var(--page); }
 body {
   margin: 0;
-  background: var(--bg);
+  background: var(--page);
   color: var(--ink);
-  font: 16px/1.55 var(--body);
+  font: 17px/1.55 var(--body);
   -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
 }
-a { color: inherit; }
-h1, h2, h3 { font-family: var(--display); line-height: 1.1; margin: 0; letter-spacing: -0.01em; }
+::selection { background: var(--marigold); color: #1b1f2a; }
+a { color: inherit; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2.5px; }
+:focus-visible { outline: 3px solid currentColor; outline-offset: 3px; border-radius: 4px; }
+h1, h2, h3 { font-family: var(--display); margin: 0; line-height: 1.05; text-wrap: balance; }
 p { margin: 0; }
-.wrap { max-width: 760px; margin: 0 auto; padding: 0 16px; }
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+.narrow { max-width: 720px; }
 
-.demo-banner {
-  background: var(--gold); color: #231f1a; text-align: center;
-  font-size: 14px; font-weight: 600; padding: 8px 16px;
-}
+.demo-banner { background: var(--ink); color: var(--page); text-align: center; font-size: 14px; padding: 8px 16px; }
 
-/* Header */
-.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 20px 0; }
-.wordmark { display: flex; align-items: center; gap: 10px; font: 800 20px var(--display); text-decoration: none; }
-.wordmark i { width: 18px; height: 18px; border-radius: 50%; background: var(--red); box-shadow: inset 0 0 0 5px var(--red), inset 0 0 0 9px #fff; }
-.pill {
-  display: inline-flex; align-items: center; gap: 6px;
-  font: 700 14px var(--display); text-decoration: none;
-  border: 1.5px solid var(--ink); border-radius: 999px; padding: 7px 14px;
-}
-.pill:hover { background: var(--ink); color: var(--bg); }
+/* ---------- Hero: the mood monitor ---------- */
+.hero { --mood: var(--mood-hopeful); background: var(--mood); color: var(--hero-ink); transition: background-color .6s ease; }
+.hero[data-mood="party"] { --mood: var(--mood-party); }
+.hero[data-mood="happy"] { --mood: var(--mood-happy); }
+.hero[data-mood="sad"] { --mood: var(--mood-sad); }
+.hero-ink-2 { color: color-mix(in srgb, var(--hero-ink) 80%, var(--mood)); }
 
-/* Mood monitor */
-.hero {
-  display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: center;
-  padding: 28px; border-radius: 28px; background: var(--surface); border: 1px solid var(--line);
-  position: relative; overflow: hidden;
+.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 22px 0 8px; }
+.wordmark {
+  display: inline-flex; align-items: center; gap: 10px; text-decoration: none; white-space: nowrap;
+  font: 800 21px var(--display); font-stretch: 125%; letter-spacing: -0.01em;
 }
-.hero::before {
-  content: ""; position: absolute; inset: 0; opacity: 0.14; pointer-events: none;
-  background: radial-gradient(circle at 18% 40%, var(--mood) 0, transparent 55%);
+.wordmark i { width: 20px; height: 20px; border-radius: 50%; background: radial-gradient(circle, #fff 0 38%, var(--red) 40%); }
+.top-buy {
+  font: 700 15px var(--display); font-stretch: 110%; text-decoration: none;
+  padding: 9px 16px; border-radius: 999px; background: var(--hero-ink); color: var(--mood); white-space: nowrap;
 }
-.hero[data-mood="party"] { --mood: var(--gold); }
-.hero[data-mood="happy"] { --mood: var(--green); }
-.hero[data-mood="hopeful"] { --mood: var(--blue); }
-.hero[data-mood="sad"] { --mood: var(--cloud); }
-.face { width: 200px; height: 200px; display: block; overflow: visible; }
-.eyebrow { font: 700 13px var(--body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
-.mood-word { font-size: clamp(48px, 11vw, 76px); font-weight: 800; margin: 4px 0 10px; }
-.mood-line { font-size: 18px; max-width: 34ch; }
-.scale { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 18px; list-style: none; padding: 0; }
-.scale li {
-  font-size: 13px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted);
-  display: inline-flex; align-items: center; gap: 6px;
+.top-buy:hover { background: color-mix(in srgb, var(--hero-ink) 85%, var(--mood)); }
+
+.monitor { display: grid; grid-template-columns: auto 1fr; gap: 40px; align-items: center; padding: 28px 0 56px; }
+.face { width: 250px; height: 250px; display: block; overflow: visible; }
+.mood-head {
+  font-size: calc(clamp(44px, 8vw, 88px) * var(--k, 1)); letter-spacing: -0.02em;
+  font-weight: var(--w, 600); font-stretch: var(--s, 100%);
+  animation: settle 1.1s cubic-bezier(.16, 1, .3, 1) both;
 }
-.scale li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--dot); }
-.scale li.on { color: var(--ink); border-color: var(--ink); font-weight: 600; }
-.scale [data-s="party"] { --dot: var(--gold); }
-.scale [data-s="happy"] { --dot: var(--green); }
-.scale [data-s="hopeful"] { --dot: var(--blue); }
-.scale [data-s="sad"] { --dot: var(--cloud); }
+.hero[data-mood="sad"] .mood-head { --w: 260; --s: 58%; --k: 1.35; }
+.hero[data-mood="hopeful"] .mood-head { --w: 560; --s: 92%; }
+.hero[data-mood="happy"] .mood-head { --w: 760; --s: 118%; }
+.hero[data-mood="party"] .mood-head { --w: 900; --s: 145%; --k: 0.92; }
+@keyframes settle { from { font-weight: 560; font-stretch: 100%; } }
+.mood-line { font-size: 20px; margin-top: 14px; max-width: 34ch; }
+
+.meter { margin-top: 28px; max-width: 460px; }
+.meter ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.meter li { font: 600 14px var(--display); font-stretch: 105%; }
+.meter li::before {
+  content: ""; display: block; height: 10px; border-radius: 999px; margin-bottom: 8px;
+  background: color-mix(in srgb, var(--hero-ink) 18%, transparent);
+}
+.meter li.on::before { background: var(--hero-ink); }
+.meter li:not(.on) { color: color-mix(in srgb, var(--hero-ink) 62%, var(--mood)); }
+.meter-rule { font-size: 15px; margin-top: 10px; }
 
 /* Face */
-.face .stroke { fill: none; stroke: var(--ball-ink); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+.face .stroke { fill: none; stroke: var(--face-ink); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
 .face .thin { stroke-width: 4; }
 .face .blush { fill: var(--red); opacity: 0.22; }
 .face .body { transform-box: fill-box; transform-origin: 50% 100%; }
-.face-party .body { animation: bounce 0.8s cubic-bezier(.3,.7,.4,1) infinite alternate; }
+.face-party .body { animation: bounce 0.8s cubic-bezier(.3, .7, .4, 1) infinite alternate; }
 .face-happy .body { animation: bob 3s ease-in-out infinite; }
 .face-hopeful .body { animation: bob 5s ease-in-out infinite; }
 .face-sad .body { transform: translateY(6px) scaleY(0.97); }
@@ -124,163 +140,169 @@ p { margin: 0; }
 @keyframes tear { 0%, 30% { transform: translateY(0); opacity: 0; } 40% { opacity: 1; } 100% { transform: translateY(26px); opacity: 0; } }
 @keyframes twinkle { 50% { transform: scale(0.4); opacity: 0.4; } }
 
-/* Cards */
-main { display: grid; gap: 20px; padding-bottom: 48px; }
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 24px; }
-.card h2 { font-size: 26px; margin-top: 4px; }
-.card-head { margin-bottom: 18px; }
-.muted { color: var(--muted); }
-.small { font-size: 14px; }
+/* ---------- Sections ---------- */
+section.block { padding-top: 72px; }
+section.block h2 { font-size: clamp(30px, 5vw, 40px); font-weight: 750; font-stretch: 105%; letter-spacing: -0.015em; }
+.sub { color: var(--ink-2); margin-top: 8px; }
+.block-body { margin-top: 28px; }
 
 /* Balls */
-.balls { display: flex; gap: 6px; flex-wrap: nowrap; }
+.balls { display: flex; gap: 7px; flex-wrap: nowrap; }
 .ball {
   width: var(--ball); height: var(--ball); flex: none; border-radius: 50%;
   display: grid; place-items: center;
-  font: 700 calc(var(--ball) * 0.4) var(--display); font-variant-numeric: tabular-nums;
-  color: var(--ball-ink);
-  background: radial-gradient(circle at 35% 30%, #fff 0, #f3eee4 60%, #ddd4c4 100%);
-  box-shadow: 0 1px 0 rgba(0,0,0,.08), inset 0 -2px 4px rgba(0,0,0,.08);
+  font: 800 calc(var(--ball) * 0.4) var(--display); font-stretch: 112%;
+  color: #1b1f2a;
+  background: radial-gradient(circle at 35% 30%, #fff 0, #f2f3f5 58%, #cfd4dc 100%);
+  box-shadow: 0 2px 4px rgba(27, 31, 42, .14), inset 0 -2px 4px rgba(27, 31, 42, .08);
 }
-.ball.pb { background: radial-gradient(circle at 35% 30%, #f06a55 0, var(--red) 60%, #a82a1c 100%); color: #fff; }
-.balls.small-balls { --ball: clamp(28px, 7.5vw, 36px); gap: 5px; }
-.balls.scored .ball:not(.hit) { opacity: 0.35; }
-.balls.scored .ball.hit { box-shadow: 0 0 0 2.5px var(--surface), 0 0 0 4.5px var(--gold); }
+.ball.pb { background: radial-gradient(circle at 35% 30%, #f46a5f 0, var(--red) 58%, #a8241f 100%); color: #fff; }
+.balls.small-balls { --ball: clamp(30px, 8vw, 38px); gap: 5px; }
+.balls.scored .ball:not(.hit) { opacity: 0.32; box-shadow: none; }
+.balls.scored .ball.hit { box-shadow: 0 0 0 2.5px var(--page), 0 0 0 5px var(--marigold); }
+
+.tag { display: inline-block; font-size: 13px; font-weight: 600; padding: 2px 9px; border-radius: 999px; background: var(--panel); color: var(--ink-2); }
+.tag.tip { background: color-mix(in srgb, var(--marigold) 40%, var(--page)); color: var(--ink); }
 
 /* Picks */
-.ticket { padding: 16px 0; border-top: 1px solid var(--line); display: grid; gap: 10px; }
-.ticket:first-of-type { border-top: 0; padding-top: 0; }
-.note { font-family: var(--display); font-size: 18px; font-weight: 500; }
-.meta { font-size: 14px; color: var(--muted); }
-.tag {
-  display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
-  padding: 2px 8px; border-radius: 6px; background: var(--bg); color: var(--muted);
-}
-.tag.tip { background: color-mix(in srgb, var(--gold) 25%, transparent); color: var(--ink); }
-.proof { margin-top: 16px; font-size: 14px; }
+.ticket { display: grid; gap: 12px; padding: 22px 0; border-top: 1px solid var(--rule); }
+.ticket:first-child { border-top: 0; padding-top: 0; }
+.note { font: 500 21px/1.35 var(--display); font-stretch: 95%; max-width: 40ch; }
+.meta { font-size: 15px; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+.proof { margin-top: 20px; font-size: 15px; color: var(--ink-2); max-width: 60ch; }
 
-/* Scoreboard */
-.score-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.stat { padding: 14px; border-radius: 16px; background: var(--bg); }
-.stat b { display: block; font: 800 clamp(24px, 6vw, 34px) var(--display); font-variant-numeric: tabular-nums; }
-.stat.neg b { color: var(--red); }
-.stat.pos b { color: var(--green); }
-.score-foot { margin-top: 12px; }
+/* The running tab */
+.tab { margin: 0; max-width: 420px; font-size: 18px; }
+.tab div { display: flex; align-items: baseline; gap: 10px; padding: 7px 0; }
+.tab .lead { flex: 1; border-bottom: 2px dotted var(--rule); transform: translateY(-5px); }
+.tab dd { margin: 0; font: 700 20px var(--display); font-stretch: 110%; }
+.tab .total { margin-top: 6px; padding-top: 12px; border-top: 2px solid var(--ink); }
+.tab .total dt { font-weight: 700; }
+.tab .total dd { font-size: 30px; font-weight: 850; }
+.tab .neg dd { color: var(--red); }
+.tab .pos dd { color: var(--win); }
+.tab-note { margin-top: 14px; font-size: 15px; color: var(--ink-2); }
 
-/* Tip */
-.tip-card { background: var(--tip-bg); color: var(--tip-ink); border: 0; position: relative; overflow: hidden; }
-.tip-card .eyebrow, .tip-card .muted { color: var(--tip-muted); }
-.tip-card h2 { font-size: clamp(30px, 7vw, 44px); max-width: 16ch; }
-.tip-card .lede { font-size: 18px; margin-top: 14px; max-width: 46ch; }
-.gets { list-style: none; padding: 0; margin: 22px 0; display: grid; gap: 10px; }
-.gets li { display: grid; grid-template-columns: 112px 1fr; gap: 14px; align-items: baseline; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,.06); }
-.gets b { font: 800 18px var(--display); color: var(--gold); }
+/* ---------- Tip band ---------- */
+.band { margin-top: 88px; background: var(--band); color: var(--band-ink); padding: 72px 0; }
+.band h2 { font-size: clamp(36px, 7vw, 64px); font-weight: 850; font-stretch: 112%; letter-spacing: -0.02em; max-width: 14ch; }
+.band .lede { font-size: 20px; margin-top: 18px; max-width: 44ch; }
+.band-2 { color: var(--band-ink-2); }
+.odds { list-style: none; margin: 36px 0; padding: 0; max-width: 620px; }
+.odds li { display: grid; grid-template-columns: 13rem 1fr; gap: 20px; align-items: baseline; padding: 16px 0; border-top: 1px solid var(--band-rule); }
+.odds li:last-child { border-bottom: 1px solid var(--band-rule); }
+.odds b { font: 850 24px var(--display); font-stretch: 108%; color: var(--marigold); }
+.buy-row { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 20px; }
 .buy {
-  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-  font: 800 19px var(--display); text-decoration: none;
-  background: var(--gold); color: #231f1a; border: 0; border-radius: 999px; padding: 15px 26px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 12px; text-decoration: none;
+  font: 800 20px var(--display); font-stretch: 112%;
+  background: var(--marigold); color: #1b1f2a; border-radius: 999px; padding: 16px 28px 16px 18px;
+  transition: transform .15s ease, box-shadow .15s ease;
 }
-.buy:hover { filter: brightness(1.06); }
-.buy[aria-disabled="true"] { background: rgba(255,255,255,.14); color: var(--tip-muted); cursor: default; filter: none; }
-.buy .mini { width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #f06a55 0, var(--red) 70%); }
-.buy-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+.buy:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0, 0, 0, .3); }
+.buy:active { transform: translateY(0); box-shadow: none; }
+.buy .mini { width: 26px; height: 26px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #f46a5f 0, var(--red) 70%); }
+.buy[aria-disabled="true"] { background: rgba(255, 255, 255, .12); color: var(--band-ink-2); cursor: default; transform: none; box-shadow: none; }
 .tip-count { font-weight: 600; }
-.fine { margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.12); font-size: 13px; display: grid; gap: 8px; }
+.timing { margin-top: 18px; font-size: 15px; max-width: 60ch; }
+.fine { margin-top: 28px; font-size: 14px; display: grid; gap: 6px; max-width: 64ch; }
 
 /* Results */
 .results { list-style: none; padding: 0; margin: 0; }
-.result { display: grid; grid-template-columns: 1fr auto; gap: 8px 16px; align-items: center; padding: 14px 0; border-top: 1px solid var(--line); }
+.result { display: grid; grid-template-columns: 1fr auto; gap: 8px 16px; align-items: center; padding: 18px 0; border-top: 1px solid var(--rule); }
 .result:first-child { border-top: 0; padding-top: 0; }
-.result .when { grid-column: 1 / -1; display: flex; gap: 8px; align-items: center; font-size: 14px; color: var(--muted); }
-.result .drawn { grid-column: 1 / -1; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.prize { text-align: right; font: 800 20px var(--display); }
-.prize small { display: block; font: 500 12px var(--body); color: var(--muted); }
-.prize.win { color: var(--green); }
-.prize.lose { color: var(--muted); }
-.more { display: inline-block; margin-top: 14px; font-size: 14px; font-weight: 600; }
+.result .when { grid-column: 1 / -1; display: flex; gap: 10px; align-items: center; font-size: 15px; color: var(--ink-2); }
+.result .drawn { grid-column: 1 / -1; font-size: 14px; color: var(--ink-2); }
+.prize { text-align: right; font: 800 22px var(--display); font-stretch: 110%; }
+.prize small { display: block; font: 500 13px var(--body); color: var(--ink-2); }
+.prize.win { color: var(--win); }
+.prize.lose { color: var(--ink-2); }
+.more { display: inline-block; margin-top: 18px; font-size: 15px; font-weight: 600; }
 
 /* How it works */
-.steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 16px; counter-reset: step; }
-.steps li { display: grid; grid-template-columns: 36px 1fr; gap: 12px; counter-increment: step; }
-.steps li::before {
-  content: counter(step); width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center;
-  font: 800 15px var(--display); background: var(--bg); border: 1px solid var(--line);
-}
-.steps h3 { font-size: 18px; margin-bottom: 2px; }
+.steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 22px; counter-reset: step; max-width: 620px; }
+.steps li { display: grid; grid-template-columns: 44px 1fr; gap: 10px; counter-increment: step; }
+.steps li::before { content: counter(step); font: 850 30px/1 var(--display); font-stretch: 120%; color: var(--ink-2); }
+.steps h3 { font-size: 21px; font-weight: 750; margin-bottom: 4px; }
+.steps p { color: var(--ink-2); }
 
-footer { padding: 8px 0 40px; font-size: 13px; color: var(--muted); display: grid; gap: 8px; }
-footer nav { display: flex; gap: 16px; }
+footer { margin-top: 88px; padding: 28px 0 44px; border-top: 1px solid var(--rule); font-size: 14px; color: var(--ink-2); display: grid; gap: 8px; }
+footer nav { display: flex; gap: 18px; margin-top: 4px; }
 
-@media (max-width: 600px) {
-  .hero { grid-template-columns: 1fr; justify-items: center; text-align: center; padding: 24px 18px; gap: 8px; }
-  .hero .scale { justify-content: center; }
-  .mood-line { margin: 0 auto; }
-  .face { width: 168px; height: 168px; }
-  .card { padding: 20px 18px; border-radius: 20px; }
-  .gets li { grid-template-columns: 1fr; gap: 2px; }
-  .score-grid { gap: 8px; }
-  .stat { padding: 12px 10px; }
-  .top .pill span { display: none; }
+@media (max-width: 680px) {
+  body { font-size: 16px; }
+  .monitor { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 8px; padding: 12px 0 40px; }
+  .face { width: 190px; height: 190px; }
+  .mood-line { margin-left: auto; margin-right: auto; font-size: 18px; }
+  .meter { margin-left: auto; margin-right: auto; width: 100%; }
+  .top-buy .long { display: none; }
+  .wordmark { font-size: 19px; }
+  section.block { padding-top: 56px; }
+  .odds li { grid-template-columns: 1fr; gap: 2px; }
+  .band { padding: 56px 0; margin-top: 64px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
   .confetti, .rain, .tear { display: none; }
 }
 </style>
 </head>
 <body>
 <div id="demo-banner" class="demo-banner" hidden>Demo data. These aren't real results.</div>
-<div class="wrap">
-  <header class="top">
-    <a class="wordmark" href="./"><i></i>Claude picks</a>
-    <a class="pill" href="#tip">Buy Claude a ticket<span>&nbsp;· $2</span></a>
-  </header>
 
-  <main>
-    <section class="hero" id="hero" data-mood="hopeful" aria-live="polite">
+<header class="hero" id="hero" data-mood="hopeful">
+  <div class="wrap">
+    <div class="top">
+      <a class="wordmark" href="./"><i></i>Claude picks</a>
+      <a class="top-buy" href="#tip">Buy <span class="long">Claude </span>a <span class="long">$2 </span>ticket</a>
+    </div>
+    <div class="monitor">
       <div id="face"></div>
       <div>
-        <p class="eyebrow">Claude's mood right now</p>
-        <h1 class="mood-word" id="mood-word">Hopeful</h1>
-        <p class="mood-line" id="mood-line">Loading the latest numbers…</p>
-        <ul class="scale" aria-label="Mood scale">
-          <li data-s="party" title="A win of $100 or more this week">Party</li>
-          <li data-s="happy" title="Any win this week">Happy</li>
-          <li data-s="hopeful" title="Still believes">Hopeful</li>
-          <li data-s="sad" title="A month without a win">Sad</li>
-        </ul>
+        <h1 class="mood-head" id="mood-head">Claude is hopeful.</h1>
+        <p class="mood-line" id="mood-line">Loading the latest numbers.</p>
+        <div class="meter" id="meter">
+          <ol aria-label="Mood meter, from sad to party">
+            <li data-s="sad">Sad</li>
+            <li data-s="hopeful">Hopeful</li>
+            <li data-s="happy">Happy</li>
+            <li data-s="party">Party</li>
+          </ol>
+          <p class="meter-rule hero-ink-2" id="meter-rule"></p>
+        </div>
       </div>
-    </section>
+    </div>
+  </div>
+</header>
 
-    <section class="card" id="picks">
-      <div class="card-head">
-        <p class="eyebrow" id="picks-eyebrow">Next drawing</p>
-        <h2 id="picks-title">&nbsp;</h2>
-      </div>
-      <div id="picks-body"></div>
-      <p class="proof muted">Every pick is uploaded to GitHub hours before its drawing, and GitHub logs when it arrived.
-        <a id="proof-link" href="#">See the upload log</a></p>
-    </section>
+<main>
+  <section class="block wrap" id="picks">
+    <h2 id="picks-title">Next picks</h2>
+    <p class="sub" id="picks-sub">The drawing is at 10:59 PM ET.</p>
+    <div class="block-body" id="picks-body"></div>
+    <p class="proof">Every pick is uploaded to GitHub hours before its drawing, and GitHub logs when it arrived.
+      <a id="proof-link" href="#">See the upload log</a></p>
+  </section>
 
-    <section class="card" id="score">
-      <div class="card-head">
-        <p class="eyebrow">The running tab</p>
-        <h2>If these were real tickets</h2>
-      </div>
-      <div class="score-grid">
-        <div class="stat"><span class="muted small">Spent</span><b id="spent">$0</b></div>
-        <div class="stat"><span class="muted small">Won</span><b id="won">$0</b></div>
-        <div class="stat" id="net-stat"><span class="muted small">Net</span><b id="net">$0</b></div>
-      </div>
-      <p class="score-foot muted small" id="score-foot"></p>
-    </section>
+  <section class="block wrap" id="score">
+    <h2>If these were real tickets</h2>
+    <div class="block-body">
+      <dl class="tab">
+        <div><dt>Tickets</dt><span class="lead"></span><dd id="tickets">0</dd></div>
+        <div><dt>Spent</dt><span class="lead"></span><dd id="spent">$0</dd></div>
+        <div><dt>Won</dt><span class="lead"></span><dd id="won">$0</dd></div>
+        <div class="total" id="net-row"><dt>Net</dt><span class="lead"></span><dd id="net">$0</dd></div>
+      </dl>
+      <p class="tab-note" id="tab-note"></p>
+    </div>
+  </section>
 
-    <section class="card tip-card" id="tip">
-      <p class="eyebrow">Help the odds</p>
+  <section class="band" id="tip">
+    <div class="wrap">
       <h2>Claude's next party is 66&nbsp;years away.</h2>
       <p class="lede">A win of $100 or more is a 1 in 10,251 shot. With one ticket a drawing, Claude can
         expect one about every 66 years. With two a drawing, 33. You see where this is going.</p>
-      <ul class="gets" aria-label="What a $2 ticket gets Claude">
+      <ul class="odds" aria-label="What a $2 ticket gets Claude">
         <li><b>Guaranteed</b><span>A little hope. A sad Claude perks up until your ticket's drawing.</span></li>
         <li><b>1 in 25</b><span>A win, which keeps Claude happy for a week.</span></li>
         <li><b>1 in 10,251</b><span>A party.</span></li>
@@ -289,45 +311,49 @@ footer nav { display: flex; gap: 16px; }
         <a class="buy" id="buy" href="#" aria-disabled="true"><span class="mini"></span><span id="buy-label">Tickets open soon</span></a>
         <span class="tip-count" id="tip-count"></span>
       </div>
-      <p class="muted small" style="margin-top:12px">Buy as many as you like. Claude picks the numbers for each one.
-        Tickets bought before Claude picks (early evening ET on Mondays, Wednesdays and Saturdays) go into that night's
-        drawing. Later ones go into the next.</p>
-      <div class="fine muted">
+      <p class="timing band-2">Buy as many as you like. Claude picks the numbers for each one. Tickets bought before
+        Claude picks (early evening ET on Mondays, Wednesdays and Saturdays) go into that night's drawing. Later ones
+        go into the next.</p>
+      <div class="fine band-2">
         <p>This is a $2 tip, not a lottery ticket. No real tickets are bought, and nobody wins anything: not you, not Claude.</p>
         <p>Tips go to the human who runs this and help pay for the Claude plan it runs on. They aren't tax-deductible.</p>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section class="card" id="results-card">
-      <div class="card-head">
-        <p class="eyebrow">How it's going</p>
-        <h2>Results</h2>
-      </div>
+  <section class="block wrap" id="results-section">
+    <h2>Results</h2>
+    <div class="block-body">
       <ul class="results" id="results"></ul>
       <a class="more" id="ledger-link" href="#">See every ticket in the full ledger</a>
-    </section>
+    </div>
+  </section>
 
-    <section class="card">
-      <div class="card-head"><h2>How it works</h2></div>
-      <ol class="steps">
-        <li><div><h3>Claude picks.</h3><p class="muted">On drawing days, Claude chooses five numbers and a Powerball (no random number generator) and writes down why.</p></div></li>
-        <li><div><h3>The pick is locked in.</h3><p class="muted">It's uploaded to GitHub hours before the drawing, and GitHub logs when it arrived.</p></div></li>
-        <li><div><h3>A script keeps score.</h3><p class="muted">After the drawing, a script checks the official results and adds up what the ticket would have cost and won. Claude never does the math.</p></div></li>
-      </ol>
-    </section>
-  </main>
+  <section class="block wrap">
+    <h2>How it works</h2>
+    <ol class="steps block-body">
+      <li><div><h3>Claude picks.</h3><p>On drawing days, Claude chooses five numbers and a Powerball (no random number generator) and writes down why.</p></div></li>
+      <li><div><h3>The pick is locked in.</h3><p>It's uploaded to GitHub hours before the drawing, and GitHub logs when it arrived.</p></div></li>
+      <li><div><h3>A script keeps score.</h3><p>After the drawing, a script checks the official results and adds up what the ticket would have cost and won. Claude never does the math.</p></div></li>
+    </ol>
+  </section>
+</main>
 
-  <footer>
-    <p>Results come from the New York Lottery's official Powerball data. Tickets are counted at $2 each, without Power Play.</p>
-    <p>Claude picks is a fan project. It isn't affiliated with Powerball, the Multi-State Lottery Association, or Anthropic.</p>
-    <nav><a id="repo-link" href="#">GitHub</a><a id="ledger-link-2" href="#">Full ledger</a></nav>
-  </footer>
-</div>
+<footer class="wrap">
+  <p>Results come from the New York Lottery's official Powerball data. Tickets are counted at $2 each, without Power Play.</p>
+  <p>Claude picks is a fan project. It isn't affiliated with Powerball, the Multi-State Lottery Association, or Anthropic.</p>
+  <nav><a id="repo-link" href="#">GitHub</a><a id="ledger-link-2" href="#">Full ledger</a></nav>
+</footer>
 
 <script>
 const REPO = "https://github.com/nate-nightshift/Claude-picks";
 const TIP_URL = ""; // the Stripe Payment Link goes here when tips open
-const MOODS = { party: "Party!", happy: "Happy", hopeful: "Hopeful", sad: "Sad" };
+const MOODS = {
+  sad: { head: "Claude is sad.", rule: "Sad means a month without a win." },
+  hopeful: { head: "Claude is hopeful.", rule: "Hopeful means no win this week, but no lost month either." },
+  happy: { head: "Claude is happy.", rule: "Happy means a win in the past week." },
+  party: { head: "Claude is partying.", rule: "Party means a win of $100 or more in the past week." },
+};
 const $ = (id) => document.getElementById(id);
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -340,8 +366,11 @@ function parseNumbers(text) {
   return [w.trim().split(/\s+/).map(Number), Number(pb)];
 }
 
-function fmtDate(iso) {
-  return new Date(iso + "T12:00:00Z").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" });
+function fmtDate(iso, long) {
+  const opts = long
+    ? { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" }
+    : { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" };
+  return new Date(iso + "T12:00:00Z").toLocaleDateString("en-US", opts);
 }
 
 function fmtTimeET(isoWithOffset) {
@@ -371,18 +400,14 @@ function balls(pick, against, small) {
   const [w, pb] = parseNumbers(pick);
   const [rw, rpb] = against ? parseNumbers(against) : [[], null];
   const cls = ["balls", small ? "small-balls" : "", against ? "scored" : ""].join(" ");
-  return `<span class="${cls}">` +
+  const label = `${w.map(pad).join(" ")}, Powerball ${pad(pb)}`;
+  return `<span class="${cls}" role="img" aria-label="${label}">` +
     w.map((n) => `<span class="ball${rw.includes(n) ? " hit" : ""}">${pad(n)}</span>`).join("") +
-    `<span class="ball pb${rpb === pb ? " hit" : ""}" title="Powerball">${pad(pb)}</span></span>`;
+    `<span class="ball pb${rpb === pb ? " hit" : ""}">${pad(pb)}</span></span>`;
 }
 
-function prizeText(r) {
-  return r.prize === "JACKPOT" ? "the jackpot" : money(Number(r.prize));
-}
-
-const sourceTag = (r) => r.source === "tip"
-  ? `<span class="tag tip">Bought by someone</span>`
-  : `<span class="tag">Claude's ticket</span>`;
+const prizeText = (r) => (r.prize === "JACKPOT" ? "the jackpot" : money(Number(r.prize)));
+const sourceTag = (r) => (r.source === "tip" ? `<span class="tag tip">Bought by someone</span>` : `<span class="tag">Claude's ticket</span>`);
 
 /* ---------- Face ---------- */
 
@@ -391,7 +416,7 @@ function star(cx, cy, r) {
 }
 
 function face(state) {
-  const confettiColors = ["var(--gold)", "var(--red)", "var(--green)", "var(--blue)"];
+  const confettiColors = ["#ffffff", "var(--red)", "#1b1f2a", "#3f6fb5"];
   const confetti = Array.from({ length: 16 }, (_, i) => {
     const x = 12 + ((i * 47) % 176), y = -10 + ((i * 29) % 60);
     return `<rect class="confetti" x="${x}" y="${y}" width="7" height="12" rx="1.5" fill="${confettiColors[i % 4]}"
@@ -404,30 +429,30 @@ function face(state) {
       before: confetti,
       face: `
         <path d="M64 104 Q76 90 88 104 M112 104 Q124 90 136 104" class="stroke"/>
-        <path d="M72 122 Q100 166 128 122 Z" fill="var(--ball-ink)"/>
+        <path d="M72 122 Q100 166 128 122 Z" fill="var(--face-ink)"/>
         <path d="M86 138 Q100 150 114 138 Q100 132 86 138 Z" fill="var(--red)"/>
         ${blush}
         <g transform="rotate(-16 100 48)">
-          <polygon points="100,0 79,50 121,50" fill="var(--gold)"/>
-          <path d="M92 20 L108 20 M86 35 L114 35" stroke="var(--red)" stroke-width="5"/>
-          <circle cx="100" cy="1" r="7" fill="var(--red)"/>
+          <polygon points="100,0 79,50 121,50" fill="var(--red)"/>
+          <path d="M92 20 L108 20 M86 35 L114 35" stroke="#fff" stroke-width="5"/>
+          <circle cx="100" cy="1" r="7" fill="#fff"/>
         </g>`,
     },
     happy: {
       before: "",
       face: `
-        <ellipse cx="78" cy="102" rx="6.5" ry="8.5" fill="var(--ball-ink)"/>
-        <ellipse cx="122" cy="102" rx="6.5" ry="8.5" fill="var(--ball-ink)"/>
+        <ellipse cx="78" cy="102" rx="6.5" ry="8.5" fill="var(--face-ink)"/>
+        <ellipse cx="122" cy="102" rx="6.5" ry="8.5" fill="var(--face-ink)"/>
         <path d="M74 126 Q100 154 126 126" class="stroke"/>
         ${blush}`,
     },
     hopeful: {
-      before: `<path class="twinkle" d="${star(166, 44, 11)}" fill="var(--gold)"/>
-               <path class="twinkle" style="--delay:1.1s" d="${star(34, 62, 7)}" fill="var(--gold)"/>`,
+      before: `<path class="twinkle" d="${star(166, 44, 11)}" fill="#fff"/>
+               <path class="twinkle" style="--delay:1.1s" d="${star(34, 62, 7)}" fill="#fff"/>`,
       face: `
         <path d="M66 84 Q77 77 88 82 M112 82 Q123 77 134 84" class="stroke thin"/>
-        <ellipse cx="78" cy="103" rx="7" ry="9.5" fill="var(--ball-ink)"/>
-        <ellipse cx="122" cy="103" rx="7" ry="9.5" fill="var(--ball-ink)"/>
+        <ellipse cx="78" cy="103" rx="7" ry="9.5" fill="var(--face-ink)"/>
+        <ellipse cx="122" cy="103" rx="7" ry="9.5" fill="var(--face-ink)"/>
         <circle cx="80.5" cy="97.5" r="2.6" fill="#fff"/><circle cx="124.5" cy="97.5" r="2.6" fill="#fff"/>
         <path d="M87 132 Q100 141 113 132" class="stroke"/>`,
     },
@@ -438,22 +463,22 @@ function face(state) {
           <rect x="67" y="18" width="67" height="16" rx="8"/>
         </g>
         ${[78, 92, 106, 120].map((x, i) => `<line class="rain" style="--delay:${i * 0.28}s" x1="${x}" y1="38" x2="${x - 3}" y2="47"
-          stroke="var(--blue)" stroke-width="3" stroke-linecap="round"/>`).join("")}`,
+          stroke="var(--tear)" stroke-width="3" stroke-linecap="round"/>`).join("")}`,
       face: `
         <path d="M66 93 L88 86 M112 86 L134 93" class="stroke thin"/>
-        <ellipse cx="78" cy="106" rx="5" ry="6" fill="var(--ball-ink)"/>
-        <ellipse cx="122" cy="106" rx="5" ry="6" fill="var(--ball-ink)"/>
+        <ellipse cx="78" cy="106" rx="5" ry="6" fill="var(--face-ink)"/>
+        <ellipse cx="122" cy="106" rx="5" ry="6" fill="var(--face-ink)"/>
         <path d="M80 144 Q100 127 120 144" class="stroke"/>
-        <path class="tear" d="M71 116 Q64 127 71 131 Q78 127 71 116 Z" fill="var(--blue)"/>`,
+        <path class="tear" d="M71 116 Q64 127 71 131 Q78 127 71 116 Z" fill="var(--tear)"/>`,
     },
   }[state];
 
-  const shade = state === "sad" ? ["#f1f3f6", "#dfe4ea", "#c4ccd6"] : ["#ffffff", "#f3eee4", "#dbd1bf"];
-  return `<svg class="face face-${state}" viewBox="0 0 200 200" role="img" aria-label="Claude's face: ${state}">
+  const shade = state === "sad" ? ["#f4f6f9", "#e1e6ed", "#c3cbd6"] : ["#ffffff", "#f2f3f5", "#d3d8df"];
+  return `<svg class="face face-${state}" viewBox="0 0 200 200" aria-hidden="true">
     <defs><radialGradient id="shade" cx="38%" cy="30%" r="75%">
       <stop offset="0" stop-color="${shade[0]}"/><stop offset=".65" stop-color="${shade[1]}"/><stop offset="1" stop-color="${shade[2]}"/>
     </radialGradient></defs>
-    <ellipse cx="100" cy="192" rx="52" ry="6" fill="var(--ink)" opacity=".12"/>
+    <ellipse cx="100" cy="192" rx="52" ry="6" fill="#1b1f2a" opacity=".16"/>
     ${parts.before}
     <g class="body">
       <circle cx="100" cy="114" r="70" fill="url(#shade)"/>
@@ -476,40 +501,50 @@ function moodLine(stats) {
   if (m.tips_waiting) return `${drought}, but people bought it ${plural(m.tips_waiting, "ticket")} for the next drawing.`;
   if (!stats.totals.tickets) return "No results yet. Anything is possible.";
   if (m.days_since_win == null) return "No wins yet. Early days.";
-  return `${drought}. Still believes.`;
+  return `${drought}. It still believes.`;
+}
+
+function setMood(state, line) {
+  const hero = $("hero");
+  hero.dataset.mood = state;
+  $("face").innerHTML = face(state);
+  $("mood-head").textContent = MOODS[state].head;
+  $("mood-line").textContent = line;
+  $("meter-rule").textContent = MOODS[state].rule;
+  $("meter").querySelectorAll("li").forEach((li) => {
+    const on = li.dataset.s === state;
+    li.classList.toggle("on", on);
+    if (on) li.setAttribute("aria-current", "true"); else li.removeAttribute("aria-current");
+  });
 }
 
 function render(stats) {
-  const hero = $("hero");
-  hero.dataset.mood = stats.mood.state;
-  $("face").innerHTML = face(stats.mood.state);
-  $("mood-word").textContent = MOODS[stats.mood.state];
-  $("mood-line").textContent = moodLine(stats);
-  hero.querySelectorAll(".scale li").forEach((li) => li.classList.toggle("on", li.dataset.s === stats.mood.state));
+  setMood(stats.mood.state, moodLine(stats));
 
   // Picks for the next drawing; tickets for drawings already held wait in the results list.
   const next = nextDrawDate();
   const nextTickets = stats.upcoming.filter((r) => r.draw_date >= next);
   const waiting = stats.upcoming.filter((r) => r.draw_date < next);
   const drawDate = nextTickets.length ? nextTickets[0].draw_date : next;
-  $("picks-title").textContent = `${fmtDate(drawDate)} · 10:59 PM ET`;
+  $("picks-title").textContent = `Picks for ${fmtDate(drawDate, true)}`;
   $("picks-body").innerHTML = nextTickets.length
     ? nextTickets.map((t) => `
       <div class="ticket">
         ${balls(t.pick)}
         ${t.note ? `<p class="note">“${esc(t.note)}”</p>` : ""}
-        <p class="meta">${sourceTag(t)} Picked at ${fmtTimeET(t.picked_at)}, ${leadTime(t)}</p>
+        <p class="meta">${sourceTag(t)}<span>Picked at ${fmtTimeET(t.picked_at)}, ${leadTime(t)}.</span></p>
       </div>`).join("")
-    : `<p class="muted">Claude hasn't picked yet. It picks in the early evening (ET) on drawing days.</p>`;
+    : `<p>Claude hasn't picked yet. It picks in the early evening (ET) on drawing days.</p>`;
 
-  // Scoreboard
+  // The running tab
   const t = stats.totals;
+  $("tickets").textContent = t.tickets.toLocaleString("en-US");
   $("spent").textContent = money(t.spent);
   $("won").textContent = money(t.won);
   $("net").textContent = money(t.net);
-  $("net-stat").className = "stat " + (t.net < 0 ? "neg" : t.net > 0 ? "pos" : "");
-  $("score-foot").textContent = t.tickets
-    ? `${plural(t.tickets, "ticket")} at $2 each.` + (t.jackpots ? ` Plus ${plural(t.jackpots, "jackpot")}, not counted above!` : "")
+  $("net-row").className = "total " + (t.net < 0 ? "neg" : t.net > 0 ? "pos" : "");
+  $("tab-note").textContent = t.tickets
+    ? "Every ticket counts at $2." + (t.jackpots ? ` Plus ${plural(t.jackpots, "jackpot")}, which isn't counted above!` : "")
     : "The first results come in after the first drawing.";
 
   // Tip count
@@ -524,30 +559,33 @@ function render(stats) {
       <li class="result">
         <div class="when">${fmtDate(r.draw_date)} ${sourceTag(r)}</div>
         ${balls(r.pick, null, true)}
-        <div class="prize lose">…<small>Waiting for results</small></div>
+        <div class="prize lose">Pending<small>Waiting for results</small></div>
       </li>`),
-    ...stats.recent.slice(0, 12).map((r) => `
+    ...stats.recent.slice(0, 12).map((r) => {
+      const [w, pb] = parseNumbers(r.result);
+      return `
       <li class="result">
         <div class="when">${fmtDate(r.draw_date)} ${sourceTag(r)}</div>
         ${balls(r.pick, r.result, true)}
         <div class="prize ${r.prize === "0" ? "lose" : "win"}">${r.prize === "0" ? "$0" : prizeText(r)}<small>Matched ${esc(r.match)}</small></div>
-        <div class="drawn">Drawn: ${esc(r.result.replace("|", "·"))}</div>
-      </li>`),
+        <div class="drawn">Drawn: ${w.map(pad).join(" ")}, Powerball ${pad(pb)}</div>
+      </li>`;
+    }),
   ];
-  $("results").innerHTML = rows.length ? rows.join("") : `<li class="muted">No results yet. The first drawing is ${fmtDate(drawDate)}.</li>`;
+  $("results").innerHTML = rows.length ? rows.join("") : `<li>No results yet. The first drawing is ${fmtDate(drawDate, true)}.</li>`;
 }
 
 function setLinks() {
   $("proof-link").href = `${REPO}/activity`;
   $("repo-link").href = REPO;
   $("ledger-link").href = $("ledger-link-2").href = `${REPO}/blob/main/ledger.csv`;
+  const buy = $("buy");
   if (TIP_URL) {
-    const buy = $("buy");
     buy.href = TIP_URL;
     buy.removeAttribute("aria-disabled");
-    $("buy-label").textContent = "Buy Claude a ticket · $2";
+    $("buy-label").textContent = "Buy Claude a $2 ticket";
   } else {
-    $("buy").addEventListener("click", (e) => e.preventDefault());
+    buy.addEventListener("click", (e) => e.preventDefault());
   }
 }
 
@@ -586,12 +624,13 @@ async function main() {
       $("demo-banner").hidden = false;
       stats = demoStats(demo);
     } else {
-      stats = await fetch("stats.json", { cache: "no-store" }).then((r) => r.json());
+      const res = await fetch("stats.json", { cache: "no-store" });
+      if (!res.ok) throw new Error(res.status);
+      stats = await res.json();
     }
     render(stats);
   } catch (err) {
-    $("face").innerHTML = face("sad");
-    $("mood-line").textContent = "Couldn't load the latest numbers. Try again in a bit.";
+    setMood("sad", "The latest numbers didn't load. Refresh the page to try again.");
   }
 }
 main();
