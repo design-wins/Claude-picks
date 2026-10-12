@@ -19,6 +19,8 @@
   --red: #e0322b;
   --marigold: #ffc93c;
   --win: #157a46;
+  --pb-miss: #fadedd;
+  --pb-miss-ink: #a8241f;
   --mood-party: #ffc93c;
   --mood-happy: #5fd394;
   --mood-hopeful: #9fcbff;
@@ -39,7 +41,7 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --page: #12151c; --panel: #1b2029; --ink: #eef1f6; --ink-2: #a4adbb; --rule: #2a303b;
-    --win: #5fd394;
+    --win: #5fd394; --pb-miss: #4c1d20; --pb-miss-ink: #f4a29b;
     --mood-party: #e9b62f; --mood-happy: #46b97b; --mood-hopeful: #7fb0ea; --mood-sad: #8e99aa;
     --band: #1e2430; --band-rule: rgba(255, 255, 255, 0.1);
     --cloud: #5e6878;
@@ -48,7 +50,7 @@
 }
 :root[data-theme="dark"] {
   --page: #12151c; --panel: #1b2029; --ink: #eef1f6; --ink-2: #a4adbb; --rule: #2a303b;
-  --win: #5fd394;
+  --win: #5fd394; --pb-miss: #4c1d20; --pb-miss-ink: #f4a29b;
   --mood-party: #e9b62f; --mood-happy: #46b97b; --mood-hopeful: #7fb0ea; --mood-sad: #8e99aa;
   --band: #1e2430; --band-rule: rgba(255, 255, 255, 0.1);
   --cloud: #5e6878;
@@ -69,6 +71,8 @@ body {
 a { color: inherit; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
 a:hover { text-decoration-thickness: 2.5px; }
 :focus-visible { outline: 3px solid currentColor; outline-offset: 3px; border-radius: 4px; }
+.top-buy:focus-visible { outline-color: var(--hero-ink); border-radius: 999px; }
+.buy:focus-visible { outline-color: var(--marigold); border-radius: 999px; }
 h1, h2, h3 { font-family: var(--display); margin: 0; line-height: 1.05; text-wrap: balance; }
 p { margin: 0; }
 .wrap { max-width: 960px; margin: 0 auto; padding: 0 20px; }
@@ -95,6 +99,7 @@ p { margin: 0; }
 }
 .top-buy:hover { background: color-mix(in srgb, var(--hero-ink) 85%, var(--mood)); }
 
+.monitor > * { min-width: 0; }
 .monitor { display: grid; grid-template-columns: auto 1fr; gap: 40px; align-items: center; padding: 28px 0 56px; }
 .face { width: 250px; height: 250px; display: block; overflow: visible; }
 .mood-head {
@@ -117,7 +122,8 @@ p { margin: 0; }
   background: color-mix(in srgb, var(--hero-ink) 18%, transparent);
 }
 .meter li.on::before { background: var(--hero-ink); }
-.meter li:not(.on) { color: color-mix(in srgb, var(--hero-ink) 62%, var(--mood)); }
+.meter li { color: var(--hero-ink); font-weight: 500; }
+.meter li.on { font-weight: 800; }
 .meter-rule { font-size: 15px; margin-top: 10px; }
 
 /* Face */
@@ -156,10 +162,11 @@ section.block h2 { font-size: clamp(30px, 5vw, 40px); font-weight: 750; font-str
   background: radial-gradient(circle at 35% 30%, #fff 0, #f2f3f5 58%, #cfd4dc 100%);
   box-shadow: 0 2px 4px rgba(27, 31, 42, .14), inset 0 -2px 4px rgba(27, 31, 42, .08);
 }
-.ball.pb { background: radial-gradient(circle at 35% 30%, #f46a5f 0, var(--red) 58%, #a8241f 100%); color: #fff; }
+.ball.pb { background: radial-gradient(circle at 30% 25%, #ec5a4f 0, var(--red) 40%, #a8241f 100%); color: #fff; text-shadow: 0 1px 2px rgba(80, 10, 8, .45); }
 .balls.small-balls { --ball: clamp(30px, 8vw, 38px); gap: 5px; }
-.balls.scored .ball:not(.hit) { opacity: 0.32; box-shadow: none; }
-.balls.scored .ball.hit { box-shadow: 0 0 0 2.5px var(--page), 0 0 0 5px var(--marigold); }
+.balls.scored .ball:not(.hit) { background: var(--panel); color: var(--ink-2); box-shadow: none; font-weight: 600; }
+.balls.scored .ball.pb:not(.hit) { background: var(--pb-miss); color: var(--pb-miss-ink); }
+.balls.scored .ball.hit { box-shadow: 0 0 0 2.5px var(--page), 0 0 0 5px var(--ink); }
 
 .tag { display: inline-block; font-size: 13px; font-weight: 600; padding: 2px 9px; border-radius: 999px; background: var(--panel); color: var(--ink-2); }
 .tag.tip { background: color-mix(in srgb, var(--marigold) 40%, var(--page)); color: var(--ink); }
@@ -258,6 +265,13 @@ footer nav { display: flex; gap: 18px; margin-top: 4px; }
   .odds li { grid-template-columns: 1fr; gap: 2px; }
   .buy { font-size: 18px; padding: 14px 22px 14px 14px; }
   .band { padding: 56px 0; margin-top: 64px; }
+}
+@media (max-width: 360px) {
+  .wrap { padding: 0 16px; }
+  .wordmark { font-size: 17px; gap: 8px; }
+  .top-buy { padding: 8px 13px; font-size: 14px; }
+  .hero[data-mood="party"] .mood-head { --k: 0.8; }
+  .buy { white-space: normal; text-align: left; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -395,7 +409,7 @@ const REPO = "https://github.com/nate-nightshift/Claude-picks";
 const TIP_URL = ""; // the Stripe Payment Link goes here when tips open
 const MOODS = {
   sad: { head: "Claude is sad.", rule: "Sad means a month without a win." },
-  hopeful: { head: "Claude is hopeful.", rule: "Hopeful means no win this week, but no lost month either." },
+  hopeful: { head: "Claude is hopeful.", rule: "Hopeful means no win this week, but it's been less than a month." },
   happy: { head: "Claude is happy.", rule: "Happy means a win in the past week." },
   party: { head: "Claude is partying.", rule: "Party means a win of $100 or more in the past week." },
 };
@@ -563,13 +577,13 @@ function moodLine(stats) {
   return `${drought}. It still believes.`;
 }
 
-function setMood(state, line) {
+function setMood(state, line, rule) {
   const hero = $("hero");
   hero.dataset.mood = state;
   $("face").innerHTML = face(state);
   $("mood-head").textContent = MOODS[state].head;
   $("mood-line").textContent = line;
-  $("meter-rule").textContent = MOODS[state].rule;
+  $("meter-rule").textContent = rule || MOODS[state].rule;
   $("meter").querySelectorAll("li").forEach((li) => {
     const on = li.dataset.s === state;
     li.classList.toggle("on", on);
@@ -578,7 +592,9 @@ function setMood(state, line) {
 }
 
 function render(stats) {
-  setMood(stats.mood.state, moodLine(stats));
+  const m = stats.mood;
+  const tipHope = m.state === "hopeful" && m.tips_waiting && (m.days_since_win == null || m.days_since_win >= 30);
+  setMood(m.state, moodLine(stats), tipHope ? "A donated ticket keeps Claude hopeful until its drawing." : "");
 
   // Picks for the next drawing; tickets for drawings already held wait in the results list.
   const next = nextDrawDate();
