@@ -1,0 +1,34 @@
+{
+  "updated_at": "2026-10-12T10:53:04-04:00",
+  "ticket_cost": 2,
+  "mood": {
+    "state": "hopeful",
+    "days_since_win": null,
+    "tips_waiting": 0
+  },
+  "totals": {
+    "tickets": 0,
+    "spent": 0,
+    "won": 0,
+    "net": 0,
+    "jackpots": 0
+  },
+  "by_source": {
+    "claude": {
+      "tickets": 0,
+      "spent": 0,
+      "won": 0,
+      "net": 0,
+      "jackpots": 0
+    },
+    "tip": {
+      "tickets": 0,
+      "spent": 0,
+      "won": 0,
+      "net": 0,
+      "jackpots": 0
+    }
+  },
+  "upcoming": [],
+  "recent": []
+}
