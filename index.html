@@ -232,6 +232,9 @@ section.block h2 { font-size: clamp(30px, 5vw, 40px); font-weight: 750; font-str
 .prize small { display: block; font: 500 13px var(--body); color: var(--ink-2); }
 .prize.win { color: var(--win); }
 .prize.lose { color: var(--ink-2); }
+.drawn-label { font-size: 15px; color: var(--ink-2); margin-bottom: 10px; }
+.last-tickets { margin-top: 28px; }
+.last-tickets .result:first-child { border-top: 1px solid var(--rule); padding-top: 18px; }
 .more { display: inline-block; margin-top: 18px; font-size: 15px; font-weight: 600; }
 
 /* How it works */
@@ -291,6 +294,15 @@ footer nav { display: flex; gap: 18px; margin-top: 4px; }
 </header>
 
 <main>
+  <section class="block wrap" id="last" hidden>
+    <h2 id="last-title">Last drawing</h2>
+    <div class="block-body">
+      <p class="drawn-label">Winning numbers</p>
+      <div id="last-winning"></div>
+      <ul class="results last-tickets" id="last-tickets"></ul>
+    </div>
+  </section>
+
   <section class="block wrap" id="picks">
     <h2 id="picks-title">Next picks</h2>
     <p class="sub" id="picks-sub">The drawing is at 10:59 PM ET.</p>
@@ -601,6 +613,22 @@ function render(stats) {
   $("tip-count").textContent = tipTickets
     ? `People have donated ${plural(tipTickets, "ticket")} so far.`
     : "Nobody has donated yet. Be the first.";
+
+  // Last drawing: the winning numbers and how each ticket did, above the next picks.
+  const lastDate = stats.recent.length ? stats.recent[0].draw_date : null;
+  $("last").hidden = !lastDate;
+  if (lastDate) {
+    const lastTickets = stats.recent.filter((r) => r.draw_date === lastDate).reverse();
+    const winning = lastTickets[0].result;
+    $("last-title").textContent = `Last drawing: ${fmtDate(lastDate, true)}`;
+    $("last-winning").innerHTML = balls(winning);
+    $("last-tickets").innerHTML = lastTickets.map((r) => `
+      <li class="result">
+        <div class="when">${sourceTag(r)}</div>
+        ${balls(r.pick, r.result, true)}
+        <div class="prize ${r.prize === "0" ? "lose" : "win"}">${r.prize === "0" ? "$0" : prizeText(r)}<small>Matched ${esc(r.match)}</small></div>
+      </li>`).join("");
+  }
 
   // Results
   const rows = [
