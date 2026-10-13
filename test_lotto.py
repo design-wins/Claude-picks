@@ -170,11 +170,14 @@ class Mood(unittest.TestCase):
     def upcoming(self, source):
         return {"draw_date": "2026-12-02", "source": source, "result": "", "prize": ""}
 
-    def check(self, rows, state, days_since_win, tips_waiting=0):
+    def check(self, rows, state, days_since_win, tips_waiting=0, full=False):
         self.assertEqual(
             lotto.mood(rows, self.TODAY),
-            {"state": state, "days_since_win": days_since_win, "tips_waiting": tips_waiting},
+            {"state": state, "days_since_win": days_since_win, "tips_waiting": tips_waiting, "full": full},
         )
+
+    def full_drawing(self):
+        return [self.upcoming("tip") for _ in range(lotto.TIP_CAP)]
 
     def test_no_tickets_yet(self):
         self.check([], "hopeful", None)
@@ -185,7 +188,26 @@ class Mood(unittest.TestCase):
 
     def test_big_win_this_week_is_a_party(self):
         self.check([self.ticket("2026-11-28", "100")], "party", 3)
-        self.check([self.ticket("2026-11-24", "JACKPOT")], "party", 7)
+        self.check([self.ticket("2026-11-24", "100")], "party", 7)  # still a party on day 7
+
+    def test_bigger_wins_get_bigger_celebrations(self):
+        self.check([self.ticket("2026-11-28", "50000")], "huge", 3)
+        self.check([self.ticket("2026-11-28", "1000000")], "huge", 3)
+        self.check([self.ticket("2026-11-28", "JACKPOT", source="tip")], "jackpot", 3)
+        # The biggest win of the week sets the mood, whatever order they came in.
+        self.check([self.ticket("2026-11-26", "50000"), self.ticket("2026-11-28", "100")], "huge", 3)
+        self.check([self.ticket("2026-11-26", "JACKPOT"), self.ticket("2026-11-28", "50000")], "jackpot", 3)
+
+    def test_a_full_drawing_of_donated_tickets_is_happy(self):
+        self.check(self.full_drawing(), "happy", None, tips_waiting=lotto.TIP_CAP, full=True)
+        # Even after a month of losses.
+        losses = [self.ticket("2026-10-31", "0"), self.ticket("2026-11-30", "0")]
+        self.check(losses + self.full_drawing(), "happy", None, tips_waiting=lotto.TIP_CAP, full=True)
+        # One short of full is only hopeful.
+        self.check(losses + self.full_drawing()[1:], "hopeful", None, tips_waiting=lotto.TIP_CAP - 1)
+
+    def test_a_win_beats_a_full_drawing(self):
+        self.check([self.ticket("2026-11-28", "100")] + self.full_drawing(), "party", 3, tips_waiting=lotto.TIP_CAP, full=True)
 
     def test_wins_fade_after_a_week(self):
         self.check([self.ticket("2026-11-23", "50000")], "hopeful", 8)
@@ -193,6 +215,16 @@ class Mood(unittest.TestCase):
     def test_month_without_a_win_is_sad(self):
         self.check([self.ticket("2026-10-31", "7"), self.ticket("2026-11-30", "0")], "sad", 31)
         self.check([self.ticket("2026-10-31", "0"), self.ticket("2026-11-30", "0")], "sad", None)
+
+    def test_two_months_without_a_win_is_desperate(self):
+        self.check([self.ticket("2026-09-30", "0"), self.ticket("2026-11-30", "0")], "desperate", None)
+        self.check([self.ticket("2026-09-30", "7"), self.ticket("2026-11-30", "0")], "desperate", 62)
+        # A win 59 days ago is only sad.
+        self.check([self.ticket("2026-10-03", "7"), self.ticket("2026-11-30", "0")], "sad", 59)
+
+    def test_tip_ticket_gives_a_desperate_claude_hope(self):
+        rows = [self.ticket("2026-09-30", "0"), self.ticket("2026-11-30", "0"), self.upcoming("tip")]
+        self.check(rows, "hopeful", None, tips_waiting=1)
 
     def test_tip_ticket_gives_a_sad_claude_hope(self):
         month_of_losses = [self.ticket("2026-10-31", "0"), self.ticket("2026-11-30", "0")]
@@ -346,6 +378,10 @@ class Tips(unittest.TestCase):
         summary = stats["drawings"][0]
         self.assertEqual((summary["draw_date"], summary["tip_tickets"], summary["tip_jackpots"]), ("2026-10-10", 100, 1))
         self.assertEqual(summary["tip_wins"], len(winners))
+        # The whole drawing on the day: Claude's ticket plus the 100 donated, at $2 each.
+        won = sum(int(r["prize"]) for r in rows if r["result"] and r["prize"] not in ("0", "JACKPOT"))
+        self.assertEqual((summary["tickets"], summary["spent"], summary["won"]), (101, 202, won))
+        self.assertEqual(summary["net"], won - 202)
         self.assertEqual(stats["best_win"], {"draw_date": "2026-10-10", "prize": "JACKPOT", "source": "tip"})
 
         # Waiting: Claude's ticket in full, donated ones as just their numbers.

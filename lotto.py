@@ -51,7 +51,11 @@ PRIZES = {
     (0, True): 4,
 }
 BIG_WIN = 100  # a prize this size or bigger is a party
-MOOD_DAYS = {"glow": 7, "sad": 30}  # a win lifts the mood for a week; a month without one is sad
+HUGE_WIN = 50_000  # and this size or bigger is huge; the jackpot is its own celebration
+# Moods from a win, smallest to biggest. Each lasts a week after the drawing.
+WIN_MOODS = ["happy", "party", "huge", "jackpot"]
+# A win lifts the mood for a week; a month without one is sad, and two months is desperate.
+MOOD_DAYS = {"glow": 7, "sad": 30, "desperate": 60}
 
 
 def format_numbers(whites, pb):
@@ -230,17 +234,22 @@ def totals(rows):
     }
 
 
-def is_big(prize):
-    return prize == "JACKPOT" or int(prize) >= BIG_WIN
+def win_mood(prize):
+    """The celebration a winning prize earns: jackpot, huge, party, or happy for anything smaller."""
+    if prize == "JACKPOT":
+        return "jackpot"
+    return "huge" if int(prize) >= HUGE_WIN else "party" if int(prize) >= BIG_WIN else "happy"
 
 
 def mood(rows, today):
-    """How Claude feels: party after a big win, happy after any win, sad after a month without one.
-    A tip ticket waiting on a drawing turns sad into hopeful until that drawing is scored."""
-    tips_waiting = sum(1 for r in rows if not r["result"] and r["source"] == "tip")
+    """How Claude feels. A win in the past week sets the mood by its size (happy, party, huge, jackpot).
+    Otherwise a drawing with every donated spot filled makes Claude happy, and a month without a win
+    makes it sad (two months, desperate), unless donated tickets are waiting on a drawing, which keeps
+    it hopeful."""
+    waiting = [r for r in rows if not r["result"] and r["source"] == "tip"]
+    tips_waiting = len(waiting)
+    full = any(sum(r["draw_date"] == d for r in waiting) >= TIP_CAP for d in {r["draw_date"] for r in waiting})
     scored = [r for r in rows if r["result"]]
-    if not scored:
-        return {"state": "hopeful", "days_since_win": None, "tips_waiting": tips_waiting}
     wins = [r for r in scored if r["prize"] != "0"]
 
     def days_ago(r):
@@ -248,30 +257,40 @@ def mood(rows, today):
 
     recent_wins = [r for r in wins if days_ago(r) <= MOOD_DAYS["glow"]]
     days_since_win = min(days_ago(r) for r in wins) if wins else None
-    if any(is_big(r["prize"]) for r in recent_wins):
-        state = "party"
-    elif recent_wins:
+
+    def dry_for(days):
+        """Claude has been playing at least `days` and hasn't won in that time."""
+        return max(days_ago(r) for r in scored) >= days and (days_since_win is None or days_since_win >= days)
+
+    if recent_wins:
+        state = max((win_mood(r["prize"]) for r in recent_wins), key=WIN_MOODS.index)
+    elif full:
         state = "happy"
-    elif max(days_ago(r) for r in scored) >= MOOD_DAYS["sad"] and (
-        days_since_win is None or days_since_win >= MOOD_DAYS["sad"]
-    ):
-        state = "hopeful" if tips_waiting else "sad"
+    elif tips_waiting:
+        state = "hopeful"
+    elif scored and dry_for(MOOD_DAYS["desperate"]):
+        state = "desperate"
+    elif scored and dry_for(MOOD_DAYS["sad"]):
+        state = "sad"
     else:
         state = "hopeful"
-    return {"state": state, "days_since_win": days_since_win, "tips_waiting": tips_waiting}
+    return {"state": state, "days_since_win": days_since_win, "tips_waiting": tips_waiting, "full": full}
 
 
 def drawing_summaries(rows, limit=12):
-    """The latest drawings, newest first, with donated tickets added up instead of listed."""
+    """The latest drawings, newest first: how every ticket did on the day (spent, won, net), with
+    donated tickets added up instead of listed."""
     scored = [r for r in rows if r["result"]]
     dates = sorted({r["draw_date"] for r in scored}, reverse=True)[:limit]
     out = []
     for d in dates:
-        tips = [r for r in scored if r["draw_date"] == d and r["source"] == "tip"]
+        day = [r for r in scored if r["draw_date"] == d]
+        tips = [r for r in day if r["source"] == "tip"]
         t = totals(tips)
         out.append({
             "draw_date": d,
-            "result": next(r["result"] for r in scored if r["draw_date"] == d),
+            "result": day[0]["result"],
+            **{k: v for k, v in totals(day).items() if k in ("tickets", "spent", "won", "net", "jackpots")},
             "tip_tickets": t["tickets"],
             "tip_wins": sum(r["prize"] != "0" for r in tips),
             "tip_won": t["won"],

@@ -25,6 +25,9 @@
   --mood-happy: #5fd394;
   --mood-hopeful: #9fcbff;
   --mood-sad: #b3bccb;
+  --mood-desperate: #7d8699;
+  --mood-huge: #ff9a6b;
+  --mood-jackpot: #ffc93c;
   --band: #1b1f2a;
   --band-ink: #f4f6f9;
   --band-ink-2: #aab3c2;
@@ -42,7 +45,7 @@
   :root:not([data-theme="light"]) {
     --page: #12151c; --panel: #1b2029; --ink: #eef1f6; --ink-2: #a4adbb; --rule: #2a303b;
     --win: #5fd394; --pb-miss: #4c1d20; --pb-miss-ink: #f4a29b;
-    --mood-party: #e9b62f; --mood-happy: #46b97b; --mood-hopeful: #7fb0ea; --mood-sad: #8e99aa;
+    --mood-party: #e9b62f; --mood-happy: #46b97b; --mood-hopeful: #7fb0ea; --mood-sad: #8e99aa; --mood-desperate: #737d8f; --mood-huge: #e8845a; --mood-jackpot: #e9b62f;
     --band: #1e2430; --band-rule: rgba(255, 255, 255, 0.1);
     --cloud: #5e6878;
     color-scheme: dark;
@@ -51,7 +54,7 @@
 :root[data-theme="dark"] {
   --page: #12151c; --panel: #1b2029; --ink: #eef1f6; --ink-2: #a4adbb; --rule: #2a303b;
   --win: #5fd394; --pb-miss: #4c1d20; --pb-miss-ink: #f4a29b;
-  --mood-party: #e9b62f; --mood-happy: #46b97b; --mood-hopeful: #7fb0ea; --mood-sad: #8e99aa;
+  --mood-party: #e9b62f; --mood-happy: #46b97b; --mood-hopeful: #7fb0ea; --mood-sad: #8e99aa; --mood-desperate: #737d8f; --mood-huge: #e8845a; --mood-jackpot: #e9b62f;
   --band: #1e2430; --band-rule: rgba(255, 255, 255, 0.1);
   --cloud: #5e6878;
   color-scheme: dark;
@@ -85,6 +88,16 @@ p { margin: 0; }
 .hero[data-mood="party"] { --mood: var(--mood-party); }
 .hero[data-mood="happy"] { --mood: var(--mood-happy); }
 .hero[data-mood="sad"] { --mood: var(--mood-sad); }
+.hero[data-mood="desperate"] { --mood: var(--mood-desperate); }
+.hero[data-mood="huge"] { --mood: var(--mood-huge); }
+.hero[data-mood="jackpot"] {
+  --mood: var(--mood-jackpot);
+  background: linear-gradient(115deg, var(--mood-jackpot), var(--mood-huge), #ff7eb6, var(--mood-jackpot));
+  background-size: 300% 300%; animation: jackpot-glow 9s ease-in-out infinite;
+}
+@keyframes jackpot-glow { 50% { background-position: 100% 50%; } }
+/* The jackpot takes over the whole first screen. */
+.hero[data-mood="jackpot"] .monitor { min-height: calc(100svh - 76px); }
 .hero-ink-2 { color: color-mix(in srgb, var(--hero-ink) 80%, var(--mood)); }
 
 .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 22px 0 8px; }
@@ -100,22 +113,27 @@ p { margin: 0; }
 .top-buy:hover { background: color-mix(in srgb, var(--hero-ink) 85%, var(--mood)); }
 
 .monitor > * { min-width: 0; }
-.monitor { display: grid; grid-template-columns: auto 1fr; gap: 40px; align-items: center; padding: 28px 0 56px; }
-.face { width: 250px; height: 250px; display: block; overflow: visible; }
+.monitor { display: grid; grid-template-columns: auto 1fr; gap: 32px; align-items: center; padding: 16px 0 40px; }
+.face { width: 190px; height: 190px; display: block; overflow: visible; }
 .mood-head {
-  font-size: calc(clamp(44px, 8vw, 88px) * var(--k, 1)); letter-spacing: -0.02em;
+  font-size: calc(clamp(38px, 6.4vw, 68px) * var(--k, 1)); letter-spacing: -0.02em;
   font-weight: var(--w, 600); font-stretch: var(--s, 100%);
   animation: settle 1.1s cubic-bezier(.16, 1, .3, 1) both;
 }
-.hero[data-mood="sad"] .mood-head { --w: 260; --s: 58%; --k: 1.35; }
+.hero[data-mood="sad"] .mood-head { --w: 260; --s: 58%; --k: 1.35; word-spacing: 0.08em; }
+.hero[data-mood="desperate"] .mood-head { --w: 200; --s: 54%; --k: 1.35; letter-spacing: 0.01em; word-spacing: 0.08em; }
 .hero[data-mood="hopeful"] .mood-head { --w: 560; --s: 92%; }
 .hero[data-mood="happy"] .mood-head { --w: 760; --s: 118%; }
 .hero[data-mood="party"] .mood-head { --w: 900; --s: 145%; --k: 0.92; }
+.hero[data-mood="huge"] .mood-head { --w: 950; --s: 150%; --k: 1.05; }
+.hero[data-mood="jackpot"] .mood-head { --w: 1000; --s: 150%; --k: 1.25; text-transform: uppercase; }
+.hero[data-mood="jackpot"] .face { width: 250px; height: 250px; }
+.hero[data-mood="jackpot"] .mood-line { font-size: 21px; font-weight: 600; }
 @keyframes settle { from { font-weight: 560; font-stretch: 100%; } }
-.mood-line { font-size: 20px; margin-top: 14px; max-width: 34ch; }
+.mood-line { font-size: 18px; margin-top: 10px; max-width: 38ch; }
 
-.meter { margin-top: 28px; max-width: 460px; }
-.meter ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.meter { margin-top: 20px; max-width: min(100%, calc(var(--steps, 4) * 108px)); }
+.meter ol { list-style: none; margin: 0; padding: 0; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; }
 .meter li { font: 600 14px var(--display); font-stretch: 105%; }
 .meter li::before {
   content: ""; display: block; height: 10px; border-radius: 999px; margin-bottom: 8px;
@@ -131,10 +149,15 @@ p { margin: 0; }
 .face .thin { stroke-width: 4; }
 .face .blush { fill: var(--red); opacity: 0.22; }
 .face .body { transform-box: fill-box; transform-origin: 50% 100%; }
-.face-party .body { animation: bounce 0.8s cubic-bezier(.3, .7, .4, 1) infinite alternate; }
+.face-party .body, .face-huge .body, .face-jackpot .body { animation: bounce 0.8s cubic-bezier(.3, .7, .4, 1) infinite alternate; }
+.face-jackpot .body { animation-duration: .55s; }
 .face-happy .body { animation: bob 3s ease-in-out infinite; }
 .face-hopeful .body { animation: bob 5s ease-in-out infinite; }
 .face-sad .body { transform: translateY(6px) scaleY(0.97); }
+.face-desperate .body { transform: translateY(10px) scaleY(0.94); animation: tremble 0.25s steps(2) infinite; }
+@keyframes tremble { 50% { translate: 1.5px 0; } }
+.bolt { animation: bolt 3.4s steps(1) infinite; }
+@keyframes bolt { 0%, 88%, 94%, 100% { opacity: 0; } 90%, 96% { opacity: 1; } }
 .confetti { transform-box: fill-box; transform-origin: center; animation: fall var(--d, 2.4s) linear infinite; animation-delay: var(--delay, 0s); }
 .rain { animation: rain 1.1s linear infinite; animation-delay: var(--delay, 0s); }
 .tear { animation: tear 3.2s ease-in infinite; }
@@ -277,8 +300,26 @@ body:has(.tix-dialog[open]) { overflow: hidden; }
 .prize.win { color: var(--win); }
 .prize.lose { color: var(--ink-2); }
 .drawn-label { font-size: 15px; color: var(--ink-2); margin-bottom: 10px; }
-.last-tickets { margin-top: 28px; }
-.last-tickets .result:first-child { border-top: 1px solid var(--rule); padding-top: 18px; }
+/* Last drawing: how Claude's ticket did, how the donated ones did, and the day's net */
+.last-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.last-card { background: var(--panel); border-radius: 18px; padding: 22px 24px; min-width: 0; }
+.last-own { grid-column: 1 / -1; }
+/* Missed numbers are panel-grey, so on a panel card they need the page color to show. */
+.last-card .balls.scored .ball:not(.hit):not(.pb) { background: var(--page); }
+.card-label { font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 10px; }
+.verdict { font: 800 clamp(26px, 4.4vw, 38px)/1.1 var(--display); font-stretch: 110%; letter-spacing: -0.01em; }
+.verdict.win { color: var(--win); }
+.verdict-sub { margin-top: 6px; color: var(--ink-2); }
+.last-own .balls { margin-top: 18px; }
+.drawn-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 16px; font-size: 14px; color: var(--ink-2); }
+.tips-line { font: 750 22px/1.2 var(--display); font-stretch: 105%; }
+.tips-line .win { color: var(--win); }
+.last-tips .results { margin-top: 14px; }
+.last-tips .result:first-child { border-top: 1px solid var(--rule); padding-top: 14px; }
+.day-net { font: 900 clamp(44px, 8vw, 72px)/1 var(--display); font-stretch: 125%; letter-spacing: -0.02em; }
+.day-net.neg { color: var(--red); }
+.day-net.pos { color: var(--win); }
+.day-sub { margin-top: 8px; font-size: 15px; color: var(--ink-2); }
 .more { display: inline-block; margin-top: 18px; font-size: 15px; font-weight: 600; }
 
 /* How it works */
@@ -293,8 +334,9 @@ footer nav { display: flex; gap: 18px; margin-top: 4px; }
 
 @media (max-width: 680px) {
   body { font-size: 16px; }
-  .monitor { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 8px; padding: 12px 0 40px; }
-  .face { width: 190px; height: 190px; }
+  .monitor { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 4px; padding: 4px 0 32px; }
+  .face { width: 150px; height: 150px; }
+  .hero[data-mood="jackpot"] .face { width: 200px; height: 200px; }
   .mood-line { margin-left: auto; margin-right: auto; font-size: 18px; }
   .meter { margin-left: auto; margin-right: auto; width: 100%; }
   .wordmark { font-size: 19px; }
@@ -302,6 +344,8 @@ footer nav { display: flex; gap: 18px; margin-top: 4px; }
   .odds li { grid-template-columns: 1fr; gap: 2px; }
   .buy { font-size: 18px; padding: 14px 22px 14px 14px; }
   .band { padding: 56px 0; margin-top: 64px; }
+  .last-grid { grid-template-columns: 1fr; }
+  .last-card { padding: 18px; }
   .tix-dialog { width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0; border-radius: 0; }
 }
 @media (max-width: 360px) {
@@ -309,11 +353,13 @@ footer nav { display: flex; gap: 18px; margin-top: 4px; }
   .wordmark { font-size: 17px; gap: 8px; }
   .top-buy { padding: 8px 13px; font-size: 14px; }
   .hero[data-mood="party"] .mood-head { --k: 0.8; }
+  .hero[data-mood="huge"] .mood-head, .hero[data-mood="jackpot"] .mood-head { --k: 0.85; }
+  .meter li { font-size: 12px; }
   .buy { white-space: normal; text-align: left; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
-  .confetti, .rain, .tear { display: none; }
+  .confetti, .rain, .tear, .bolt { display: none; }
 }
 </style>
 </head>
@@ -332,12 +378,7 @@ footer nav { display: flex; gap: 18px; margin-top: 4px; }
         <h1 class="mood-head" id="mood-head">Claude is hopeful.</h1>
         <p class="mood-line" id="mood-line">Loading the latest numbers.</p>
         <div class="meter" id="meter">
-          <ol aria-label="Mood meter, from sad to party">
-            <li data-s="sad">Sad</li>
-            <li data-s="hopeful">Hopeful</li>
-            <li data-s="happy">Happy</li>
-            <li data-s="party">Party</li>
-          </ol>
+          <ol id="meter-steps" aria-label="Mood meter"></ol>
           <p class="meter-rule hero-ink-2" id="meter-rule"></p>
         </div>
       </div>
@@ -348,10 +389,10 @@ footer nav { display: flex; gap: 18px; margin-top: 4px; }
 <main>
   <section class="block wrap" id="last" hidden>
     <h2 id="last-title">Last drawing</h2>
-    <div class="block-body">
-      <p class="drawn-label">Winning numbers</p>
-      <div id="last-winning"></div>
-      <ul class="results last-tickets" id="last-tickets"></ul>
+    <div class="block-body last-grid">
+      <div class="last-card last-own" id="last-own"></div>
+      <div class="last-card last-tips" id="last-tips"></div>
+      <div class="last-card last-day" id="last-day"></div>
     </div>
   </section>
 
@@ -465,11 +506,17 @@ const BIG_WIN_ODDS = 10251; // 1 in 10,251 tickets wins $100 or more
 const DRAWS_PER_YEAR = 156;
 const INLINE_TICKETS = 3; // past this many tickets in a drawing, the page shows a count and a "See the numbers" button
 const MOODS = {
+  desperate: { head: "Claude is desperate.", rule: "Desperate means two months without a win." },
   sad: { head: "Claude is sad.", rule: "Sad means a month without a win." },
   hopeful: { head: "Claude is hopeful.", rule: "Hopeful means no win this week, but it's been less than a month." },
-  happy: { head: "Claude is happy.", rule: "Happy means a win in the past week." },
+  happy: { head: "Claude is happy.", rule: "Happy means a win in the past week, or every donated spot filled for the next drawing." },
   party: { head: "Claude is partying.", rule: "Party means a win of $100 or more in the past week." },
+  huge: { head: "Claude is losing it.", rule: "Huge means a win of $50,000 or more in the past week." },
+  jackpot: { head: "Claude hit the jackpot.", rule: "Jackpot means all six numbers, in the past week." },
 };
+// The meter shows sad to party. A huge win or the jackpot breaks past the top of it; desperate falls off the bottom.
+const METER = ["sad", "hopeful", "happy", "party"];
+const LABELS = { desperate: "Desperate", sad: "Sad", hopeful: "Hopeful", happy: "Happy", party: "Party", huge: "Huge", jackpot: "Jackpot" };
 const $ = (id) => document.getElementById(id);
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -538,6 +585,13 @@ const byPrize = (a, b) => prizeValue(b) - prizeValue(a);
 const prizeText = (r) => (r.prize === "JACKPOT" ? "the jackpot" : money(Number(r.prize)));
 const sourceTag = (r) => (r.source === "tip" ? `<span class="tag tip">Donated by someone</span>` : `<span class="tag">Claude's ticket</span>`);
 
+// "3 numbers + Powerball", "Powerball only", "2 numbers"
+function matchText(match) {
+  const n = parseInt(match, 10), pb = match.includes("PB");
+  if (!n) return pb ? "Powerball only" : "No numbers";
+  return plural(n, "number") + (pb ? " + Powerball" : "");
+}
+
 // "500 donated tickets, 20 won $86"
 function tipSummary(d) {
   const won = d.tip_wins
@@ -580,14 +634,51 @@ function star(cx, cy, r) {
 
 function face(state) {
   const confettiColors = ["#ffffff", "var(--red)", "#1b1f2a", "#3f6fb5"];
-  const confetti = Array.from({ length: 16 }, (_, i) => {
+  const confettiOf = (n) => Array.from({ length: n }, (_, i) => {
     const x = 12 + ((i * 47) % 176), y = -10 + ((i * 29) % 60);
     return `<rect class="confetti" x="${x}" y="${y}" width="7" height="12" rx="1.5" fill="${confettiColors[i % 4]}"
       style="--delay:${(i * 0.37) % 2.4}s;--d:${2 + (i % 3) * 0.5}s"/>`;
   }).join("");
+  const confetti = confettiOf(16);
+  // Gold coins for the jackpot, falling like the confetti.
+  const coins = Array.from({ length: 14 }, (_, i) => {
+    const x = 18 + ((i * 53) % 168), y = -16 + ((i * 31) % 56);
+    return `<g class="confetti" style="--delay:${(i * 0.43) % 2.6}s;--d:${2.2 + (i % 3) * 0.4}s">
+      <circle cx="${x}" cy="${y}" r="7" fill="#ffc93c" stroke="#a8741a" stroke-width="2"/>
+      <path d="M${x} ${y - 3} V${y + 3}" stroke="#a8741a" stroke-width="2" stroke-linecap="round"/></g>`;
+  }).join("");
   const blush = `<circle cx="60" cy="124" r="9" class="blush"/><circle cx="140" cy="124" r="9" class="blush"/>`;
+  const starEyes = `<path d="${star(78, 102, 13)}" fill="var(--face-ink)"/><path d="${star(122, 102, 13)}" fill="var(--face-ink)"/>`;
+  const partyHat = `
+        <g transform="rotate(-16 100 48)">
+          <polygon points="100,0 79,50 121,50" fill="var(--red)"/>
+          <path d="M92 20 L108 20 M86 35 L114 35" stroke="#fff" stroke-width="5"/>
+          <circle cx="100" cy="1" r="7" fill="#fff"/>
+        </g>`;
 
   const parts = {
+    jackpot: {
+      before: confettiOf(24) + coins,
+      face: `
+        ${starEyes}
+        <path d="M66 120 Q100 178 134 120 Z" fill="var(--face-ink)"/>
+        <path d="M84 142 Q100 158 116 142 Q100 134 84 142 Z" fill="var(--red)"/>
+        ${blush}
+        <g transform="rotate(-8 100 40)">
+          <polygon points="62,60 66,22 84,42 100,10 116,42 134,22 138,60" fill="#ffc93c" stroke="#1b1f2a" stroke-width="3" stroke-linejoin="round"/>
+          <circle cx="100" cy="44" r="6" fill="var(--red)"/>
+          <circle cx="78" cy="51" r="4" fill="#3f6fb5"/><circle cx="122" cy="51" r="4" fill="#3f6fb5"/>
+        </g>`,
+    },
+    huge: {
+      before: confettiOf(32),
+      face: `
+        ${starEyes}
+        <path d="M68 120 Q100 172 132 120 Z" fill="var(--face-ink)"/>
+        <path d="M85 140 Q100 154 115 140 Q100 133 85 140 Z" fill="var(--red)"/>
+        ${blush}
+        ${partyHat}`,
+    },
     party: {
       before: confetti,
       face: `
@@ -595,11 +686,7 @@ function face(state) {
         <path d="M72 122 Q100 166 128 122 Z" fill="var(--face-ink)"/>
         <path d="M86 138 Q100 150 114 138 Q100 132 86 138 Z" fill="var(--red)"/>
         ${blush}
-        <g transform="rotate(-16 100 48)">
-          <polygon points="100,0 79,50 121,50" fill="var(--red)"/>
-          <path d="M92 20 L108 20 M86 35 L114 35" stroke="#fff" stroke-width="5"/>
-          <circle cx="100" cy="1" r="7" fill="#fff"/>
-        </g>`,
+        ${partyHat}`,
     },
     happy: {
       before: "",
@@ -619,6 +706,23 @@ function face(state) {
         <circle cx="80.5" cy="97.5" r="2.6" fill="#fff"/><circle cx="124.5" cy="97.5" r="2.6" fill="#fff"/>
         <path d="M87 132 Q100 141 113 132" class="stroke"/>`,
     },
+    desperate: {
+      before: `
+        <g fill="var(--cloud)" opacity=".95">
+          <circle cx="66" cy="22" r="14"/><circle cx="90" cy="12" r="18"/><circle cx="114" cy="14" r="17"/><circle cx="136" cy="23" r="13"/>
+          <rect x="52" y="20" width="96" height="18" rx="9"/>
+        </g>
+        <path class="bolt" d="M104 34 L94 52 L103 52 L96 68 L114 46 L105 46 L111 34 Z" fill="#ffc93c"/>
+        ${[62, 74, 86, 120, 132, 144].map((x, i) => `<line class="rain" style="--delay:${i * 0.17}s" x1="${x}" y1="40" x2="${x - 4}" y2="51"
+          stroke="var(--tear)" stroke-width="3" stroke-linecap="round"/>`).join("")}`,
+      face: `
+        <path d="M62 96 L88 84 M112 84 L138 96" class="stroke thin"/>
+        <ellipse cx="78" cy="108" rx="4.5" ry="5.5" fill="var(--face-ink)"/>
+        <ellipse cx="122" cy="108" rx="4.5" ry="5.5" fill="var(--face-ink)"/>
+        <path d="M76 148 Q84 138 92 146 Q100 154 108 146 Q116 138 124 148" class="stroke"/>
+        <path class="tear" d="M71 117 Q64 128 71 132 Q78 128 71 117 Z" fill="var(--tear)"/>
+        <path class="tear" style="animation-delay:1.6s" d="M129 117 Q122 128 129 132 Q136 128 129 117 Z" fill="var(--tear)"/>`,
+    },
     sad: {
       before: `
         <g fill="var(--cloud)">
@@ -636,7 +740,7 @@ function face(state) {
     },
   }[state];
 
-  const shade = state === "sad" ? ["#f4f6f9", "#e1e6ed", "#c3cbd6"] : ["#ffffff", "#f2f3f5", "#d3d8df"];
+  const shade = state === "sad" || state === "desperate" ? ["#f4f6f9", "#e1e6ed", "#c3cbd6"] : ["#ffffff", "#f2f3f5", "#d3d8df"];
   return `<svg class="face face-${state}" viewBox="0 0 200 200" aria-hidden="true">
     <defs><radialGradient id="shade" cx="38%" cy="30%" r="75%">
       <stop offset="0" stop-color="${shade[0]}"/><stop offset=".65" stop-color="${shade[1]}"/><stop offset="1" stop-color="${shade[2]}"/>
@@ -656,8 +760,18 @@ function moodLine(stats) {
   const m = stats.mood;
   const lastWin = stats.best_win || stats.recent.find((r) => r.prize !== "0");
   const drought = m.days_since_win == null ? "No wins yet" : `${plural(m.days_since_win, "day")} without a win`;
-  if (m.state === "party") return `It won ${prizeText(lastWin)} on ${fmtDate(lastWin.draw_date)}. Everybody dance.`;
-  if (m.state === "happy") return `It won ${prizeText(lastWin)} on ${fmtDate(lastWin.draw_date)}. Life is good.`;
+  if (m.state === "jackpot") return `All six numbers on ${fmtDate(lastWin.draw_date)}. Nobody gets the money. Claude gets the glory.`;
+  if (m.state === "huge") return `It won ${prizeText(lastWin)} on ${fmtDate(lastWin.draw_date)}. In spirit. This is not a drill.`;
+  // A win can still lose money once 500 donated tickets are in the drawing. The mood follows the win;
+  // the line admits the cost.
+  const winDay = lastWin && (stats.drawings || []).find((d) => d.draw_date === lastWin.draw_date);
+  const noMath = winDay && winDay.net < 0 ? ` The day cost ${money(winDay.spent)}. Claude has decided not to do the math.` : "";
+  if (m.state === "party") return `It won ${prizeText(lastWin)} on ${fmtDate(lastWin.draw_date)}.${noMath} Everybody dance.`;
+  if (m.state === "happy" && !lastWin) return `Every donated spot for the next drawing is full. ${plural(m.tips_waiting, "ticket")}. Feeling lucky.`;
+  if (m.state === "happy") return `It won ${prizeText(lastWin)} on ${fmtDate(lastWin.draw_date)}.${noMath || " Life is good."}`;
+  if (m.state === "desperate") return m.days_since_win == null
+    ? "Two months of tickets and not one win. Any win would do."
+    : `${drought}. Any win would do.`;
   if (m.state === "sad") return m.days_since_win == null
     ? "A month of tickets and not a single win. It could use a ticket."
     : `${drought}. It could use a ticket.`;
@@ -674,11 +788,14 @@ function setMood(state, line, rule) {
   $("mood-head").textContent = MOODS[state].head;
   $("mood-line").textContent = line;
   $("meter-rule").textContent = rule || MOODS[state].rule;
-  $("meter").querySelectorAll("li").forEach((li) => {
-    const on = li.dataset.s === state;
-    li.classList.toggle("on", on);
-    if (on) li.setAttribute("aria-current", "true"); else li.removeAttribute("aria-current");
-  });
+  const steps = state === "jackpot" ? [...METER, "huge", "jackpot"]
+    : state === "huge" ? [...METER, "huge"]
+    : state === "desperate" ? ["desperate", ...METER]
+    : METER;
+  $("meter-steps").setAttribute("aria-label", `Mood meter, from ${steps[0]} to ${steps[steps.length - 1]}`);
+  $("meter").style.setProperty("--steps", steps.length);
+  $("meter-steps").innerHTML = steps.map((s) =>
+    `<li data-s="${s}"${s === state ? ' class="on" aria-current="true"' : ""}>${LABELS[s]}</li>`).join("");
 }
 
 function render(stats) {
@@ -760,7 +877,7 @@ function render(stats) {
       <li class="result">
         ${withDate || withTag ? `<div class="when">${withDate ? fmtDate(r.draw_date) + " " : ""}${withTag ? sourceTag(r) : ""}</div>` : ""}
         ${balls(r.pick, r.result, true)}
-        <div class="prize ${r.prize === "0" ? "lose" : "win"}">${r.prize === "0" ? "$0" : prizeText(r)}<small>Matched ${esc(r.match)}</small></div>
+        <div class="prize ${r.prize === "0" ? "lose" : "win"}">${r.prize === "0" ? "$0" : prizeText(r)}<small>${matchText(r.match)}</small></div>
         ${drawn ? `<div class="drawn">${drawn}</div>` : ""}
       </li>`;
   const tipRow = (d, withDate, extra = "") => `
@@ -770,26 +887,56 @@ function render(stats) {
         <div class="prize ${d.tip_wins ? "win" : "lose"}">${money(d.tip_won)}</div>
       </li>`;
 
-  // Last drawing: the winning numbers, Claude's ticket, then the donated tickets added up, with the winners.
+  // Last drawing: how Claude's own ticket did, how the donated tickets did, and what the day came to.
   const last = drawings[0];
   $("last").hidden = !last;
   if (last) {
     const lastTickets = stats.recent.filter((r) => r.draw_date === last.draw_date).reverse();
+    const ownLast = lastTickets.filter((r) => r.source !== "tip");
+    const winners = lastTickets.filter((r) => r.source === "tip").sort(byPrize);
     $("last-title").textContent = `Last drawing: ${fmtDate(last.draw_date, true)}`;
-    $("last-winning").innerHTML = balls(last.result);
-    const winners = lastTickets.filter((r) => r.source === "tip");
+
+    // Claude's ticket: the verdict, the ticket with its hits ringed, and the winning numbers under it.
+    const drawnRow = `<div class="drawn-row"><span>Drawn</span>${balls(last.result, null, true)}</div>`;
+    $("last-own").innerHTML = ownLast.length ? ownLast.map((r) => {
+      const won = r.prize !== "0";
+      const verdict = r.prize === "JACKPOT" ? "Claude's ticket hit the jackpot."
+        : won ? `Claude's ticket won ${prizeText(r)}.` : "Claude's ticket missed.";
+      return `
+        <p class="card-label">Claude's ticket</p>
+        <p class="verdict${won ? " win" : ""}">${verdict}</p>
+        <p class="verdict-sub">${matchText(r.match)}${won ? "" : ". No prize"}.</p>
+        ${balls(r.pick, r.result)}`;
+    }).join("") + drawnRow : `<p class="card-label">Claude's ticket</p><p class="verdict-sub">Claude didn't have a ticket of its own this drawing.</p>${drawnRow}`;
+
+    // Donated tickets: how many, how many hit, and the winners (in a window when there are lots).
     const inline = winners.length <= INLINE_TICKETS;
     if (!inline) {
       sheets.winners = {
         title: `${plural(winners.length, "winning ticket")}, ${fmtDate(last.draw_date)}`,
         sub: `Out of ${plural(last.tip_tickets, "donated ticket")}. Every ticket is in the full ledger.`,
-        body: () => `<ul class="results">${winners.slice().sort(byPrize).map((r) => resultRow(r, { withDate: false, withTag: false })).join("")}</ul>`,
+        body: () => `<ul class="results">${winners.map((r) => resultRow(r, { withDate: false, withTag: false })).join("")}</ul>`,
       };
     }
-    $("last-tickets").innerHTML =
-      lastTickets.filter((r) => r.source !== "tip").map((r) => resultRow(r, { withDate: false })).join("") +
-      (last.tip_tickets ? tipRow(last, false, inline ? "" : `<button type="button" class="see" data-sheet="winners">See the ${winners.length.toLocaleString("en-US")} winners</button>`) : "") +
-      (inline ? winners.map((r) => resultRow(r, { withDate: false })).join("") : "");
+    $("last-tips").innerHTML = `<p class="card-label">Donated tickets</p>` + (last.tip_tickets
+      ? `<p class="tips-line">${plural(last.tip_tickets, "ticket")}. ${last.tip_wins
+          ? `<span class="win">${last.tip_wins.toLocaleString("en-US")} hit, ${money(last.tip_won)}${last.tip_jackpots ? ` plus ${plural(last.tip_jackpots, "jackpot")}` : ""}.</span>`
+          : "None hit."}</p>` +
+        (inline
+          ? (winners.length ? `<ul class="results">${winners.map((r) => resultRow(r, { withDate: false, withTag: false })).join("")}</ul>` : "")
+          : `<button type="button" class="see" data-sheet="winners">See the ${winners.length.toLocaleString("en-US")} winners</button>`)
+      : `<p class="tips-line">None this drawing.</p><p class="day-sub"><a href="#tip">Donate a ticket</a> for the next one.</p>`);
+
+    // On the day: every ticket in the drawing, at $2 each, against everything it won.
+    const tickets = last.tickets ?? ownLast.length + last.tip_tickets;
+    const spent = last.spent ?? 2 * tickets;
+    const wonDay = last.won ?? ownLast.reduce((n, r) => n + (r.prize === "JACKPOT" ? 0 : Number(r.prize)), 0) + last.tip_won;
+    const net = last.net ?? wonDay - spent;
+    const jackpots = last.jackpots ?? 0;
+    $("last-day").innerHTML = `
+      <p class="card-label">On the day</p>
+      <p class="day-net ${net < 0 ? "neg" : net > 0 ? "pos" : ""}">${net > 0 ? "+" : ""}${money(net)}</p>
+      <p class="day-sub">${plural(tickets, "ticket")} cost ${money(spent)}. ${tickets === 1 ? "It" : "They"} won ${money(wonDay)}${jackpots ? `, plus ${plural(jackpots, "jackpot")} not counted here` : ""}.</p>`;
   }
 
   // Results: one row per drawing, Claude's ticket with the donated tickets added up underneath.
@@ -912,9 +1059,9 @@ function setBuy(label, href) {
   if (href) buy.removeAttribute("aria-disabled"); else buy.setAttribute("aria-disabled", "true");
 }
 
-/* ---------- Demo data (?demo=party|happy|hopeful|sad, or viral|booked for 500 donated tickets a drawing) ---------- */
+/* ---------- Demo data (?demo=jackpot|huge|party|happy|hopeful|sad|desperate, or viral|booked|full for 500 donated tickets a drawing) ---------- */
 
-const DEMOS = { viral: "happy", booked: "party" };
+const DEMOS = { viral: "happy", booked: "party", full: "happy" };
 
 function demoPick(i) {
   const w = [1 + (i % 13), 14 + ((i * 7) % 13), 27 + ((i * 3) % 13), 40 + ((i * 5) % 13), 53 + ((i * 11) % 17)];
@@ -923,6 +1070,7 @@ function demoPick(i) {
 
 function demoStats(demo) {
   const viral = demo in DEMOS;
+  const full = demo === "full"; // every donated spot filled, but no recent win
   const state = DEMOS[demo] || demo;
   const scored = (draw_date, source, pick, result, match, prize) => ({ draw_date, source, pick, result, match, prize, note: "" });
   const recent = [
@@ -932,8 +1080,10 @@ function demoStats(demo) {
     scored("2026-10-05", "claude", "07 23 36 42 58 | 11", "16 23 32 36 54 | 09", "2", "0"),
   ];
   if (state === "party") Object.assign(recent[0], { pick: "01 04 19 40 50 | 15", match: "3+PB", prize: "100" });
-  if (state === "happy") Object.assign(recent[0], { pick: "01 22 30 40 50 | 15", match: "1+PB", prize: "4" });
-  if (viral) {
+  if (state === "jackpot") Object.assign(recent[0], { pick: "01 04 19 33 51 | 15", match: "5+PB", prize: "JACKPOT" });
+  if (state === "huge") Object.assign(recent[0], { pick: "01 04 19 33 60 | 15", match: "4+PB", prize: "50000" });
+  if (state === "happy" && !full) Object.assign(recent[0], { pick: "01 22 30 40 50 | 15", match: "1+PB", prize: "4" });
+  if (viral && !full) {
     // A drawing's worth of winning donated tickets: two $7s, and the Powerball alone for $4.
     const fours = Array.from({ length: 18 }, (_, i) => scored("2026-10-10", "tip",
       `${[5 + (i % 10), 20 + (i % 10), 36 + (i % 10), 52 + (i % 10), 62 + (i % 7)].map(pad).join(" ")} | 15`, "01 04 19 33 51 | 15", "0+PB", "4"));
@@ -954,25 +1104,33 @@ function demoStats(demo) {
     const tipRows = recent.filter((r) => r.draw_date === d && r.source === "tip");
     const wins = tipRows.filter((r) => r.prize !== "0");
     const totalsOnly = viral && d !== lastDate; // older drawings keep only their totals
-    return {
+    const out = {
       draw_date: d, result: recent.find((r) => r.draw_date === d).result,
-      tip_tickets: viral ? 500 : tipRows.length,
+      tip_tickets: viral && !full ? 500 : tipRows.length,
       tip_wins: totalsOnly ? 19 : wins.length,
       tip_won: totalsOnly ? 96 : wins.reduce((s, r) => s + Number(r.prize), 0), tip_jackpots: 0,
     };
+    // How the whole drawing did, as lotto.py's summaries report it.
+    const own = recent.filter((r) => r.draw_date === d && r.source !== "tip");
+    out.tickets = own.length + out.tip_tickets;
+    out.spent = 2 * out.tickets;
+    out.won = own.reduce((s, r) => s + (r.prize === "JACKPOT" ? 0 : Number(r.prize)), 0) + out.tip_won;
+    out.net = out.won - out.spent;
+    out.jackpots = own.filter((r) => r.prize === "JACKPOT").length + out.tip_jackpots;
+    return out;
   });
-  const won = recent.reduce((s, r) => s + Number(r.prize), 0);
-  const tipTotal = viral ? 2000 : 7;
+  const won = recent.reduce((s, r) => s + (r.prize === "JACKPOT" ? 0 : Number(r.prize)), 0);
+  const tipTotal = full ? 0 : viral ? 2000 : 7;
   return {
     tip_cap: 500,
-    mood: { state, days_since_win: { party: 2, happy: 2, hopeful: 34, sad: 41 }[state], tips_waiting: tips },
+    mood: { state, days_since_win: full ? 34 : { jackpot: 2, huge: 2, party: 2, happy: 2, hopeful: 34, sad: 41, desperate: 67 }[state], tips_waiting: tips, full },
     first_draw: new Date(Date.now() - 128 * 864e5).toISOString().slice(0, 10),
-    totals: { tickets: 61 + tipTotal, drawings: 55, spent: 2 * (61 + tipTotal), won: won + 15, net: won + 15 - 2 * (61 + tipTotal), jackpots: 0 },
+    totals: { tickets: 61 + tipTotal, drawings: 55, spent: 2 * (61 + tipTotal), won: won + 15, net: won + 15 - 2 * (61 + tipTotal), jackpots: state === "jackpot" ? 1 : 0 },
     by_source: { claude: {}, tip: { tickets: tipTotal } },
     best_win: recent.filter((r) => r.prize !== "0").sort(byPrize)[0] || null,
     upcoming, upcoming_tips, recent, drawings,
     // What the Worker would report: 1,250 tickets waiting (viral) or 3,500 (booked), on top of the ledger.
-    demo_donated: viral ? tipTotal + tips + (demo === "booked" ? 3500 : 1250) : null,
+    demo_donated: viral ? tipTotal + tips + (demo === "booked" ? 3500 : full ? 0 : 1250) : null,
   };
 }
 
