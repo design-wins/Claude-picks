@@ -959,8 +959,31 @@ function render(stats) {
 
   // Last drawing: how Claude's own ticket did, how the donated tickets did, and what the day came to.
   const last = drawings[0];
-  $("last").hidden = !last;
-  if (last) {
+  // The newest drawing in the feed, when none of Claude's tickets were in it (before Claude's first
+  // ticket, or a drawing it skipped): show its numbers and say why there's no ticket.
+  const latest = stats.latest_drawing;
+  const noTicket = latest && (!last || latest.draw_date > last.draw_date) ? latest : null;
+  $("last").hidden = !last && !noTicket;
+  $("last-day").hidden = !!noTicket;
+  $("last-tips").style.gridColumn = noTicket ? "1 / -1" : ""; // full width when it's the only card left
+  if (noTicket) {
+    const d = noTicket.draw_date;
+    const waiting = stats.upcoming.some((r) => r.draw_date === d) || tipGroups.some((g) => g.draw_date === d);
+    const firstOwn = stats.upcoming.find((r) => r.source !== "tip");
+    const why = waiting ? "Claude's ticket gets scored as soon as every number for this drawing is out."
+      : !stats.first_draw || stats.first_draw > d
+        ? `Claude wasn't playing yet.${firstOwn ? ` Its first ticket is in the drawing on ${fmtDate(firstOwn.draw_date, true)}.` : ""}`
+        : "Claude didn't have a ticket in this drawing.";
+    $("last-title").textContent = `Last drawing: ${fmtDate(d, true)}`;
+    $("last-own").innerHTML = `
+        <p class="card-label">Claude's ticket</p>
+        <p class="verdict-sub">${why}</p>
+        <div class="drawn-row"><span>Drawn</span>${balls(noTicket.numbers, null, true)}</div>
+        ${noTicket.multiplier ? `<p class="verdict-sub">Power Play ${noTicket.multiplier}×</p>` : ""}
+        ${noTicket.double_play ? `<div class="drawn-row"><span>Double Play</span>${balls(noTicket.double_play, null, true)}</div>` : ""}`;
+    $("last-tips").innerHTML = `<p class="card-label">Donated tickets</p><p class="tips-line">None this drawing.</p>
+      <p class="day-sub"><a href="#tip">Donate a ticket</a> for the next one.</p>`;
+  } else if (last) {
     const lastTickets = stats.recent.filter((r) => r.draw_date === last.draw_date).reverse();
     const ownLast = lastTickets.filter((r) => r.source !== "tip");
     const winners = lastTickets.filter((r) => r.source === "tip").sort(byPrize);

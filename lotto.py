@@ -391,7 +391,7 @@ def best_win(rows, today):
     return {"draw_date": best["draw_date"], "prize": prize, "source": best["source"]}
 
 
-def build_stats(rows, now):
+def build_stats(rows, now, latest_drawing=None):
     # Donated tickets can run to 500 a drawing, so the site gets them added up per drawing, the numbers
     # of the ones still waiting, and the winners from the latest drawing. The ledger has every ticket.
     summaries = drawing_summaries(rows)
@@ -415,6 +415,8 @@ def build_stats(rows, now):
         "upcoming_tips": upcoming_tips(rows),
         "recent": recent[::-1],
         "drawings": summaries,
+        # The newest drawing in the feed, so the site can show it even when Claude had no ticket in it.
+        "latest_drawing": latest_drawing,
     }
 
 
@@ -452,12 +454,19 @@ def read_ledger():
         return [{k: r.get(k) or "" for k in FIELDS} for r in csv.DictReader(f)]
 
 
-def save(rows, now):
+def save(rows, now, latest_drawing=None):
+    """Writes the ledger and stats.json. Without a new `latest_drawing` (only scoring fetches one),
+    the one already in stats.json is kept."""
+    if latest_drawing is None and STATS.exists():
+        try:
+            latest_drawing = json.loads(STATS.read_text()).get("latest_drawing")
+        except ValueError:
+            latest_drawing = None
     with LEDGER.open("w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=FIELDS)
         writer.writeheader()
         writer.writerows(rows)
-    STATS.write_text(json.dumps(build_stats(rows, now), indent=2) + "\n")
+    STATS.write_text(json.dumps(build_stats(rows, now, latest_drawing), indent=2) + "\n")
 
 
 def cmd_pick(args):
@@ -521,11 +530,13 @@ def cmd_score(args):
     for draw in sorted({r["draw_date"] for r in scored if r["source"] == "tip"}):
         tips = [r for r in scored if r["draw_date"] == draw and r["source"] == "tip"]
         print(f"{draw}: {len(tips)} donated tickets, {sum(is_win(r) for r in tips)} won {money(totals(tips)['won'])}.")
+    latest_drawing = None
     if results:
         latest = max(results)
         d = results[latest]
+        latest_drawing = {"draw_date": latest, **d}
         print(f"Latest drawing: {latest}: {d['numbers']}, Power Play {d['multiplier']}x, Double Play {d['double_play'] or 'not out yet'}")
-    save(rows, now)
+    save(rows, now, latest_drawing)
     print(status_text(rows))
 
 

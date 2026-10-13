@@ -1,3 +1,4 @@
+import json
 import tempfile
 import unittest
 from datetime import date, datetime, timezone
@@ -485,6 +486,21 @@ class LedgerFile(unittest.TestCase):
             lotto.save(rows, now)
             self.assertEqual(lotto.read_ledger(), rows)
             self.assertTrue(lotto.STATS.exists())
+
+    def test_latest_drawing_is_kept_until_scoring_brings_a_newer_one(self):
+        self.addCleanup(setattr, lotto, "LEDGER", lotto.LEDGER)
+        self.addCleanup(setattr, lotto, "STATS", lotto.STATS)
+        with tempfile.TemporaryDirectory() as tmp:
+            lotto.LEDGER = Path(tmp) / "ledger.csv"
+            lotto.STATS = Path(tmp) / "stats.json"
+            now = et(2026, 10, 12, 18)
+            oct10 = {"draw_date": "2026-10-10", **drawn("01 04 19 33 51 | 15")}
+            lotto.save([], now, oct10)
+            # A pick doesn't fetch results, so it keeps the drawing already saved.
+            rows = []
+            lotto.add_ticket(rows, [1, 2, 3, 4, 5, 6], "", "claude", now)
+            lotto.save(rows, now)
+            self.assertEqual(json.loads(lotto.STATS.read_text())["latest_drawing"], oct10)
 
     def test_reads_a_ledger_from_before_the_donation_column(self):
         self.addCleanup(setattr, lotto, "LEDGER", lotto.LEDGER)
