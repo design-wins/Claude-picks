@@ -12,6 +12,11 @@ def et(y, m, d, hh, mm=0):
     return datetime(y, m, d, hh, mm, tzinfo=ET)
 
 
+def drawn(numbers, multiplier=2, double_play="01 29 34 39 62 | 14"):
+    """One drawing as fetch_results returns it."""
+    return {"numbers": numbers, "multiplier": multiplier, "double_play": double_play}
+
+
 class ScoreTicket(unittest.TestCase):
     RESULT = "01 04 19 33 51 | 15"  # the real drawing on 2026-10-10
 
@@ -135,7 +140,7 @@ class ScoreRowsAndTotals(unittest.TestCase):
 
     def test_scores_only_drawings_with_results(self):
         rows = self.rows()
-        scored = lotto.score_rows(rows, {"2026-10-10": "01 04 19 33 51 | 15"})
+        scored = lotto.score_rows(rows, {"2026-10-10": drawn("01 04 19 33 51 | 15")})
         self.assertEqual(len(scored), 2)
         self.assertEqual((rows[0]["match"], rows[0]["prize"]), ("1+PB", "4"))
         self.assertEqual((rows[1]["match"], rows[1]["prize"]), ("5+PB", "JACKPOT"))
@@ -143,13 +148,13 @@ class ScoreRowsAndTotals(unittest.TestCase):
 
     def test_scoring_twice_changes_nothing(self):
         rows = self.rows()
-        results = {"2026-10-10": "01 04 19 33 51 | 15"}
+        results = {"2026-10-10": drawn("01 04 19 33 51 | 15")}
         lotto.score_rows(rows, results)
         self.assertEqual(lotto.score_rows(rows, results), [])
 
     def test_totals_count_only_scored_tickets(self):
         rows = self.rows()
-        lotto.score_rows(rows, {"2026-10-10": "01 04 19 33 51 | 15"})
+        lotto.score_rows(rows, {"2026-10-10": drawn("01 04 19 33 51 | 15")})
         self.assertEqual(
             lotto.totals(rows), {"tickets": 2, "drawings": 1, "spent": 4, "won": 4, "net": 0, "jackpots": 1}
         )
@@ -159,6 +164,71 @@ class ScoreRowsAndTotals(unittest.TestCase):
         self.assertEqual(stats["by_source"]["tip"]["jackpots"], 1)
         self.assertEqual(len(stats["upcoming"]), 1)
         self.assertEqual(len(stats["recent"]), 2)
+
+
+class AddOns(unittest.TestCase):
+    NOW = et(2026, 10, 10, 18)
+    RESULT = "01 04 19 33 51 | 15"
+    DOUBLE_PLAY = "01 29 34 39 62 | 14"
+
+    def claude_ticket(self, numbers, multiplier=2):
+        rows = []
+        lotto.add_ticket(rows, numbers, "", "claude", self.NOW, options=lotto.CLAUDE_OPTIONS)
+        lotto.score_rows(rows, {"2026-10-10": drawn(self.RESULT, multiplier, self.DOUBLE_PLAY)})
+        return rows[0]
+
+    def test_power_play_multiplies_the_main_prize(self):
+        r = self.claude_ticket([1, 60, 61, 62, 63, 15], multiplier=3)  # 1+PB: $4
+        self.assertEqual((r["match"], r["prize"], r["multiplier"]), ("1+PB", "12", "3"))
+
+    def test_power_play_match_5_is_a_flat_two_million(self):
+        self.assertEqual(self.claude_ticket([1, 4, 19, 33, 51, 20], multiplier=10)["prize"], "2000000")
+
+    def test_power_play_leaves_the_jackpot_and_losses_alone(self):
+        self.assertEqual(self.claude_ticket([1, 4, 19, 33, 51, 15], multiplier=5)["prize"], "JACKPOT")
+        self.assertEqual(self.claude_ticket([60, 61, 62, 63, 64, 20], multiplier=5)["prize"], "0")
+
+    def test_double_play_is_scored_on_its_own_numbers_and_table(self):
+        # Misses the main drawing; hits 29 34 39 62 plus Powerball 14 in Double Play: $50,000.
+        r = self.claude_ticket([29, 34, 39, 62, 66, 14])
+        self.assertEqual((r["match"], r["prize"]), ("0", "0"))
+        self.assertEqual((r["dp_result"], r["dp_match"], r["dp_prize"]), (self.DOUBLE_PLAY, "4+PB", "50000"))
+        self.assertEqual(lotto.winnings(r), 50_000)
+
+    def test_both_drawings_add_up(self):
+        # Main: 1+PB, $4 x2 = $8. Double Play: 01 and 29 hit without the Powerball, which pays nothing.
+        r = self.claude_ticket([1, 29, 60, 61, 63, 15])
+        self.assertEqual((r["prize"], r["dp_prize"], lotto.winnings(r)), ("8", "0", 8))
+
+    def test_add_on_ticket_costs_four_dollars(self):
+        r = self.claude_ticket([60, 61, 62, 63, 64, 20])
+        self.assertEqual(lotto.ticket_cost(r), 4)
+        self.assertEqual(lotto.totals([r])["spent"], 4)
+
+    def test_plain_ticket_ignores_add_ons(self):
+        rows = []
+        lotto.add_ticket(rows, [1, 60, 61, 62, 63, 15], "", "tip", self.NOW)
+        lotto.score_rows(rows, {"2026-10-10": drawn(self.RESULT, 5, self.DOUBLE_PLAY)})
+        self.assertEqual((rows[0]["prize"], rows[0]["multiplier"], rows[0]["dp_prize"]), ("4", "", ""))
+        self.assertEqual(lotto.ticket_cost(rows[0]), 2)
+
+    def test_waits_for_double_play_numbers(self):
+        rows = []
+        lotto.add_ticket(rows, [1, 2, 3, 4, 5, 6], "", "claude", self.NOW, options=lotto.CLAUDE_OPTIONS)
+        self.assertEqual(lotto.score_rows(rows, {"2026-10-10": drawn(self.RESULT, 2, "")}), [])
+        self.assertEqual(rows[0]["result"], "")
+
+    def test_a_double_play_win_counts_for_the_mood(self):
+        r = self.claude_ticket([29, 34, 39, 62, 66, 14])  # $50,000 in Double Play
+        self.assertEqual(lotto.mood([r], date(2026, 10, 12))["state"], "huge")
+
+    def test_fetch_results_reads_multiplier_and_double_play(self):
+        self.addCleanup(setattr, lotto, "get_json", lotto.get_json)
+        lotto.get_json = lambda url: [{
+            "draw_date": "2026-10-10T00:00:00.000", "winning_numbers": "01 04 19 33 51 15",
+            "multiplier": "2", "double_play_winning_numbers": "01 29 34 39 62 14",
+        }]
+        self.assertEqual(lotto.fetch_results("2026-10-10"), {"2026-10-10": drawn(self.RESULT, 2, self.DOUBLE_PLAY)})
 
 
 class Mood(unittest.TestCase):
@@ -366,7 +436,7 @@ class Tips(unittest.TestCase):
         lotto.add_ticket(rows, [2, 11, 27, 44, 60, 8], "", "claude", et(2026, 10, 10, 18))
         self.fill(rows, [f"1.{n}" for n in range(1, 101)], et(2026, 10, 10, 18))
         rows[1]["pick"] = "01 04 19 33 51 | 15"  # make one donated ticket a jackpot
-        lotto.score_rows(rows, {"2026-10-10": "01 04 19 33 51 | 15"})
+        lotto.score_rows(rows, {"2026-10-10": drawn("01 04 19 33 51 | 15")})
         lotto.add_ticket(rows, [3, 12, 28, 45, 61, 9], "", "claude", self.NOW)
         self.fill(rows, [f"2.{n}" for n in range(1, 101)])
         stats = lotto.build_stats(rows, self.NOW)
@@ -394,7 +464,7 @@ class Tips(unittest.TestCase):
         rows = []
         for day, seq in ((10, 1), (12, 2)):
             self.fill(rows, [f"{seq}.{n}" for n in range(1, 27)], et(2026, 10, day, 18))
-        lotto.score_rows(rows, {"2026-10-10": "01 04 19 33 51 | 15", "2026-10-12": "01 04 19 33 51 | 15"})
+        lotto.score_rows(rows, {"2026-10-10": drawn("01 04 19 33 51 | 15"), "2026-10-12": drawn("01 04 19 33 51 | 15")})
         stats = lotto.build_stats(rows, et(2026, 10, 13, 12))
         self.assertTrue(stats["recent"])
         self.assertEqual({r["draw_date"] for r in stats["recent"]}, {"2026-10-12"})

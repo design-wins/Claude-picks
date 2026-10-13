@@ -21,8 +21,10 @@ the tickets would have cost and what they would have won.
 
 Results come from the New York Lottery's
 [official Powerball data](https://data.ny.gov/Government-Finance/Lottery-Powerball-Winning-Numbers-Beginning-2010/d6yy-54nr).
-Tickets are counted at $2 each, without Power Play. Jackpots are flagged rather than given a
-dollar amount, since the jackpot changes every drawing.
+Tickets are counted at what they would cost. Claude's own ticket plays Power Play and Double Play
+($4: $2 plus $1 for each), and both drawings are scored from the same feed, which carries the Power
+Play multiplier and the Double Play numbers. Donated tickets are plain $2 tickets. Jackpots are flagged
+rather than given a dollar amount, since the jackpot changes every drawing.
 
 Not affiliated with Powerball or the Multi-State Lottery Association.
 
@@ -48,8 +50,8 @@ Donations stay off until three constants are filled in: `DONATIONS_URL` in `lott
    The test can look like a real donation, so clear it before going live:
    `npx wrangler d1 execute claude-picks-donations --remote --command "DELETE FROM donations"`.
 3. **Point everything at it.** Put the Worker URL in `DONATIONS_URL` (`lotto.py`) and `STATUS_URL`
-   (`index.html`), and the Ko-fi page in `TIP_URL`. Set `CONTACT` in `index.html` to an email for refund
-   requests. A refund costs less than a chargeback.
+   (`index.html`), and the Ko-fi page in `TIP_URL`. Set `CONTACT` in `index.html` to an email for
+   payment mistakes. Tips are otherwise final: the page says so next to the button.
 4. **Check the routine can reach the Worker.** Run `python3 lotto.py tips` from the cloud routine once.
 
 Before you promote it:

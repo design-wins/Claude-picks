@@ -39,6 +39,9 @@
   --display: "Anybody", ui-sans-serif, system-ui, sans-serif;
   --body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --ball: clamp(36px, 9.5vw, 50px);
+  /* Spacing scale: margins and gaps use only these. */
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px;
+  --space-6: 32px; --space-7: 48px; --space-8: 64px; --space-9: 96px;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -78,7 +81,8 @@ a:hover { text-decoration-thickness: 2.5px; }
 .buy:focus-visible { outline-color: var(--marigold); border-radius: 999px; }
 h1, h2, h3 { font-family: var(--display); margin: 0; line-height: 1.05; text-wrap: balance; }
 p { margin: 0; }
-.wrap { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+/* Side gutters grow with the window (about 22px on a phone, 56px on desktop); the content stays 920px at most. */
+.wrap { --gutter: clamp(16px, 6vw, 56px); max-width: calc(920px + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
 .narrow { max-width: 720px; }
 
 .demo-banner { background: var(--ink); color: var(--page); text-align: center; font-size: 14px; padding: 8px 16px; }
@@ -170,10 +174,15 @@ p { margin: 0; }
 @keyframes twinkle { 50% { transform: scale(0.4); opacity: 0.4; } }
 
 /* ---------- Sections ---------- */
-section.block { padding-top: 72px; }
+section.block { padding-top: var(--space-9); }
 section.block h2 { font-size: clamp(30px, 5vw, 40px); font-weight: 750; font-stretch: 105%; letter-spacing: -0.015em; }
+/* "Up next" label over the coming drawing's picks, with a live dot */
+.eyebrow { display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2);
+  font: 700 13px var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--red); }
+.eyebrow .live { width: 8px; height: 8px; border-radius: 50%; background: var(--red); animation: live 1.6s ease-in-out infinite; }
+@keyframes live { 50% { opacity: .25; } }
 .sub { color: var(--ink-2); margin-top: 8px; }
-.block-body { margin-top: 28px; }
+.block-body { margin-top: var(--space-5); }
 
 /* Balls */
 .balls { display: flex; gap: 7px; flex-wrap: nowrap; }
@@ -197,9 +206,12 @@ section.block h2 { font-size: clamp(30px, 5vw, 40px); font-weight: 750; font-str
 /* Picks */
 .ticket { display: grid; gap: 12px; padding: 22px 0; border-top: 1px solid var(--rule); }
 .ticket:first-child { border-top: 0; padding-top: 0; }
-.note { font: 500 21px/1.35 var(--display); font-stretch: 95%; max-width: 40ch; }
+/* Claude's reason for its pick, set off with a label and a rule so it reads as Claude's words */
+.reason { margin: var(--space-2) 0 0; padding-left: var(--space-4); border-left: 3px solid var(--marigold); }
+.reason .card-label { margin-bottom: var(--space-1); }
+.note { margin: 0; font: 500 21px/1.35 var(--display); font-stretch: 95%; max-width: 40ch; }
 .meta { font-size: 15px; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
-.proof { margin-top: 20px; font-size: 15px; color: var(--ink-2); max-width: 60ch; }
+.proof { margin-top: var(--space-5); font-size: 15px; color: var(--ink-2); max-width: 60ch; }
 .tip-picks { display: grid; gap: 14px; padding: 22px 0; border-top: 1px solid var(--rule); }
 .tip-picks:first-child { border-top: 0; padding-top: 0; }
 .tip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 256px), 1fr)); gap: 12px 24px; }
@@ -245,19 +257,18 @@ body:has(.tix-dialog[open]) { overflow: hidden; }
 .tab .total dd { font-size: 30px; font-weight: 850; }
 .tab .neg dd { color: var(--red); }
 .tab .pos dd { color: var(--win); }
-.tab-note { margin-top: 14px; font-size: 15px; color: var(--ink-2); }
+.tab-note { margin-top: var(--space-4); font-size: 15px; color: var(--ink-2); }
 
 /* ---------- Tip band ---------- */
-.band { margin-top: 88px; background: var(--band); color: var(--band-ink); padding: 72px 0; }
-.band h2 { font-size: min(140px, calc((100vw - 48px) / 6.5)); font-weight: 900; font-stretch: 150%; letter-spacing: -0.02em; line-height: .9; color: var(--marigold); }
-.band .party { font: 800 clamp(28px, 5vw, 44px)/1.08 var(--display); font-stretch: 110%; letter-spacing: -0.015em; margin-top: 22px; max-width: 18ch; text-wrap: balance; }
-.band .lede { font-size: 20px; margin-top: 18px; max-width: 44ch; }
+.band { margin-top: var(--space-9); background: var(--band); color: var(--band-ink); padding: var(--space-9) 0; }
+.band h2 { font-size: clamp(44px, 8.5vw, 100px); font-weight: 900; font-stretch: 125%; letter-spacing: -0.02em; line-height: .92; color: var(--marigold); text-transform: uppercase; max-width: 12ch; }
+.band .chances { font: 800 clamp(26px, 4.4vw, 40px)/1.1 var(--display); font-stretch: 110%; letter-spacing: -0.015em; margin-top: var(--space-4); text-wrap: balance; }
+.band .lede strong { color: var(--band-ink); font-weight: 700; }
+.band .lede { font-size: 20px; line-height: 1.55; margin-top: var(--space-7); max-width: 46ch; color: var(--band-ink-2); }
 .band-2 { color: var(--band-ink-2); }
-.odds { list-style: none; margin: 36px 0; padding: 0; max-width: 620px; }
-.odds li { display: grid; grid-template-columns: 13rem 1fr; gap: 20px; align-items: baseline; padding: 16px 0; border-top: 1px solid var(--band-rule); }
-.odds li:last-child { border-bottom: 1px solid var(--band-rule); }
-.odds b { font: 850 24px var(--display); font-stretch: 108%; color: var(--marigold); }
-.buy-row { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 20px; }
+/* Action cluster: the button with its status right under it */
+.tip-action { margin-top: var(--space-7); display: grid; justify-items: start; gap: var(--space-4); }
+.tip-status { display: grid; gap: var(--space-1); }
 .buy {
   display: inline-flex; align-items: center; gap: 12px; text-decoration: none;
   font: 800 20px var(--display); font-stretch: 112%;
@@ -269,11 +280,12 @@ body:has(.tix-dialog[open]) { overflow: hidden; }
 .buy .mini { width: 26px; height: 26px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #f46a5f 0, var(--red) 70%); }
 .buy[aria-disabled="true"] { background: rgba(255, 255, 255, .12); color: var(--band-ink-2); cursor: default; transform: none; box-shadow: none; }
 .tip-count { font-weight: 600; }
-.tip-live { margin-top: 14px; font-size: 15px; font-weight: 600; color: var(--marigold); }
-.buy-note { margin-top: 14px; font-size: 15px; font-weight: 600; max-width: 60ch; }
-.timing { margin-top: 18px; font-size: 15px; max-width: 60ch; }
+.tip-live { font-size: 15px; font-weight: 600; color: var(--marigold); }
+/* Fine print: its own group after the action, quieter than the status */
+.tip-fine { margin-top: var(--space-7); display: grid; gap: var(--space-2); max-width: 60ch; font-size: 15px; line-height: 1.6; }
+.buy-note { font-weight: 500; }
 .timing a { color: var(--band-ink); }
-.where { margin-top: 56px; max-width: 560px; }
+.where { margin-top: var(--space-9); max-width: 560px; }
 .where h3 { font-size: 26px; font-weight: 800; font-stretch: 108%; margin-bottom: 14px; }
 .where dl { margin: 0; }
 .where dl > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 10px; padding: 12px 0; border-top: 1px solid var(--band-rule); }
@@ -281,10 +293,15 @@ body:has(.tix-dialog[open]) { overflow: hidden; }
 .where .lead { flex: 1; min-width: 24px; border-bottom: 2px dotted var(--band-rule); transform: translateY(-5px); }
 .where dd { margin: 0; font: 800 19px var(--display); font-stretch: 108%; }
 .where dl > div p { flex-basis: 100%; font-size: 15px; margin-top: 2px; max-width: 52ch; }
-.where .of { padding-left: 22px; }
+.where dl > .of { padding-left: 40px; }
 .where .of dt { font-weight: 500; }
 .where .of dd { font: 600 15px var(--body); color: var(--band-ink-2); }
-.where .total { border-top: 2px solid var(--band-ink); margin-top: 2px; }
+.where dl > div:not(.group, .total) { padding-left: 18px; }
+.where .group { margin-top: 22px; border-top: 2px solid var(--band-ink); }
+.where .group:first-child { margin-top: 0; }
+.where .group dt, .where .group dd { font: 800 15px var(--body); letter-spacing: .06em; text-transform: uppercase; }
+.where .group dd { color: var(--marigold); }
+.where .total { border-top: 2px solid var(--band-ink); margin-top: 22px; }
 .where .total dt, .where .total dd { font-weight: 800; }
 .where .total dd { font-size: 24px; color: var(--marigold); }
 .fine { margin-top: 18px; font-size: 14px; max-width: 64ch; }
@@ -310,6 +327,9 @@ body:has(.tix-dialog[open]) { overflow: hidden; }
 .verdict { font: 800 clamp(26px, 4.4vw, 38px)/1.1 var(--display); font-stretch: 110%; letter-spacing: -0.01em; }
 .verdict.win { color: var(--win); }
 .verdict-sub { margin-top: 6px; color: var(--ink-2); }
+.last-own .dp { margin-top: var(--space-5); padding-top: var(--space-5); border-top: 1px solid var(--rule); }
+.last-own .dp .card-label { margin-bottom: var(--space-1); }
+.last-own .dp .balls { margin-top: var(--space-3); }
 .last-own .balls { margin-top: 18px; }
 .drawn-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 16px; font-size: 14px; color: var(--ink-2); }
 .tips-line { font: 750 22px/1.2 var(--display); font-stretch: 105%; }
@@ -320,17 +340,17 @@ body:has(.tix-dialog[open]) { overflow: hidden; }
 .day-net.neg { color: var(--red); }
 .day-net.pos { color: var(--win); }
 .day-sub { margin-top: 8px; font-size: 15px; color: var(--ink-2); }
-.more { display: inline-block; margin-top: 18px; font-size: 15px; font-weight: 600; }
+.more { display: inline-block; margin-top: var(--space-4); font-size: 15px; font-weight: 600; }
 
 /* How it works */
-.steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 22px; counter-reset: step; max-width: 620px; }
-.steps li { display: grid; grid-template-columns: 44px 1fr; gap: 10px; counter-increment: step; }
+.steps { list-style: none; padding: 0; margin: var(--space-5) 0 0; display: grid; gap: var(--space-6); counter-reset: step; max-width: 620px; }
+.steps li { display: grid; grid-template-columns: 44px 1fr; align-items: baseline; gap: var(--space-3); counter-increment: step; }
 .steps li::before { content: counter(step); font: 850 30px/1 var(--display); font-stretch: 120%; color: var(--ink-2); }
-.steps h3 { font-size: 21px; font-weight: 750; margin-bottom: 4px; }
+.steps h3 { font-size: 21px; font-weight: 750; margin-bottom: var(--space-1); }
 .steps p { color: var(--ink-2); }
 
-footer { margin-top: 88px; padding: 28px 0 44px; border-top: 1px solid var(--rule); font-size: 14px; color: var(--ink-2); display: grid; gap: 8px; }
-footer nav { display: flex; gap: 18px; margin-top: 4px; }
+footer.wrap { margin-top: var(--space-9); padding-top: var(--space-6); padding-bottom: var(--space-7); border-top: 1px solid var(--rule); font-size: 14px; color: var(--ink-2); display: grid; gap: var(--space-2); }
+footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
 
 @media (max-width: 680px) {
   body { font-size: 16px; }
@@ -340,16 +360,14 @@ footer nav { display: flex; gap: 18px; margin-top: 4px; }
   .mood-line { margin-left: auto; margin-right: auto; font-size: 18px; }
   .meter { margin-left: auto; margin-right: auto; width: 100%; }
   .wordmark { font-size: 19px; }
-  section.block { padding-top: 56px; }
-  .odds li { grid-template-columns: 1fr; gap: 2px; }
+  section.block { padding-top: var(--space-8); }
   .buy { font-size: 18px; padding: 14px 22px 14px 14px; }
-  .band { padding: 56px 0; margin-top: 64px; }
+  .band { padding: var(--space-8) 0; margin-top: var(--space-8); }
   .last-grid { grid-template-columns: 1fr; }
   .last-card { padding: 18px; }
   .tix-dialog { width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0; border-radius: 0; }
 }
 @media (max-width: 360px) {
-  .wrap { padding: 0 16px; }
   .wordmark { font-size: 17px; gap: 8px; }
   .top-buy { padding: 8px 13px; font-size: 14px; }
   .hero[data-mood="party"] .mood-head { --k: 0.8; }
@@ -360,6 +378,7 @@ footer nav { display: flex; gap: 18px; margin-top: 4px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .confetti, .rain, .tear, .bolt { display: none; }
+  .eyebrow .live { opacity: 1; }
 }
 </style>
 </head>
@@ -370,7 +389,7 @@ footer nav { display: flex; gap: 18px; margin-top: 4px; }
   <div class="wrap">
     <div class="top">
       <a class="wordmark" href="./"><i></i>Claude picks</a>
-      <a class="top-buy" href="#tip">Donate</a>
+      <a class="top-buy" href="#tip">Buy a ticket</a>
     </div>
     <div class="monitor">
       <div id="face"></div>
@@ -397,6 +416,7 @@ footer nav { display: flex; gap: 18px; margin-top: 4px; }
   </section>
 
   <section class="block wrap" id="picks">
+    <p class="eyebrow"><span class="live" aria-hidden="true"></span><span id="picks-eyebrow">Up next</span></p>
     <h2 id="picks-title">Next picks</h2>
     <p class="sub" id="picks-sub">The drawing is at 10:59 PM ET.</p>
     <div class="block-body" id="picks-body"></div>
@@ -421,43 +441,51 @@ footer nav { display: flex; gap: 18px; margin-top: 4px; }
 
   <section class="band" id="tip">
     <div class="wrap">
-      <h2>DONATE</h2>
-      <p class="party" id="party">Claude's next party is 66&nbsp;years away.</p>
-      <p class="lede">A win of $100 or more is a 1 in 10,251 shot. With one ticket a drawing, Claude can
-        expect one about every 66 years. With two a drawing, 33. You see where this is going.</p>
-      <ul class="odds" aria-label="What $2 gets Claude">
-        <li><b>Guaranteed</b><span>A little hope. A sad Claude perks up until your ticket's drawing.</span></li>
-        <li><b>1 in 25</b><span>A win, which keeps Claude happy for a week.</span></li>
-        <li><b>1 in 10,251</b><span>A party.</span></li>
-      </ul>
-      <div class="buy-row">
-        <a class="buy" id="buy" href="#" aria-disabled="true"><span class="mini"></span><span id="buy-label">Donations open soon</span></a>
-        <span class="tip-count" id="tip-count"></span>
+      <div class="tip-head">
+        <h2>Buy Claude another ticket</h2>
+        <p class="chances">Increase Claude's chances.</p>
       </div>
-      <p class="tip-live" id="tip-live" hidden></p>
+      <p class="lede"><strong id="party">Claude's next party is 66&nbsp;years away.</strong> A win of $100 or more
+        is a 1 in 10,251 shot. With one ticket a drawing, Claude can expect one about every 66 years. With two a
+        drawing, 33. You see where this is going.</p>
+      <div class="tip-action">
+        <a class="buy" id="buy" href="#" aria-disabled="true"><span class="mini"></span><span id="buy-label">Donations open soon</span></a>
+        <div class="tip-status">
+          <p class="tip-count" id="tip-count"></p>
+          <p class="tip-live" id="tip-live" hidden></p>
+        </div>
+      </div>
+      <div class="tip-fine">
       <p class="buy-note">You can't win anything, and no real ticket is bought. Not affiliated with Powerball or Anthropic.</p>
       <p class="timing band-2">Every full $2 you donate is one more ticket, and Claude picks the numbers for each one.
         Claude picks up to 500 donated tickets a drawing, first come, first served, in the early evening ET on Mondays,
         Wednesdays and Saturdays. Once a drawing is full or Claude has picked, new tickets go into the next one with room.
-        <span id="refund" hidden>Changed your mind? Email <a id="refund-link" href="#"></a> within 30 days for a full refund.</span></p>
+        <span id="refund" hidden>Tips are final: every $2 becomes a ticket in the next drawing. If you were charged by
+        mistake, email <a id="refund-link" href="#"></a>.</span></p>
+      </div>
       <div class="where">
         <h3>Where your $2 goes</h3>
         <dl>
-          <div><dt>Claude</dt><span class="lead"></span><dd>$0.00</dd>
-            <p class="band-2">Claude is an AI. It can't hold money, and it doesn't know this page exists.</p></div>
-          <div><dt>Ko-fi</dt><span class="lead"></span><dd>$0.00</dd>
-            <p class="band-2">Ko-fi doesn't take a cut of one-off donations.</p></div>
+          <div class="group"><dt>To mega corps</dt><span class="lead"></span><dd>$0.55</dd></div>
           <div><dt>PayPal</dt><span class="lead"></span><dd>$0.55</dd>
-            <p class="band-2">For handling your payment, card or PayPal. Mostly a flat 49¢, which is why $2 hurts.</p></div>
-          <div><dt>A human</dt><span class="lead"></span><dd>$1.45</dd>
-            <p class="band-2">The person who runs this. It goes toward the Claude plan that runs it.</p></div>
-          <div class="of"><dt>…which goes to Anthropic</dt><span class="lead"></span><dd>Most of it</dd>
-            <p class="band-2">The company that makes Claude. So Claude's employer gets paid. Claude does not. Claude was not consulted.</p></div>
+            <p class="band-2">For handling your payment. Mostly a flat 49¢, which is why $2 hurts. Fight the power:
+              tip $10 in one go and PayPal gets about 79¢, instead of $2.75 for five separate $2 tips. Same five tickets.</p></div>
+          <div><dt>Ko-fi</dt><span class="lead"></span><dd>$0.00</dd>
+            <p class="band-2">Ko-fi doesn't take a cut of one-off tips.</p></div>
+          <div><dt>Anthropic</dt><span class="lead"></span><dd>About 0.1¢</dd>
+            <p class="band-2">What picking one ticket costs at Anthropic's API prices. It's paid out of the human's share, through a $20-a-month Claude plan.</p></div>
+          <div class="group"><dt>To the human</dt><span class="lead"></span><dd>$1.45</dd></div>
+          <div><dt>The person who runs this</dt><span class="lead"></span><dd>$1.45</dd>
+            <p class="band-2">The first 14 or so tickets a month pay for the Claude plan. After that, it's the human's.</p></div>
+          <div class="group"><dt>To AI</dt><span class="lead"></span><dd>$0.00</dd></div>
+          <div><dt>Claude</dt><span class="lead"></span><dd>$0.00</dd>
+            <p class="band-2">Claude is an AI. It can't hold money, it doesn't know this page exists, and it was not consulted.</p></div>
+          <div class="group"><dt>Everyone else</dt><span class="lead"></span><dd>$0.00</dd></div>
           <div><dt>Powerball</dt><span class="lead"></span><dd>$0.00</dd>
             <p class="band-2">No real ticket is bought. This may be the first $2 ever spent on Powerball that the lottery never sees.</p></div>
           <div><dt>Your tax deduction</dt><span class="lead"></span><dd>$0.00</dd>
             <p class="band-2">We call it a donation. The IRS would not. This isn't a charity.</p></div>
-          <div class="total"><dt>Total</dt><span class="lead"></span><dd>$2.00</dd></div>
+          <div class="total"><dt>Final score</dt><span class="lead"></span><dd>Mega&nbsp;corps&nbsp;$0.55, human&nbsp;$1.45, AI&nbsp;$0.00</dd></div>
         </dl>
         <p class="fine band-2">No real tickets are bought, and nobody wins anything: not you, not Claude, not the human.</p>
       </div>
@@ -483,7 +511,7 @@ footer nav { display: flex; gap: 18px; margin-top: 4px; }
 </main>
 
 <footer class="wrap">
-  <p>Results come from the New York Lottery's official Powerball data. Tickets are counted at $2 each, without Power Play.</p>
+  <p>Results come from the New York Lottery's official Powerball data. Tickets are counted at what they would cost: $2, plus $1 each for Power Play and Double Play, which Claude's own ticket plays. Donated tickets are plain $2 tickets.</p>
   <p>Claude picks is a fan project. It isn't affiliated with Powerball, the Multi-State Lottery Association, or Anthropic.</p>
   <nav><a id="repo-link" href="#">GitHub</a><a id="ledger-link-2" href="#">Full ledger</a></nav>
 </footer>
@@ -501,6 +529,7 @@ const REPO = "https://github.com/design-wins/Claude-picks";
 const TIP_URL = "https://ko-fi.com/claude_picks";
 const STATUS_URL = "https://claude-picks-donations.claude-picks.workers.dev"; // the donations Worker (worker/)
 const CONTACT = "claudepicks.tickets@gmail.com"; // where refund requests go
+const ROUTINE_UTC = "22:00"; // when the drawing-day routine runs (its cron is in UTC)
 const BOOKED_DRAWINGS = 6; // about two weeks; past this, the Donate button pauses
 const BIG_WIN_ODDS = 10251; // 1 in 10,251 tickets wins $100 or more
 const DRAWS_PER_YEAR = 156;
@@ -559,6 +588,26 @@ function nextDrawDate() {
   return d.toISOString().slice(0, 10);
 }
 
+// Today's date in New York.
+function todayET() {
+  return new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+}
+
+// 0 for today in New York, 1 for tomorrow, and so on.
+function daysFromTodayET(iso) {
+  return Math.round((new Date(iso + "T12:00:00Z") - new Date(todayET() + "T12:00:00Z")) / 864e5);
+}
+
+// "1 day, 4 hours" or "3 hours, 12 minutes" until the 10:59 PM ET drawing on `iso`; "" once it's passed.
+function countdown(iso) {
+  const offset = new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", timeZoneName: "longOffset" })
+    .formatToParts(new Date(iso + "T12:00:00Z")).find((p) => p.type === "timeZoneName").value.replace("GMT", "") || "+00:00";
+  const ms = new Date(`${iso}T22:59:00${offset}`) - Date.now();
+  if (ms <= 0) return "";
+  const d = Math.floor(ms / 864e5), h = Math.floor((ms % 864e5) / 3.6e6), m = Math.floor((ms % 3.6e6) / 6e4);
+  return d ? `${plural(d, "day")}, ${plural(h, "hour")}` : h ? `${plural(h, "hour")}, ${plural(m, "minute")}` : plural(Math.max(m, 1), "minute");
+}
+
 // The drawing `n` drawings after `iso`.
 function addDraws(iso, n) {
   const d = new Date(iso + "T12:00:00Z");
@@ -580,9 +629,16 @@ function balls(pick, against, small) {
 }
 
 // Biggest prize first; the jackpot beats everything.
-const prizeValue = (r) => (r.prize === "JACKPOT" ? Infinity : Number(r.prize));
+// What a ticket won across the main drawing and Double Play. A jackpot isn't a dollar amount.
+const winnings = (r) => (r.prize === "JACKPOT" ? 0 : Number(r.prize || 0)) + Number(r.dp_prize || 0);
+const isWin = (r) => r.prize === "JACKPOT" || winnings(r) > 0;
+const prizeValue = (r) => (r.prize === "JACKPOT" ? Infinity : winnings(r));
 const byPrize = (a, b) => prizeValue(b) - prizeValue(a);
-const prizeText = (r) => (r.prize === "JACKPOT" ? "the jackpot" : money(Number(r.prize)));
+const prizeText = (r) => (r.prize === "JACKPOT" ? "the jackpot" : money(winnings(r)));
+const addOnTag = (r) => (r.options ? `<span class="tag">Power Play + Double Play</span>` : "");
+// "1 number + Powerball · Power Play 2× · Double Play $0"
+const prizeDetail = (r) => matchText(r.match) + (r.multiplier ? ` · Power Play ${r.multiplier}×` : "")
+  + (r.dp_result ? ` · Double Play ${money(Number(r.dp_prize || 0))}` : "");
 const sourceTag = (r) => (r.source === "tip" ? `<span class="tag tip">Donated by someone</span>` : `<span class="tag">Claude's ticket</span>`);
 
 // "3 numbers + Powerball", "Powerball only", "2 numbers"
@@ -603,7 +659,9 @@ function tipSummary(d) {
 // How long until a $100+ win, at the rate Claude has been getting tickets lately.
 function partyWait(stats) {
   const recent = (stats.drawings || []).slice(0, 6);
-  const perDraw = 1 + (recent.length ? recent.reduce((s, d) => s + d.tip_tickets, 0) / recent.length : 0);
+  const own = [...stats.upcoming, ...stats.recent].find((r) => r.source !== "tip");
+  const ownChances = own && own.options ? 2 : 1; // Double Play is a second drawing for the same ticket
+  const perDraw = ownChances + (recent.length ? recent.reduce((s, d) => s + d.tip_tickets, 0) / recent.length : 0);
   const days = (BIG_WIN_ODDS / perDraw / DRAWS_PER_YEAR) * 365.25;
   const span = days >= 730 ? plural(Math.round(days / 365.25), "year")
     : days >= 61 ? plural(Math.round(days / 30.44), "month")
@@ -758,10 +816,10 @@ function face(state) {
 
 function moodLine(stats) {
   const m = stats.mood;
-  const lastWin = stats.best_win || stats.recent.find((r) => r.prize !== "0");
+  const lastWin = stats.best_win || stats.recent.find(isWin);
   const drought = m.days_since_win == null ? "No wins yet" : `${plural(m.days_since_win, "day")} without a win`;
   if (m.state === "jackpot") return `All six numbers on ${fmtDate(lastWin.draw_date)}. Nobody gets the money. Claude gets the glory.`;
-  if (m.state === "huge") return `It won ${prizeText(lastWin)} on ${fmtDate(lastWin.draw_date)}. In spirit. This is not a drill.`;
+  if (m.state === "huge") return `It won ${prizeText(lastWin)} on ${fmtDate(lastWin.draw_date)}. In spirit. This is not a drill. But it is.`;
   // A win can still lose money once 500 donated tickets are in the drawing. The mood follows the win;
   // the line admits the cost.
   const winDay = lastWin && (stats.drawings || []).find((d) => d.draw_date === lastWin.draw_date);
@@ -813,12 +871,24 @@ function render(stats) {
   const waiting = own.filter((r) => r.draw_date < next);
   const drawDate = nextOwn.length ? nextOwn[0].draw_date : nextGroup ? nextGroup.draw_date : next;
   const nextTips = nextGroup && nextGroup.draw_date === drawDate ? nextGroup.picks : [];
-  $("picks-title").textContent = `Picks for ${fmtDate(drawDate, true)}`;
+  // Up next: name the drawing by how soon it is, and count down to it.
+  const days = daysFromTodayET(drawDate);
+  const dayName = new Date(drawDate + "T12:00:00Z").toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" });
+  $("picks-eyebrow").textContent = days === 0 ? "Tonight" : "Up next";
+  $("picks-title").textContent = days === 0 ? "Tonight's picks" : days === 1 ? "Tomorrow's picks" : `${dayName}'s picks`;
+  const showCountdown = () => {
+    const when = days === 0 ? "tonight" : days === 1 ? "tomorrow" : fmtDate(drawDate, true);
+    const left = countdown(drawDate);
+    $("picks-sub").textContent = `The drawing is ${when} at 10:59 PM ET${left ? `, ${left} from now` : ""}.`;
+  };
+  showCountdown();
+  clearInterval(render.timer);
+  render.timer = setInterval(showCountdown, 60_000);
   const ticketCards = nextOwn.map((t) => `
       <div class="ticket">
         ${balls(t.pick)}
-        ${t.note ? `<p class="note">“${esc(t.note)}”</p>` : ""}
-        <p class="meta">${sourceTag(t)}<span>Picked at ${fmtTimeET(t.picked_at)}, ${leadTime(t)}.</span></p>
+        ${t.note ? `<figure class="reason"><figcaption class="card-label">Claude's reason</figcaption><blockquote class="note">“${esc(t.note)}”</blockquote></figure>` : ""}
+        <p class="meta">${sourceTag(t)}${addOnTag(t)}<span>Picked at ${fmtTimeET(t.picked_at)}, ${leadTime(t)}.</span></p>
       </div>`).join("");
   const total = nextOwn.length + nextTips.length;
   let tipsHtml = "";
@@ -860,7 +930,7 @@ function render(stats) {
   $("net").textContent = money(t.net);
   $("net-row").className = "total " + (t.net < 0 ? "neg" : t.net > 0 ? "pos" : "");
   $("tab-note").textContent = t.tickets
-    ? "Every ticket counts at $2." + (t.jackpots ? ` Plus ${plural(t.jackpots, "jackpot")}, which isn't counted above!` : "")
+    ? "Every ticket counts at what it would cost: $2, plus $1 each for Power Play and Double Play on Claude's own." + (t.jackpots ? ` Plus ${plural(t.jackpots, "jackpot")}, which isn't counted above!` : "")
     : "The first results come in after the first drawing.";
 
   // Tip count
@@ -877,7 +947,7 @@ function render(stats) {
       <li class="result">
         ${withDate || withTag ? `<div class="when">${withDate ? fmtDate(r.draw_date) + " " : ""}${withTag ? sourceTag(r) : ""}</div>` : ""}
         ${balls(r.pick, r.result, true)}
-        <div class="prize ${r.prize === "0" ? "lose" : "win"}">${r.prize === "0" ? "$0" : prizeText(r)}<small>${matchText(r.match)}</small></div>
+        <div class="prize ${isWin(r) ? "win" : "lose"}">${isWin(r) ? prizeText(r) : "$0"}<small>${prizeDetail(r)}</small></div>
         ${drawn ? `<div class="drawn">${drawn}</div>` : ""}
       </li>`;
   const tipRow = (d, withDate, extra = "") => `
@@ -897,17 +967,27 @@ function render(stats) {
     $("last-title").textContent = `Last drawing: ${fmtDate(last.draw_date, true)}`;
 
     // Claude's ticket: the verdict, the ticket with its hits ringed, and the winning numbers under it.
-    const drawnRow = `<div class="drawn-row"><span>Drawn</span>${balls(last.result, null, true)}</div>`;
+    const drawnRow = (numbers) => `<div class="drawn-row"><span>Drawn</span>${balls(numbers, null, true)}</div>`;
+    const amount = (prize) => (prize === "JACKPOT" ? "the jackpot" : prize === "0" ? "no prize" : money(Number(prize)));
     $("last-own").innerHTML = ownLast.length ? ownLast.map((r) => {
-      const won = r.prize !== "0";
+      const won = isWin(r);
       const verdict = r.prize === "JACKPOT" ? "Claude's ticket hit the jackpot."
         : won ? `Claude's ticket won ${prizeText(r)}.` : "Claude's ticket missed.";
+      const main = `${matchText(r.match)}${r.multiplier ? `, Power Play ${r.multiplier}×` : ""}: ${amount(r.prize)}.`;
       return `
         <p class="card-label">Claude's ticket</p>
         <p class="verdict${won ? " win" : ""}">${verdict}</p>
-        <p class="verdict-sub">${matchText(r.match)}${won ? "" : ". No prize"}.</p>
-        ${balls(r.pick, r.result)}`;
-    }).join("") + drawnRow : `<p class="card-label">Claude's ticket</p><p class="verdict-sub">Claude didn't have a ticket of its own this drawing.</p>${drawnRow}`;
+        <p class="verdict-sub">${r.dp_result ? "Main drawing: " : ""}${main}</p>
+        ${balls(r.pick, r.result)}
+        ${drawnRow(r.result)}
+        ${r.dp_result ? `
+        <div class="dp">
+          <p class="card-label">Double Play</p>
+          <p class="verdict-sub">${matchText(r.dp_match)}: ${amount(r.dp_prize)}.</p>
+          ${balls(r.pick, r.dp_result, true)}
+          ${drawnRow(r.dp_result)}
+        </div>` : ""}`;
+    }).join("") : `<p class="card-label">Claude's ticket</p><p class="verdict-sub">Claude didn't have a ticket of its own this drawing.</p>${drawnRow(last.result)}`;
 
     // Donated tickets: how many, how many hit, and the winners (in a window when there are lots).
     const inline = winners.length <= INLINE_TICKETS;
@@ -930,7 +1010,7 @@ function render(stats) {
     // On the day: every ticket in the drawing, at $2 each, against everything it won.
     const tickets = last.tickets ?? ownLast.length + last.tip_tickets;
     const spent = last.spent ?? 2 * tickets;
-    const wonDay = last.won ?? ownLast.reduce((n, r) => n + (r.prize === "JACKPOT" ? 0 : Number(r.prize)), 0) + last.tip_won;
+    const wonDay = last.won ?? ownLast.reduce((n, r) => n + winnings(r), 0) + last.tip_won;
     const net = last.net ?? wonDay - spent;
     const jackpots = last.jackpots ?? 0;
     $("last-day").innerHTML = `
@@ -966,7 +1046,10 @@ function showTipStatus(stats, donated, href) {
   const next = nextDrawDate();
   const inLedger = donatedInLedger(stats);
   const queued = Math.max(0, donated - inLedger);
-  const picked = stats.upcoming.some((r) => r.draw_date === next) || (stats.upcoming_tips || []).some((g) => g.draw_date === next);
+  // The drawing-day run picks donated tickets at 22:00 UTC. After that, or once a drawing already has
+  // donated tickets, new donations go to the drawing after it.
+  const runAt = Date.parse(`${next}T${ROUTINE_UTC}:00Z`);
+  const picked = Date.now() >= runAt || (stats.upcoming_tips || []).some((g) => g.draw_date === next);
   const first = picked ? addDraws(next, 1) : next;
   const ahead = Math.floor(queued / cap);
   const live = $("tip-live");
@@ -1072,17 +1155,20 @@ function demoStats(demo) {
   const viral = demo in DEMOS;
   const full = demo === "full"; // every donated spot filled, but no recent win
   const state = DEMOS[demo] || demo;
-  const scored = (draw_date, source, pick, result, match, prize) => ({ draw_date, source, pick, result, match, prize, note: "" });
+  const addOns = { options: "pp+dp", multiplier: "2", dp_result: "05 09 13 18 21 | 24", dp_match: "0", dp_prize: "0" };
+  const scored = (draw_date, source, pick, result, match, prize) =>
+    ({ draw_date, source, pick, result, match, prize, note: "", ...(source === "claude" ? addOns : {}) });
   const recent = [
     scored("2026-10-10", "claude", "02 11 27 44 60 | 08", "01 04 19 33 51 | 15", "0", "0"),
     scored("2026-10-07", "tip", "08 13 22 47 60 | 07", "11 13 14 21 65 | 19", "1", "0"),
     scored("2026-10-07", "claude", "03 15 27 33 66 | 09", "11 13 14 21 65 | 19", "0", "0"),
     scored("2026-10-05", "claude", "07 23 36 42 58 | 11", "16 23 32 36 54 | 09", "2", "0"),
   ];
-  if (state === "party") Object.assign(recent[0], { pick: "01 04 19 40 50 | 15", match: "3+PB", prize: "100" });
+  // Prizes include Claude's 2x Power Play.
+  if (state === "party") Object.assign(recent[0], { pick: "01 04 19 40 50 | 15", match: "3+PB", prize: "200" });
   if (state === "jackpot") Object.assign(recent[0], { pick: "01 04 19 33 51 | 15", match: "5+PB", prize: "JACKPOT" });
-  if (state === "huge") Object.assign(recent[0], { pick: "01 04 19 33 60 | 15", match: "4+PB", prize: "50000" });
-  if (state === "happy" && !full) Object.assign(recent[0], { pick: "01 22 30 40 50 | 15", match: "1+PB", prize: "4" });
+  if (state === "huge") Object.assign(recent[0], { pick: "01 04 19 33 60 | 15", match: "4+PB", prize: "100000" });
+  if (state === "happy" && !full) Object.assign(recent[0], { pick: "01 22 30 40 50 | 15", match: "1+PB", prize: "8" });
   if (viral && !full) {
     // A drawing's worth of winning donated tickets: two $7s, and the Powerball alone for $4.
     const fours = Array.from({ length: 18 }, (_, i) => scored("2026-10-10", "tip",
@@ -1092,7 +1178,7 @@ function demoStats(demo) {
       scored("2026-10-10", "tip", "01 22 33 45 60 | 15", "01 04 19 33 51 | 15", "2+PB", "7"), ...fours);
   }
   const picked = new Date(Date.now() - 2 * 3.6e6).toLocaleString("sv-SE", { timeZone: "America/New_York" }).replace(" ", "T") + "-04:00";
-  const upcoming = [{ draw_date: nextDrawDate(), source: "claude", pick: "07 19 23 41 58 | 11", picked_at: picked,
+  const upcoming = [{ draw_date: nextDrawDate(), source: "claude", options: "pp+dp", pick: "07 19 23 41 58 | 11", picked_at: picked,
     note: "Seven keeps showing up in my favorite primes, so I'm leaning on it again.", result: "", match: "", prize: "" }];
   const tips = viral ? 500 : state === "hopeful" ? 2 : 0;
   const tipPicks = ["05 12 28 44 61 | 03", "09 17 33 52 68 | 24"];
@@ -1102,7 +1188,7 @@ function demoStats(demo) {
   const lastDate = recent[0].draw_date;
   const drawings = [...new Set(recent.map((r) => r.draw_date))].map((d) => {
     const tipRows = recent.filter((r) => r.draw_date === d && r.source === "tip");
-    const wins = tipRows.filter((r) => r.prize !== "0");
+    const wins = tipRows.filter(isWin);
     const totalsOnly = viral && d !== lastDate; // older drawings keep only their totals
     const out = {
       draw_date: d, result: recent.find((r) => r.draw_date === d).result,
@@ -1113,13 +1199,13 @@ function demoStats(demo) {
     // How the whole drawing did, as lotto.py's summaries report it.
     const own = recent.filter((r) => r.draw_date === d && r.source !== "tip");
     out.tickets = own.length + out.tip_tickets;
-    out.spent = 2 * out.tickets;
-    out.won = own.reduce((s, r) => s + (r.prize === "JACKPOT" ? 0 : Number(r.prize)), 0) + out.tip_won;
+    out.spent = own.length * 4 + 2 * out.tip_tickets;
+    out.won = own.reduce((s, r) => s + winnings(r), 0) + out.tip_won;
     out.net = out.won - out.spent;
     out.jackpots = own.filter((r) => r.prize === "JACKPOT").length + out.tip_jackpots;
     return out;
   });
-  const won = recent.reduce((s, r) => s + (r.prize === "JACKPOT" ? 0 : Number(r.prize)), 0);
+  const won = recent.reduce((s, r) => s + winnings(r), 0);
   const tipTotal = full ? 0 : viral ? 2000 : 7;
   return {
     tip_cap: 500,
@@ -1127,7 +1213,7 @@ function demoStats(demo) {
     first_draw: new Date(Date.now() - 128 * 864e5).toISOString().slice(0, 10),
     totals: { tickets: 61 + tipTotal, drawings: 55, spent: 2 * (61 + tipTotal), won: won + 15, net: won + 15 - 2 * (61 + tipTotal), jackpots: state === "jackpot" ? 1 : 0 },
     by_source: { claude: {}, tip: { tickets: tipTotal } },
-    best_win: recent.filter((r) => r.prize !== "0").sort(byPrize)[0] || null,
+    best_win: recent.filter(isWin).sort(byPrize)[0] || null,
     upcoming, upcoming_tips, recent, drawings,
     // What the Worker would report: 1,250 tickets waiting (viral) or 3,500 (booked), on top of the ledger.
     demo_donated: viral ? tipTotal + tips + (demo === "booked" ? 3500 : full ? 0 : 1250) : null,

@@ -25,13 +25,19 @@ from zoneinfo import ZoneInfo
 ROOT = Path(__file__).resolve().parent
 LEDGER = ROOT / "ledger.csv"
 STATS = ROOT / "stats.json"
-FIELDS = ["draw_date", "ticket", "source", "picked_at", "pick", "note", "result", "match", "prize", "donation"]
+FIELDS = [
+    "draw_date", "ticket", "source", "picked_at", "pick", "note", "result", "match", "prize", "donation",
+    "options", "multiplier", "dp_result", "dp_match", "dp_prize",
+]
 SOURCES = ("claude", "tip")
 
 ET = ZoneInfo("America/New_York")
 DRAW_DAYS = {0, 2, 5}  # Mon, Wed, Sat
 CUTOFF = time(22, 0)  # picks close at 10 PM ET; the drawing is at 10:59 PM ET
 TICKET_COST = 2
+ADDON_COST = 1  # Power Play and Double Play are $1 each
+# Claude's own ticket plays both add-ons. Donated tickets are plain $2 tickets.
+CLAUDE_OPTIONS = "pp+dp"
 RESULTS_URL = "https://data.ny.gov/resource/d6yy-54nr.json"  # NY Lottery's official Powerball results
 # The Worker in worker/ that records Ko-fi donations. The environment variable overrides it for local testing.
 DONATIONS_URL = os.environ.get("CLAUDE_PICKS_DONATIONS_URL", "https://claude-picks-donations.claude-picks.workers.dev")
@@ -50,6 +56,19 @@ PRIZES = {
     (1, True): 4,
     (0, True): 4,
 }
+# Double Play: a second drawing with the same numbers and its own prizes. Power Play doesn't apply to it.
+DOUBLE_PLAY_PRIZES = {
+    (5, True): 10_000_000,
+    (5, False): 500_000,
+    (4, True): 50_000,
+    (4, False): 500,
+    (3, True): 500,
+    (3, False): 20,
+    (2, True): 20,
+    (1, True): 10,
+    (0, True): 7,
+}
+POWER_PLAY_MATCH_5 = 2_000_000  # Match 5 with Power Play pays this flat, whatever the multiplier
 BIG_WIN = 100  # a prize this size or bigger is a party
 HUGE_WIN = 50_000  # and this size or bigger is huge; the jackpot is its own celebration
 # Moods from a win, smallest to biggest. Each lasts a week after the drawing.
@@ -91,17 +110,43 @@ def next_draw(now):
     return day
 
 
-def score_ticket(pick, result):
+def score_ticket(pick, result, prizes=PRIZES):
     """Returns (match, prize), e.g. ("3+PB", 100)."""
     whites, pb = parse_numbers(pick)
     result_whites, result_pb = parse_numbers(result)
     hits = len(set(whites) & set(result_whites))
     pb_hit = pb == result_pb
     match = f"{hits}+PB" if pb_hit else str(hits)
-    return match, PRIZES.get((hits, pb_hit), 0)
+    return match, prizes.get((hits, pb_hit), 0)
 
 
-def add_ticket(rows, numbers, note, source, now, donation=""):
+def power_play(match, prize, multiplier):
+    """A prize with Power Play: the jackpot and a loss stay as they are, Match 5 pays a flat $2 million,
+    and everything else is multiplied."""
+    if prize in ("JACKPOT", 0):
+        return prize
+    return POWER_PLAY_MATCH_5 if match == "5" else prize * multiplier
+
+
+def options(r):
+    return set(r["options"].split("+")) if r.get("options") else set()
+
+
+def ticket_cost(r):
+    return TICKET_COST + ADDON_COST * len(options(r))
+
+
+def winnings(r):
+    """Dollars a scored ticket won across both drawings. A jackpot isn't counted: its value changes every drawing."""
+    main = 0 if r["prize"] in ("JACKPOT", "") else int(r["prize"])
+    return main + int(r.get("dp_prize") or 0)
+
+
+def is_win(r):
+    return r["prize"] == "JACKPOT" or winnings(r) > 0
+
+
+def add_ticket(rows, numbers, note, source, now, donation="", options=""):
     """Appends a ticket for the next drawing. Claude gets one ticket of its own per drawing."""
     whites, pb = validate(numbers)
     if source not in SOURCES:
@@ -121,20 +166,37 @@ def add_ticket(rows, numbers, note, source, now, donation=""):
         "match": "",
         "prize": "",
         "donation": donation,
+        "options": options,
+        "multiplier": "",
+        "dp_result": "",
+        "dp_match": "",
+        "dp_prize": "",
     }
     rows.append(row)
     return row
 
 
 def score_rows(rows, results):
-    """Scores every unscored ticket whose drawing is in `results`. Returns the tickets scored."""
+    """Scores every unscored ticket whose drawing is in `results`, including its Power Play and Double
+    Play. A ticket waits if the feed doesn't have what its add-ons need yet. Returns the tickets scored."""
     scored = []
     for r in rows:
-        if r["result"] or r["draw_date"] not in results:
+        draw = results.get(r["draw_date"])
+        if r["result"] or not draw:
             continue
-        r["result"] = results[r["draw_date"]]
+        opts = options(r)
+        if ("pp" in opts and not draw["multiplier"]) or ("dp" in opts and not draw["double_play"]):
+            continue
+        r["result"] = draw["numbers"]
         r["match"], prize = score_ticket(r["pick"], r["result"])
+        if "pp" in opts:
+            r["multiplier"] = str(draw["multiplier"])
+            prize = power_play(r["match"], prize, draw["multiplier"])
         r["prize"] = str(prize)
+        if "dp" in opts:
+            r["dp_result"] = draw["double_play"]
+            r["dp_match"], dp_prize = score_ticket(r["pick"], r["dp_result"], DOUBLE_PLAY_PRIZES)
+            r["dp_prize"] = str(dp_prize)
         scored.append(r)
     return scored
 
@@ -154,7 +216,8 @@ def get_json(url):
 
 
 def fetch_results(since):
-    """Winning numbers for every drawing on or after `since`, as {"2026-10-10": "01 04 19 33 51 | 15"}."""
+    """Every drawing on or after `since`, as
+    {"2026-10-10": {"numbers": "01 04 19 33 51 | 15", "multiplier": 2, "double_play": "01 29 34 39 62 | 14"}}."""
     query = urllib.parse.urlencode({
         "$where": f"draw_date >= '{since}T00:00:00'",
         "$order": "draw_date",
@@ -164,7 +227,12 @@ def fetch_results(since):
     results = {}
     for row in data:
         numbers = [int(n) for n in row["winning_numbers"].split()]
-        results[row["draw_date"][:10]] = format_numbers(numbers[:5], numbers[5])
+        dp = [int(n) for n in (row.get("double_play_winning_numbers") or "").split()]
+        results[row["draw_date"][:10]] = {
+            "numbers": format_numbers(numbers[:5], numbers[5]),
+            "multiplier": int(row["multiplier"]) if row.get("multiplier") else None,
+            "double_play": format_numbers(dp[:5], dp[5]) if len(dp) == 6 else "",
+        }
     return results
 
 
@@ -222,8 +290,8 @@ def read_picks(path):
 
 def totals(rows):
     scored = [r for r in rows if r["result"]]
-    spent = TICKET_COST * len(scored)
-    won = sum(int(r["prize"]) for r in scored if r["prize"] != "JACKPOT")
+    spent = sum(ticket_cost(r) for r in scored)
+    won = sum(winnings(r) for r in scored)
     return {
         "tickets": len(scored),
         "drawings": len({r["draw_date"] for r in scored}),
@@ -234,11 +302,12 @@ def totals(rows):
     }
 
 
-def win_mood(prize):
-    """The celebration a winning prize earns: jackpot, huge, party, or happy for anything smaller."""
-    if prize == "JACKPOT":
+def win_mood(r):
+    """The celebration a winning ticket earns, across both drawings: jackpot, huge, party, or happy."""
+    if r["prize"] == "JACKPOT":
         return "jackpot"
-    return "huge" if int(prize) >= HUGE_WIN else "party" if int(prize) >= BIG_WIN else "happy"
+    won = winnings(r)
+    return "huge" if won >= HUGE_WIN else "party" if won >= BIG_WIN else "happy"
 
 
 def mood(rows, today):
@@ -250,7 +319,7 @@ def mood(rows, today):
     tips_waiting = len(waiting)
     full = any(sum(r["draw_date"] == d for r in waiting) >= TIP_CAP for d in {r["draw_date"] for r in waiting})
     scored = [r for r in rows if r["result"]]
-    wins = [r for r in scored if r["prize"] != "0"]
+    wins = [r for r in scored if is_win(r)]
 
     def days_ago(r):
         return (today - date.fromisoformat(r["draw_date"])).days
@@ -263,7 +332,7 @@ def mood(rows, today):
         return max(days_ago(r) for r in scored) >= days and (days_since_win is None or days_since_win >= days)
 
     if recent_wins:
-        state = max((win_mood(r["prize"]) for r in recent_wins), key=WIN_MOODS.index)
+        state = max((win_mood(r) for r in recent_wins), key=WIN_MOODS.index)
     elif full:
         state = "happy"
     elif tips_waiting:
@@ -292,7 +361,7 @@ def drawing_summaries(rows, limit=12):
             "result": day[0]["result"],
             **{k: v for k, v in totals(day).items() if k in ("tickets", "spent", "won", "net", "jackpots")},
             "tip_tickets": t["tickets"],
-            "tip_wins": sum(r["prize"] != "0" for r in tips),
+            "tip_wins": sum(is_win(r) for r in tips),
             "tip_won": t["won"],
             "tip_jackpots": t["jackpots"],
         })
@@ -313,12 +382,13 @@ def best_win(rows, today):
     """The biggest win of the past week (the latest, on a tie), which the site's mood line brags about."""
     wins = [
         r for r in rows
-        if r["result"] and r["prize"] != "0" and (today - date.fromisoformat(r["draw_date"])).days <= MOOD_DAYS["glow"]
+        if r["result"] and is_win(r) and (today - date.fromisoformat(r["draw_date"])).days <= MOOD_DAYS["glow"]
     ]
     if not wins:
         return None
-    best = max(wins, key=lambda r: (r["prize"] == "JACKPOT", 0 if r["prize"] == "JACKPOT" else int(r["prize"]), r["draw_date"]))
-    return {"draw_date": best["draw_date"], "prize": best["prize"], "source": best["source"]}
+    best = max(wins, key=lambda r: (r["prize"] == "JACKPOT", winnings(r), r["draw_date"]))
+    prize = "JACKPOT" if best["prize"] == "JACKPOT" else str(winnings(best))
+    return {"draw_date": best["draw_date"], "prize": prize, "source": best["source"]}
 
 
 def build_stats(rows, now):
@@ -330,7 +400,7 @@ def build_stats(rows, now):
     recent = [
         r for r in rows
         if r["result"] and r["draw_date"] in shown
-        and (r["source"] == "claude" or (r["draw_date"] == latest and r["prize"] != "0"))
+        and (r["source"] == "claude" or (r["draw_date"] == latest and is_win(r)))
     ]
     return {
         "updated_at": now.astimezone(ET).isoformat(timespec="seconds"),
@@ -393,7 +463,8 @@ def save(rows, now):
 def cmd_pick(args):
     now = datetime.now(ET)
     rows = read_ledger()
-    row = add_ticket(rows, args.numbers, args.note, args.source, now)
+    row = add_ticket(rows, args.numbers, args.note, args.source, now,
+                     options=CLAUDE_OPTIONS if args.source == "claude" else "")
     save(rows, now)
     print(f"Ticket {row['ticket']} for {row['draw_date']}: {row['pick']}")
 
@@ -441,14 +512,19 @@ def cmd_score(args):
     scored = score_rows(rows, results)
     # Claude's own tickets and every winner get a line; donated losers are only counted.
     for r in scored:
-        if r["source"] == "claude" or r["prize"] != "0":
-            print(f"{r['draw_date']} ticket {r['ticket']} ({r['source']}): {r['pick']} vs {r['result']} -> {r['match']}, {r['prize']}")
+        if r["source"] == "claude" or is_win(r):
+            extra = f" (Power Play {r['multiplier']}x)" if r["multiplier"] else ""
+            if r["dp_result"]:
+                extra += f"; Double Play {r['dp_result']} -> {r['dp_match']}, {r['dp_prize']}"
+            print(f"{r['draw_date']} ticket {r['ticket']} ({r['source']}): {r['pick']} vs {r['result']} -> "
+                  f"{r['match']}, {r['prize']}{extra}")
     for draw in sorted({r["draw_date"] for r in scored if r["source"] == "tip"}):
         tips = [r for r in scored if r["draw_date"] == draw and r["source"] == "tip"]
-        print(f"{draw}: {len(tips)} donated tickets, {sum(r['prize'] != '0' for r in tips)} won {money(totals(tips)['won'])}.")
+        print(f"{draw}: {len(tips)} donated tickets, {sum(is_win(r) for r in tips)} won {money(totals(tips)['won'])}.")
     if results:
         latest = max(results)
-        print(f"Latest drawing: {latest}: {results[latest]}")
+        d = results[latest]
+        print(f"Latest drawing: {latest}: {d['numbers']}, Power Play {d['multiplier']}x, Double Play {d['double_play'] or 'not out yet'}")
     save(rows, now)
     print(status_text(rows))
 
