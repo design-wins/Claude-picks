@@ -8,3 +8,10 @@ CREATE TABLE IF NOT EXISTS donations (
   currency TEXT NOT NULL,
   tickets INTEGER NOT NULL
 );
+
+-- A running total for the site's live count, so a page view reads one row instead of every donation.
+CREATE TABLE IF NOT EXISTS totals (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  tickets INTEGER NOT NULL
+);
+INSERT OR IGNORE INTO totals (id, tickets) SELECT 1, COALESCE(SUM(tickets), 0) FROM donations;

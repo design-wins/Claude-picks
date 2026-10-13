@@ -868,6 +868,16 @@ function setUpSheets() {
   dialog.addEventListener("click", (e) => { if (e.target === dialog) dialog.close(); });
 }
 
+// Runs `fn` once `el` is within a screen or so of view. The live count costs a Worker request,
+// so visitors who never scroll to the Donate section don't spend one.
+function whenNear(el, fn) {
+  if (!("IntersectionObserver" in window)) return fn();
+  const io = new IntersectionObserver((entries) => {
+    if (entries.some((e) => e.isIntersecting)) { io.disconnect(); fn(); }
+  }, { rootMargin: "800px 0px" });
+  io.observe(el);
+}
+
 async function loadTipStatus(stats) {
   try {
     const res = await fetch(`${STATUS_URL}/status`);
@@ -982,7 +992,7 @@ async function main() {
     }
     render(stats);
     if (stats.demo_donated != null) showTipStatus(stats, stats.demo_donated, "#tip");
-    else if (TIP_URL && STATUS_URL) loadTipStatus(stats);
+    else if (TIP_URL && STATUS_URL) whenNear($("tip"), () => loadTipStatus(stats));
   } catch (err) {
     setMood("sad", "The latest numbers didn't load. Refresh the page to try again.");
   }

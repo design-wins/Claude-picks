@@ -62,6 +62,9 @@ async function kofi(request, env) {
     String(data.currency || ""),
     tickets
   ).run();
+  if (result.meta.changes) {
+    await env.DB.prepare("UPDATE totals SET tickets = tickets + ? WHERE id = 1").bind(tickets).run();
+  }
   // No donor details here: just what kind of payment it was and what it bought.
   console.log(`kofi: ${data.type} ${data.amount} ${data.currency} -> ${tickets} tickets${result.meta.changes ? "" : " (duplicate, ignored)"}`);
   return new Response("OK");
@@ -77,7 +80,8 @@ async function donations(url, env) {
 }
 
 async function status(env) {
-  const row = await env.DB.prepare("SELECT COALESCE(SUM(tickets), 0) AS tickets FROM donations").first();
+  // Every page view can land here, so read the one-row running total rather than adding up donations.
+  const row = await env.DB.prepare("SELECT tickets FROM totals WHERE id = 1").first();
   return json({ tickets_donated: row.tickets }, {
     "Access-Control-Allow-Origin": "*",
     "Cache-Control": "public, max-age=60",
