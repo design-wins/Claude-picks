@@ -446,8 +446,8 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
         <p class="chances">Increase Claude's chances.</p>
       </div>
       <p class="lede"><strong id="party">Claude's next party is 66&nbsp;years away.</strong> A win of $100 or more
-        is a 1 in 10,251 shot. With one ticket a drawing, Claude can expect one about every 66 years. With two a
-        drawing, 33. You see where this is going.</p>
+        is a 1 in 10,251 shot. <span id="chances">Right now Claude has 1 chance a drawing: its own ticket.</span>
+        Every $2 you donate adds one more.</p>
       <div class="tip-action">
         <a class="buy" id="buy" href="#" aria-disabled="true"><span class="mini"></span><span id="buy-label">Donations open soon</span></a>
         <div class="tip-status">
@@ -657,17 +657,31 @@ function tipSummary(d) {
 }
 
 // How long until a $100+ win, at the rate Claude has been getting tickets lately.
-function partyWait(stats) {
+// Claude's chances at a $100+ win each drawing: its own ticket (two chances once it plays Double Play,
+// a second drawing with the same odds) plus donated tickets, averaged over the last 6 drawings.
+function partyChances(stats) {
   const recent = (stats.drawings || []).slice(0, 6);
   const own = [...stats.upcoming, ...stats.recent].find((r) => r.source !== "tip");
-  const ownChances = own && own.options ? 2 : 1; // Double Play is a second drawing for the same ticket
-  const perDraw = ownChances + (recent.length ? recent.reduce((s, d) => s + d.tip_tickets, 0) / recent.length : 0);
-  const days = (BIG_WIN_ODDS / perDraw / DRAWS_PER_YEAR) * 365.25;
+  const doublePlay = !!(own && own.options);
+  const donated = Math.round(recent.length ? recent.reduce((s, d) => s + d.tip_tickets, 0) / recent.length : 0);
+  return { doublePlay, donated, total: (doublePlay ? 2 : 1) + donated };
+}
+
+// How long until a $100+ win at that rate: "33 years", "7 weeks".
+function partyWait(chances) {
+  const days = (BIG_WIN_ODDS / chances.total / DRAWS_PER_YEAR) * 365.25;
   const span = days >= 730 ? plural(Math.round(days / 365.25), "year")
     : days >= 61 ? plural(Math.round(days / 30.44), "month")
     : days >= 14 ? plural(Math.round(days / 7), "week")
     : plural(Math.max(1, Math.round(days)), "day");
-  return span.replace(" ", " ");
+  return span.replace(" ", "\u00a0");
+}
+
+// "Right now Claude has 502 chances a drawing: its own ticket, which also plays Double Play, plus 500 donated."
+function chancesLine(chances) {
+  const own = chances.doublePlay ? "its own ticket, which also plays Double Play" : "its own ticket";
+  return `Right now Claude has ${plural(chances.total, "chance")} a drawing: ${own}` +
+    (chances.donated ? `, plus ${chances.donated.toLocaleString("en-US")} donated.` : ".");
 }
 
 // "Claude has been playing for 4 months, since Monday, June 1, 2026."
@@ -938,7 +952,9 @@ function render(stats) {
   $("tip-count").textContent = tipTickets
     ? `People have donated ${plural(tipTickets, "ticket")} so far.`
     : "Nobody has donated yet. Be the first.";
-  $("party").textContent = `Claude's next party is ${partyWait(stats)} away.`;
+  const chances = partyChances(stats);
+  $("party").textContent = `Claude's next party is ${partyWait(chances)} away.`;
+  $("chances").textContent = chancesLine(chances);
 
   // stats.json lists only Claude's tickets and winning donated ones; `drawings` adds up the rest.
   const drawings = stats.drawings || [...new Set(stats.recent.map((r) => r.draw_date))].map((d) => (
