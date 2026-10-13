@@ -361,7 +361,7 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
   .meter { margin-left: auto; margin-right: auto; width: 100%; }
   .wordmark { font-size: 19px; }
   section.block { padding-top: var(--space-8); }
-  .buy { font-size: 18px; padding: 14px 22px 14px 14px; }
+  .buy { font-size: 17px; font-stretch: 100%; gap: 10px; padding: 14px 20px 14px 14px; max-width: 100%; }
   .band { padding: var(--space-8) 0; margin-top: var(--space-8); }
   .last-grid { grid-template-columns: 1fr; }
   .last-card { padding: 18px; }
@@ -1099,7 +1099,7 @@ function showTipStatus(stats, donated, href) {
     live.textContent = `Every drawing through ${fmtDate(addDraws(first, ahead - 1), true)} is full. Check back soon.`;
     return;
   }
-  setBuy("Donate $2 on Ko-fi", href);
+  setBuy("Buy Claude more tickets", href);
   live.textContent = `${ahead ? "The next drawings are full. " : ""}${cap - (queued % cap)} of ${cap} spots left for ${fmtDate(addDraws(first, ahead), true)}.`;
 }
 
@@ -1165,7 +1165,7 @@ function setLinks() {
   buy.addEventListener("click", (e) => {
     if (buy.getAttribute("aria-disabled") === "true") e.preventDefault();
   });
-  if (TIP_URL) setBuy("Donate $2 on Ko-fi", TIP_URL);
+  if (TIP_URL) setBuy("Buy Claude more tickets", TIP_URL);
   if (CONTACT) {
     $("refund-link").href = `mailto:${CONTACT}`;
     $("refund-link").textContent = CONTACT;
