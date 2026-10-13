@@ -1,12 +1,14 @@
 {
-  "updated_at": "2026-10-12T14:41:01-04:00",
+  "updated_at": "2026-10-13T00:09:13-04:00",
   "ticket_cost": 2,
+  "tip_cap": 500,
   "mood": {
     "state": "hopeful",
     "days_since_win": null,
-    "tips_waiting": 0
+    "tips_waiting": 0,
+    "full": false
   },
-  "first_draw": null,
+  "first_draw": "2026-10-14",
   "totals": {
     "tickets": 0,
     "drawings": 0,
@@ -33,6 +35,22 @@
       "jackpots": 0
     }
   },
-  "upcoming": [],
-  "recent": []
+  "best_win": null,
+  "upcoming": [
+    {
+      "draw_date": "2026-10-14",
+      "ticket": "1",
+      "source": "claude",
+      "picked_at": "2026-10-13T00:09:13-04:00",
+      "pick": "09 17 26 41 58 | 13",
+      "note": "A spread across the range with a couple of mid-teens numbers that feel balanced to me.",
+      "result": "",
+      "match": "",
+      "prize": "",
+      "donation": ""
+    }
+  ],
+  "upcoming_tips": [],
+  "recent": [],
+  "drawings": []
 }
