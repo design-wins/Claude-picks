@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-13T00:17:09-04:00",
+  "updated_at": "2026-10-13T01:14:07-04:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
@@ -47,10 +47,21 @@
       "result": "",
       "match": "",
       "prize": "",
-      "donation": ""
+      "donation": "",
+      "options": "",
+      "multiplier": "",
+      "dp_result": "",
+      "dp_match": "",
+      "dp_prize": ""
     }
   ],
   "upcoming_tips": [],
   "recent": [],
-  "drawings": []
+  "drawings": [],
+  "latest_drawing": {
+    "draw_date": "2026-10-10",
+    "numbers": "01 04 19 33 51 | 15",
+    "multiplier": 2,
+    "double_play": "01 29 34 39 62 | 14"
+  }
 }
