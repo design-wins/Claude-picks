@@ -229,6 +229,142 @@ class FetchRetries(unittest.TestCase):
         self.assertEqual(len(calls), 4)
 
 
+class Tips(unittest.TestCase):
+    NOW = et(2026, 10, 12, 18)
+
+    def setUp(self):
+        # A cap of 100 keeps the numbers here small; the logic is the same at 500.
+        self.addCleanup(setattr, lotto, "TIP_CAP", lotto.TIP_CAP)
+        lotto.TIP_CAP = 100
+
+    def fill(self, rows, slots, now=NOW, start=0):
+        """Adds a pick for every slot, in batches like the routine."""
+        picks = self.picks(len(slots), start)
+        for i in range(0, len(slots), lotto.TIP_BATCH):
+            lotto.add_tips(rows, picks[i : i + lotto.TIP_BATCH], slots[i : i + lotto.TIP_BATCH], now)
+
+    def donations(self, *tickets):
+        return [{"seq": i + 1, "received_at": "2026-10-12T12:00:00Z", "tickets": n} for i, n in enumerate(tickets)]
+
+    def picks(self, count, start=0):
+        # Distinct valid picks: vary the Powerball, then the last white ball.
+        return [[1, 2, 3, 4, 30 + (start + i) // 26, 1 + (start + i) % 26] for i in range(count)]
+
+    def test_slots_fill_oldest_first(self):
+        rows = []
+        draw, slots, waiting = lotto.tips_due(rows, self.donations(2, 1), self.NOW)
+        self.assertEqual((draw, slots, waiting), ("2026-10-12", ["1.1", "1.2", "2.1"], 0))
+        lotto.add_tips(rows, self.picks(3), slots, self.NOW)
+        self.assertEqual([r["donation"] for r in rows], ["1.1", "1.2", "2.1"])
+        self.assertTrue(all(r["source"] == "tip" for r in rows))
+        self.assertEqual(lotto.tips_due(rows, self.donations(2, 1), self.NOW)[1], [])
+
+    def test_cap_rolls_the_rest_to_the_next_drawing(self):
+        rows = []
+        donations = self.donations(60, 90)  # 150 tickets; the second donation splits across drawings
+        _, slots, waiting = lotto.tips_due(rows, donations, self.NOW)
+        self.assertEqual((len(slots), waiting), (100, 50))
+        self.assertEqual((slots[0], slots[-1]), ("1.1", "2.40"))
+        self.fill(rows, slots)
+
+        # Same drawing: full.
+        self.assertEqual(lotto.tips_due(rows, donations, self.NOW)[1:], ([], 50))
+        # Next drawing: the other 50, picking up mid-donation.
+        wed = et(2026, 10, 13, 18)
+        draw, slots, waiting = lotto.tips_due(rows, donations[lotto.donation_after(rows) :], wed)
+        self.assertEqual((draw, len(slots), slots[0], waiting), ("2026-10-14", 50, "2.41", 0))
+
+    def test_donation_after_starts_at_the_newest_partial_donation(self):
+        self.assertEqual(lotto.donation_after([]), 0)
+        rows = []
+        lotto.add_tips(rows, self.picks(2), ["4.1", "5.1"], self.NOW)
+        self.assertEqual(lotto.donation_after(rows), 4)
+
+    def test_claude_ticket_does_not_use_the_cap(self):
+        rows = []
+        lotto.add_ticket(rows, [1, 2, 3, 4, 5, 6], "", "claude", self.NOW)
+        self.assertEqual(len(lotto.tips_due(rows, self.donations(150), self.NOW)[1]), 100)
+
+    def test_fewer_picks_leave_the_rest_due(self):
+        rows = []
+        _, slots, _ = lotto.tips_due(rows, self.donations(5), self.NOW)
+        lotto.add_tips(rows, self.picks(2), slots, self.NOW)
+        self.assertEqual(lotto.tips_due(rows, self.donations(5), self.NOW)[1], ["1.3", "1.4", "1.5"])
+
+    def test_rejects_too_many_picks(self):
+        rows = []
+        with self.assertRaises(ValueError):
+            lotto.add_tips(rows, self.picks(3), ["1.1", "1.2"], self.NOW)
+        self.assertEqual(rows, [])
+
+    def test_rejects_a_batch_over_the_limit(self):
+        rows = []
+        slots = [f"1.{n}" for n in range(1, 52)]
+        with self.assertRaises(ValueError):
+            lotto.add_tips(rows, self.picks(51), slots, self.NOW)
+        self.assertEqual(rows, [])
+
+    def test_real_cap_is_500(self):
+        self.addCleanup(setattr, lotto, "TIP_CAP", 100)
+        lotto.TIP_CAP = 500
+        self.assertEqual(lotto.tips_due([], self.donations(600), self.NOW)[1:][1], 100)
+
+    def test_rejects_repeated_picks_in_a_drawing(self):
+        rows = []
+        lotto.add_ticket(rows, [1, 2, 3, 4, 5, 6], "", "claude", self.NOW)
+        for picks in ([[5, 4, 3, 2, 1, 6]], [[7, 8, 9, 10, 11, 12], [11, 10, 9, 8, 7, 12]]):
+            with self.subTest(picks=picks), self.assertRaises(ValueError):
+                lotto.add_tips(rows, picks, ["1.1", "1.2"], self.NOW)
+        self.assertEqual(len(rows), 1)
+
+    def test_rejects_bad_numbers_before_adding_any(self):
+        rows = []
+        with self.assertRaises(ValueError):
+            lotto.add_tips(rows, [[1, 2, 3, 4, 5, 6], [1, 2, 3, 4, 5, 99]], ["1.1", "1.2"], self.NOW)
+        self.assertEqual(rows, [])
+
+    def test_read_picks(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "picks.txt"
+            path.write_text("# tonight\n07 19 23 41 58 11\n\n03 15 27 33 66 | 09  # a comment\n")
+            self.assertEqual(lotto.read_picks(path), [[7, 19, 23, 41, 58, 11], [3, 15, 27, 33, 66, 9]])
+
+    def test_stats_keep_donated_tickets_compact(self):
+        rows = []
+        lotto.add_ticket(rows, [2, 11, 27, 44, 60, 8], "", "claude", et(2026, 10, 10, 18))
+        self.fill(rows, [f"1.{n}" for n in range(1, 101)], et(2026, 10, 10, 18))
+        rows[1]["pick"] = "01 04 19 33 51 | 15"  # make one donated ticket a jackpot
+        lotto.score_rows(rows, {"2026-10-10": "01 04 19 33 51 | 15"})
+        lotto.add_ticket(rows, [3, 12, 28, 45, 61, 9], "", "claude", self.NOW)
+        self.fill(rows, [f"2.{n}" for n in range(1, 101)])
+        stats = lotto.build_stats(rows, self.NOW)
+
+        # Scored: Claude's ticket and the latest drawing's winners, with the rest added up.
+        winners = [r for r in rows if r["source"] == "tip" and r["result"] and r["prize"] != "0"]
+        self.assertGreater(len(winners), 1)
+        self.assertCountEqual(stats["recent"], winners + [rows[0]])
+        summary = stats["drawings"][0]
+        self.assertEqual((summary["draw_date"], summary["tip_tickets"], summary["tip_jackpots"]), ("2026-10-10", 100, 1))
+        self.assertEqual(summary["tip_wins"], len(winners))
+        self.assertEqual(stats["best_win"], {"draw_date": "2026-10-10", "prize": "JACKPOT", "source": "tip"})
+
+        # Waiting: Claude's ticket in full, donated ones as just their numbers.
+        self.assertEqual([r["source"] for r in stats["upcoming"]], ["claude"])
+        [group] = stats["upcoming_tips"]
+        self.assertEqual((group["draw_date"], len(group["picks"])), ("2026-10-12", 100))
+        self.assertEqual(stats["totals"]["tickets"], 101)
+
+    def test_only_the_latest_drawing_lists_its_winners(self):
+        rows = []
+        for day, seq in ((10, 1), (12, 2)):
+            self.fill(rows, [f"{seq}.{n}" for n in range(1, 27)], et(2026, 10, day, 18))
+        lotto.score_rows(rows, {"2026-10-10": "01 04 19 33 51 | 15", "2026-10-12": "01 04 19 33 51 | 15"})
+        stats = lotto.build_stats(rows, et(2026, 10, 13, 12))
+        self.assertTrue(stats["recent"])
+        self.assertEqual({r["draw_date"] for r in stats["recent"]}, {"2026-10-12"})
+        self.assertEqual(len(stats["drawings"]), 2)
+
+
 class LedgerFile(unittest.TestCase):
     def test_round_trip(self):
         self.addCleanup(setattr, lotto, "LEDGER", lotto.LEDGER)
@@ -243,6 +379,17 @@ class LedgerFile(unittest.TestCase):
             lotto.save(rows, now)
             self.assertEqual(lotto.read_ledger(), rows)
             self.assertTrue(lotto.STATS.exists())
+
+    def test_reads_a_ledger_from_before_the_donation_column(self):
+        self.addCleanup(setattr, lotto, "LEDGER", lotto.LEDGER)
+        with tempfile.TemporaryDirectory() as tmp:
+            lotto.LEDGER = Path(tmp) / "ledger.csv"
+            lotto.LEDGER.write_text(
+                "draw_date,ticket,source,picked_at,pick,note,result,match,prize\n"
+                "2026-10-12,1,claude,2026-10-12T18:00:00-04:00,01 02 03 04 05 | 06,,,,\n"
+            )
+            [row] = lotto.read_ledger()
+            self.assertEqual((row["pick"], row["donation"]), ("01 02 03 04 05 | 06", ""))
 
 
 if __name__ == "__main__":

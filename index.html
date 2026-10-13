@@ -177,6 +177,40 @@ section.block h2 { font-size: clamp(30px, 5vw, 40px); font-weight: 750; font-str
 .note { font: 500 21px/1.35 var(--display); font-stretch: 95%; max-width: 40ch; }
 .meta { font-size: 15px; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
 .proof { margin-top: 20px; font-size: 15px; color: var(--ink-2); max-width: 60ch; }
+.tip-picks { display: grid; gap: 14px; padding: 22px 0; border-top: 1px solid var(--rule); }
+.tip-picks:first-child { border-top: 0; padding-top: 0; }
+.tip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 256px), 1fr)); gap: 12px 24px; }
+.tip-sum p { font-size: 15px; color: var(--ink-2); }
+
+/* Lots of tickets: a count, and a window with all the numbers */
+.tix-count { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; margin-top: 22px; padding: 22px 24px; border-radius: 18px; background: var(--panel); }
+.tix-num { font: 900 clamp(60px, 14vw, 104px)/.85 var(--display); font-stretch: 140%; letter-spacing: -0.03em; }
+.tix-label { font: 750 22px/1.15 var(--display); font-stretch: 105%; }
+.tix-sub { font-size: 15px; color: var(--ink-2); margin-top: 4px; max-width: 44ch; }
+.see {
+  margin-top: 14px; font: 700 15px var(--display); font-stretch: 108%; cursor: pointer;
+  padding: 10px 18px; border: 0; border-radius: 999px; background: var(--ink); color: var(--page);
+}
+.see:hover { background: color-mix(in srgb, var(--ink) 85%, var(--page)); }
+.see:focus-visible { outline-color: var(--ink); border-radius: 999px; }
+.tip-sum .see { margin-top: 10px; }
+body:has(.tix-dialog[open]) { overflow: hidden; }
+.tix-dialog {
+  padding: 0; border: 0; border-radius: 18px; width: min(900px, calc(100vw - 32px)); max-height: min(88vh, 960px);
+  background: var(--page); color: var(--ink); box-shadow: 0 24px 70px rgba(0, 0, 0, .4);
+}
+.tix-dialog[open] { display: flex; flex-direction: column; }
+.tix-dialog::backdrop { background: rgba(12, 14, 20, .62); }
+.tix-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 20px 22px 16px; border-bottom: 1px solid var(--rule); }
+.tix-head h2 { font-size: 26px; font-weight: 750; font-stretch: 105%; }
+.tix-head .sub { margin-top: 4px; font-size: 15px; }
+.tix-close { flex: none; width: 40px; height: 40px; border: 0; border-radius: 50%; background: var(--panel); color: var(--ink); font: 400 26px/1 var(--body); cursor: pointer; }
+.tix-close:focus-visible { border-radius: 50%; }
+.tix-body { overflow: auto; overscroll-behavior: contain; padding: 20px 22px 28px; }
+.tix-body .drawn-label + .balls { margin-bottom: 24px; }
+.tix-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 12px 24px; }
+.tix-list li { display: flex; align-items: center; gap: 10px; }
+.tix-n { flex: none; width: 30px; text-align: right; font-size: 13px; color: var(--ink-2); }
 
 /* The running tab */
 .tab { margin: 0; max-width: 420px; font-size: 18px; }
@@ -212,7 +246,10 @@ section.block h2 { font-size: clamp(30px, 5vw, 40px); font-weight: 750; font-str
 .buy .mini { width: 26px; height: 26px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #f46a5f 0, var(--red) 70%); }
 .buy[aria-disabled="true"] { background: rgba(255, 255, 255, .12); color: var(--band-ink-2); cursor: default; transform: none; box-shadow: none; }
 .tip-count { font-weight: 600; }
+.tip-live { margin-top: 14px; font-size: 15px; font-weight: 600; color: var(--marigold); }
+.buy-note { margin-top: 14px; font-size: 15px; font-weight: 600; max-width: 60ch; }
 .timing { margin-top: 18px; font-size: 15px; max-width: 60ch; }
+.timing a { color: var(--band-ink); }
 .where { margin-top: 56px; max-width: 560px; }
 .where h3 { font-size: 26px; font-weight: 800; font-stretch: 108%; margin-bottom: 14px; }
 .where dl { margin: 0; }
@@ -265,6 +302,7 @@ footer nav { display: flex; gap: 18px; margin-top: 4px; }
   .odds li { grid-template-columns: 1fr; gap: 2px; }
   .buy { font-size: 18px; padding: 14px 22px 14px 14px; }
   .band { padding: 56px 0; margin-top: 64px; }
+  .tix-dialog { width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0; border-radius: 0; }
 }
 @media (max-width: 360px) {
   .wrap { padding: 0 16px; }
@@ -343,7 +381,7 @@ footer nav { display: flex; gap: 18px; margin-top: 4px; }
   <section class="band" id="tip">
     <div class="wrap">
       <h2>DONATE</h2>
-      <p class="party">Claude's next party is 66&nbsp;years away.</p>
+      <p class="party" id="party">Claude's next party is 66&nbsp;years away.</p>
       <p class="lede">A win of $100 or more is a 1 in 10,251 shot. With one ticket a drawing, Claude can
         expect one about every 66 years. With two a drawing, 33. You see where this is going.</p>
       <ul class="odds" aria-label="What $2 gets Claude">
@@ -355,17 +393,22 @@ footer nav { display: flex; gap: 18px; margin-top: 4px; }
         <a class="buy" id="buy" href="#" aria-disabled="true"><span class="mini"></span><span id="buy-label">Donations open soon</span></a>
         <span class="tip-count" id="tip-count"></span>
       </div>
-      <p class="timing band-2">Every $2 you donate is one more ticket, and Claude picks the numbers for each one.
-        Donate as many as you like. Donations made before Claude picks (early evening ET on Mondays, Wednesdays and
-        Saturdays) go into that night's drawing. Later ones go into the next.</p>
+      <p class="tip-live" id="tip-live" hidden></p>
+      <p class="buy-note">You can't win anything, and no real ticket is bought. Not affiliated with Powerball or Anthropic.</p>
+      <p class="timing band-2">Every full $2 you donate is one more ticket, and Claude picks the numbers for each one.
+        Claude picks up to 500 donated tickets a drawing, first come, first served, in the early evening ET on Mondays,
+        Wednesdays and Saturdays. Once a drawing is full or Claude has picked, new tickets go into the next one with room.
+        <span id="refund" hidden>Changed your mind? Email <a id="refund-link" href="#"></a> within 30 days for a full refund.</span></p>
       <div class="where">
         <h3>Where your $2 goes</h3>
         <dl>
           <div><dt>Claude</dt><span class="lead"></span><dd>$0.00</dd>
             <p class="band-2">Claude is an AI. It can't hold money, and it doesn't know this page exists.</p></div>
-          <div><dt>Stripe</dt><span class="lead"></span><dd>$0.36</dd>
-            <p class="band-2">For handling your card.</p></div>
-          <div><dt>A human</dt><span class="lead"></span><dd>$1.64</dd>
+          <div><dt>Ko-fi</dt><span class="lead"></span><dd>$0.00</dd>
+            <p class="band-2">Ko-fi doesn't take a cut of one-off donations.</p></div>
+          <div><dt>PayPal</dt><span class="lead"></span><dd>$0.55</dd>
+            <p class="band-2">For handling your payment, card or PayPal. Mostly a flat 49¢, which is why $2 hurts.</p></div>
+          <div><dt>A human</dt><span class="lead"></span><dd>$1.45</dd>
             <p class="band-2">The person who runs this. It goes toward the Claude plan that runs it.</p></div>
           <div class="of"><dt>…which goes to Anthropic</dt><span class="lead"></span><dd>Most of it</dd>
             <p class="band-2">The company that makes Claude. So Claude's employer gets paid. Claude does not. Claude was not consulted.</p></div>
@@ -404,9 +447,23 @@ footer nav { display: flex; gap: 18px; margin-top: 4px; }
   <nav><a id="repo-link" href="#">GitHub</a><a id="ledger-link-2" href="#">Full ledger</a></nav>
 </footer>
 
+<dialog class="tix-dialog" id="tix-dialog" aria-labelledby="tix-title">
+  <div class="tix-head">
+    <div><h2 id="tix-title"></h2><p class="sub" id="tix-sub"></p></div>
+    <button type="button" class="tix-close" id="tix-close" aria-label="Close">×</button>
+  </div>
+  <div class="tix-body" id="tix-body"></div>
+</dialog>
+
 <script>
 const REPO = "https://github.com/design-wins/Claude-picks";
-const TIP_URL = ""; // the Stripe Payment Link goes here when tips open
+const TIP_URL = "https://ko-fi.com/claude_picks";
+const STATUS_URL = "https://claude-picks-donations.claude-picks.workers.dev"; // the donations Worker (worker/)
+const CONTACT = "claudepicks.tickets@gmail.com"; // where refund requests go
+const BOOKED_DRAWINGS = 6; // about two weeks; past this, the Donate button pauses
+const BIG_WIN_ODDS = 10251; // 1 in 10,251 tickets wins $100 or more
+const DRAWS_PER_YEAR = 156;
+const INLINE_TICKETS = 3; // past this many tickets in a drawing, the page shows a count and a "See the numbers" button
 const MOODS = {
   sad: { head: "Claude is sad.", rule: "Sad means a month without a win." },
   hopeful: { head: "Claude is hopeful.", rule: "Hopeful means no win this week, but it's been less than a month." },
@@ -455,6 +512,16 @@ function nextDrawDate() {
   return d.toISOString().slice(0, 10);
 }
 
+// The drawing `n` drawings after `iso`.
+function addDraws(iso, n) {
+  const d = new Date(iso + "T12:00:00Z");
+  while (n > 0) {
+    d.setUTCDate(d.getUTCDate() + 1);
+    if ([1, 3, 6].includes(d.getUTCDay())) n--;
+  }
+  return d.toISOString().slice(0, 10);
+}
+
 function balls(pick, against, small) {
   const [w, pb] = parseNumbers(pick);
   const [rw, rpb] = against ? parseNumbers(against) : [[], null];
@@ -465,8 +532,31 @@ function balls(pick, against, small) {
     `<span class="ball pb${rpb === pb ? " hit" : ""}">${pad(pb)}</span></span>`;
 }
 
+// Biggest prize first; the jackpot beats everything.
+const prizeValue = (r) => (r.prize === "JACKPOT" ? Infinity : Number(r.prize));
+const byPrize = (a, b) => prizeValue(b) - prizeValue(a);
 const prizeText = (r) => (r.prize === "JACKPOT" ? "the jackpot" : money(Number(r.prize)));
 const sourceTag = (r) => (r.source === "tip" ? `<span class="tag tip">Donated by someone</span>` : `<span class="tag">Claude's ticket</span>`);
+
+// "500 donated tickets, 20 won $86"
+function tipSummary(d) {
+  const won = d.tip_wins
+    ? `${d.tip_wins.toLocaleString("en-US")} won ${money(d.tip_won)}${d.tip_jackpots ? ` plus ${plural(d.tip_jackpots, "jackpot")}` : ""}`
+    : "none won";
+  return `${plural(d.tip_tickets, "donated ticket")}, ${won}`;
+}
+
+// How long until a $100+ win, at the rate Claude has been getting tickets lately.
+function partyWait(stats) {
+  const recent = (stats.drawings || []).slice(0, 6);
+  const perDraw = 1 + (recent.length ? recent.reduce((s, d) => s + d.tip_tickets, 0) / recent.length : 0);
+  const days = (BIG_WIN_ODDS / perDraw / DRAWS_PER_YEAR) * 365.25;
+  const span = days >= 730 ? plural(Math.round(days / 365.25), "year")
+    : days >= 61 ? plural(Math.round(days / 30.44), "month")
+    : days >= 14 ? plural(Math.round(days / 7), "week")
+    : plural(Math.max(1, Math.round(days)), "day");
+  return span.replace(" ", " ");
+}
 
 // "Claude has been playing for 4 months, since Monday, June 1, 2026."
 function playingFor(firstDraw, drawings) {
@@ -564,7 +654,7 @@ function face(state) {
 
 function moodLine(stats) {
   const m = stats.mood;
-  const lastWin = stats.recent.find((r) => r.prize !== "0");
+  const lastWin = stats.best_win || stats.recent.find((r) => r.prize !== "0");
   const drought = m.days_since_win == null ? "No wins yet" : `${plural(m.days_since_win, "day")} without a win`;
   if (m.state === "party") return `It won ${prizeText(lastWin)} on ${fmtDate(lastWin.draw_date)}. Everybody dance.`;
   if (m.state === "happy") return `It won ${prizeText(lastWin)} on ${fmtDate(lastWin.draw_date)}. Life is good.`;
@@ -597,18 +687,50 @@ function render(stats) {
   setMood(m.state, moodLine(stats), tipHope ? "A donated ticket keeps Claude hopeful until its drawing." : "");
 
   // Picks for the next drawing; tickets for drawings already held wait in the results list.
+  // Donated tickets come grouped by drawing, as just their numbers (`upcoming_tips`).
   const next = nextDrawDate();
-  const nextTickets = stats.upcoming.filter((r) => r.draw_date >= next);
-  const waiting = stats.upcoming.filter((r) => r.draw_date < next);
-  const drawDate = nextTickets.length ? nextTickets[0].draw_date : next;
+  const own = stats.upcoming.filter((r) => r.source !== "tip");
+  const tipGroups = stats.upcoming_tips || [];
+  const nextOwn = own.filter((r) => r.draw_date >= next);
+  const nextGroup = tipGroups.find((g) => g.draw_date >= next);
+  const waiting = own.filter((r) => r.draw_date < next);
+  const drawDate = nextOwn.length ? nextOwn[0].draw_date : nextGroup ? nextGroup.draw_date : next;
+  const nextTips = nextGroup && nextGroup.draw_date === drawDate ? nextGroup.picks : [];
   $("picks-title").textContent = `Picks for ${fmtDate(drawDate, true)}`;
-  $("picks-body").innerHTML = nextTickets.length
-    ? nextTickets.map((t) => `
+  const ticketCards = nextOwn.map((t) => `
       <div class="ticket">
         ${balls(t.pick)}
         ${t.note ? `<p class="note">“${esc(t.note)}”</p>` : ""}
         <p class="meta">${sourceTag(t)}<span>Picked at ${fmtTimeET(t.picked_at)}, ${leadTime(t)}.</span></p>
-      </div>`).join("")
+      </div>`).join("");
+  const total = nextOwn.length + nextTips.length;
+  let tipsHtml = "";
+  if (nextTips.length && total <= INLINE_TICKETS) {
+    tipsHtml = `
+      <div class="tip-picks">
+        <p class="meta"><span class="tag tip">Donated by someone</span><span>${plural(nextTips.length, "donated ticket")}, picked by Claude at ${fmtTimeET(nextGroup.picked_at)}.</span></p>
+        <div class="tip-grid">${nextTips.map((p) => balls(p, null, true)).join("")}</div>
+      </div>`;
+  } else if (nextTips.length) {
+    // Lots of tickets: show how many Claude has, and put the numbers in a window.
+    sheets.next = {
+      title: `${plural(total, "ticket")} for ${fmtDate(drawDate)}`,
+      sub: `Claude picked every one by hand. ${plural(nextTips.length, "ticket")} came from donations.`,
+      body: () => (nextOwn.length ? `<p class="drawn-label">Claude's own</p>${nextOwn.map((t) => balls(t.pick, null, true)).join("")}` : "") +
+        `<p class="drawn-label">Donated</p>${numberedTickets(nextTips)}`,
+    };
+    tipsHtml = `
+      <div class="tix-count">
+        <p class="tix-num">${total.toLocaleString("en-US")}</p>
+        <div>
+          <p class="tix-label">tickets for ${fmtDate(drawDate, true)}</p>
+          <p class="tix-sub">${nextOwn.length ? "Claude's own, plus " : ""}${plural(nextTips.length, "donated ticket")}. Claude picked them all by hand, at ${fmtTimeET(nextGroup.picked_at)}.</p>
+          <button type="button" class="see" data-sheet="next">See the numbers</button>
+        </div>
+      </div>`;
+  }
+  $("picks-body").innerHTML = total
+    ? ticketCards + tipsHtml
     : `<p>Claude hasn't picked yet. It picks in the early evening (ET) on drawing days.</p>`;
 
   // The running tab
@@ -625,47 +747,135 @@ function render(stats) {
     : "The first results come in after the first drawing.";
 
   // Tip count
-  const tipTickets = stats.by_source.tip.tickets + stats.upcoming.filter((r) => r.source === "tip").length;
+  const tipTickets = donatedInLedger(stats);
   $("tip-count").textContent = tipTickets
     ? `People have donated ${plural(tipTickets, "ticket")} so far.`
     : "Nobody has donated yet. Be the first.";
+  $("party").textContent = `Claude's next party is ${partyWait(stats)} away.`;
 
-  // Last drawing: the winning numbers and how each ticket did, above the next picks.
-  const lastDate = stats.recent.length ? stats.recent[0].draw_date : null;
-  $("last").hidden = !lastDate;
-  if (lastDate) {
-    const lastTickets = stats.recent.filter((r) => r.draw_date === lastDate).reverse();
-    const winning = lastTickets[0].result;
-    $("last-title").textContent = `Last drawing: ${fmtDate(lastDate, true)}`;
-    $("last-winning").innerHTML = balls(winning);
-    $("last-tickets").innerHTML = lastTickets.map((r) => `
+  // stats.json lists only Claude's tickets and winning donated ones; `drawings` adds up the rest.
+  const drawings = stats.drawings || [...new Set(stats.recent.map((r) => r.draw_date))].map((d) => (
+    { draw_date: d, result: stats.recent.find((r) => r.draw_date === d).result, tip_tickets: 0 }));
+  const resultRow = (r, { withDate = true, withTag = true, drawn = "" } = {}) => `
       <li class="result">
-        <div class="when">${sourceTag(r)}</div>
+        ${withDate || withTag ? `<div class="when">${withDate ? fmtDate(r.draw_date) + " " : ""}${withTag ? sourceTag(r) : ""}</div>` : ""}
         ${balls(r.pick, r.result, true)}
         <div class="prize ${r.prize === "0" ? "lose" : "win"}">${r.prize === "0" ? "$0" : prizeText(r)}<small>Matched ${esc(r.match)}</small></div>
-      </li>`).join("");
+        ${drawn ? `<div class="drawn">${drawn}</div>` : ""}
+      </li>`;
+  const tipRow = (d, withDate, extra = "") => `
+      <li class="result tip-sum">
+        <div class="when">${withDate ? fmtDate(d.draw_date) + " " : ""}<span class="tag tip">Donated tickets</span></div>
+        <div><p>${tipSummary(d)}.</p>${extra}</div>
+        <div class="prize ${d.tip_wins ? "win" : "lose"}">${money(d.tip_won)}</div>
+      </li>`;
+
+  // Last drawing: the winning numbers, Claude's ticket, then the donated tickets added up, with the winners.
+  const last = drawings[0];
+  $("last").hidden = !last;
+  if (last) {
+    const lastTickets = stats.recent.filter((r) => r.draw_date === last.draw_date).reverse();
+    $("last-title").textContent = `Last drawing: ${fmtDate(last.draw_date, true)}`;
+    $("last-winning").innerHTML = balls(last.result);
+    const winners = lastTickets.filter((r) => r.source === "tip");
+    const inline = winners.length <= INLINE_TICKETS;
+    if (!inline) {
+      sheets.winners = {
+        title: `${plural(winners.length, "winning ticket")}, ${fmtDate(last.draw_date)}`,
+        sub: `Out of ${plural(last.tip_tickets, "donated ticket")}. Every ticket is in the full ledger.`,
+        body: () => `<ul class="results">${winners.slice().sort(byPrize).map((r) => resultRow(r, { withDate: false, withTag: false })).join("")}</ul>`,
+      };
+    }
+    $("last-tickets").innerHTML =
+      lastTickets.filter((r) => r.source !== "tip").map((r) => resultRow(r, { withDate: false })).join("") +
+      (last.tip_tickets ? tipRow(last, false, inline ? "" : `<button type="button" class="see" data-sheet="winners">See the ${winners.length.toLocaleString("en-US")} winners</button>`) : "") +
+      (inline ? winners.map((r) => resultRow(r, { withDate: false })).join("") : "");
   }
 
-  // Results
+  // Results: one row per drawing, Claude's ticket with the donated tickets added up underneath.
+  const waitingTips = (d) => (tipGroups.find((g) => g.draw_date === d) || { picks: [] }).picks.length;
   const rows = [
     ...waiting.slice().reverse().map((r) => `
       <li class="result">
         <div class="when">${fmtDate(r.draw_date)} ${sourceTag(r)}</div>
         ${balls(r.pick, null, true)}
         <div class="prize lose">Pending<small>Waiting for results</small></div>
+        ${waitingTips(r.draw_date) ? `<div class="drawn">Plus ${plural(waitingTips(r.draw_date), "donated ticket")}</div>` : ""}
       </li>`),
-    ...stats.recent.slice(0, 12).map((r) => {
-      const [w, pb] = parseNumbers(r.result);
-      return `
-      <li class="result">
-        <div class="when">${fmtDate(r.draw_date)} ${sourceTag(r)}</div>
-        ${balls(r.pick, r.result, true)}
-        <div class="prize ${r.prize === "0" ? "lose" : "win"}">${r.prize === "0" ? "$0" : prizeText(r)}<small>Matched ${esc(r.match)}</small></div>
-        <div class="drawn">Drawn: ${w.map(pad).join(" ")}, Powerball ${pad(pb)}</div>
-      </li>`;
+    ...drawings.slice(0, 12).map((d) => {
+      const [w, pb] = parseNumbers(d.result);
+      const drawn = `Drawn: ${w.map(pad).join(" ")}, Powerball ${pad(pb)}` + (d.tip_tickets ? `. ${tipSummary(d)}.` : "");
+      const own = stats.recent.filter((r) => r.draw_date === d.draw_date && r.source !== "tip");
+      return own.length ? own.map((r) => resultRow(r, { drawn })).join("") : tipRow(d, true);
     }),
   ];
   $("results").innerHTML = rows.length ? rows.join("") : `<li>No results yet. The first drawing is ${fmtDate(drawDate, true)}.</li>`;
+}
+
+// Where a new donation would land: tonight if there's room and Claude hasn't picked yet, otherwise
+// the first later drawing with room, `tip_cap` donated tickets a drawing.
+function showTipStatus(stats, donated, href) {
+  const cap = stats.tip_cap || 500;
+  const next = nextDrawDate();
+  const inLedger = donatedInLedger(stats);
+  const queued = Math.max(0, donated - inLedger);
+  const picked = stats.upcoming.some((r) => r.draw_date === next) || (stats.upcoming_tips || []).some((g) => g.draw_date === next);
+  const first = picked ? addDraws(next, 1) : next;
+  const ahead = Math.floor(queued / cap);
+  const live = $("tip-live");
+  live.hidden = false;
+  if (donated > inLedger) $("tip-count").textContent = `People have donated ${plural(donated, "ticket")} so far.`;
+  if (ahead >= BOOKED_DRAWINGS) {
+    setBuy("Booked up", null);
+    live.textContent = `Every drawing through ${fmtDate(addDraws(first, ahead - 1), true)} is full. Check back soon.`;
+    return;
+  }
+  setBuy("Donate $2 on Ko-fi", href);
+  live.textContent = `${ahead ? "The next drawings are full. " : ""}${cap - (queued % cap)} of ${cap} spots left for ${fmtDate(addDraws(first, ahead), true)}.`;
+}
+
+// Donated tickets already picked: scored ones plus those waiting on a drawing.
+function donatedInLedger(stats) {
+  return stats.by_source.tip.tickets + (stats.upcoming_tips || []).reduce((n, g) => n + g.picks.length, 0);
+}
+
+/* ---------- The ticket window ---------- */
+
+const sheets = {}; // what each "See the numbers" button opens; render() fills it
+
+function numberedTickets(picks) {
+  return `<ol class="tix-list">${picks.map((p, i) => `<li><span class="tix-n">${i + 1}</span>${balls(p, null, true)}</li>`).join("")}</ol>`;
+}
+
+function openSheet(key) {
+  const sheet = sheets[key];
+  if (!sheet) return;
+  $("tix-title").textContent = sheet.title;
+  $("tix-sub").textContent = sheet.sub;
+  $("tix-body").innerHTML = sheet.body();
+  $("tix-dialog").showModal();
+  $("tix-body").scrollTop = 0;
+}
+
+function setUpSheets() {
+  const dialog = $("tix-dialog");
+  document.addEventListener("click", (e) => {
+    const button = e.target.closest("[data-sheet]");
+    if (button) openSheet(button.dataset.sheet);
+  });
+  $("tix-close").addEventListener("click", () => dialog.close());
+  // A click on the dimmed backdrop lands on the dialog itself.
+  dialog.addEventListener("click", (e) => { if (e.target === dialog) dialog.close(); });
+}
+
+async function loadTipStatus(stats) {
+  try {
+    const res = await fetch(`${STATUS_URL}/status`);
+    if (!res.ok) throw new Error(res.status);
+    showTipStatus(stats, (await res.json()).tickets_donated, TIP_URL);
+  } catch (err) {
+    // Without the live count, the button still works; the spots line just stays hidden.
+  }
 }
 
 function setLinks() {
@@ -673,18 +883,37 @@ function setLinks() {
   $("repo-link").href = REPO;
   $("ledger-link").href = $("ledger-link-2").href = `${REPO}/blob/main/ledger.csv`;
   const buy = $("buy");
-  if (TIP_URL) {
-    buy.href = TIP_URL;
-    buy.removeAttribute("aria-disabled");
-    $("buy-label").textContent = "Donate $2";
-  } else {
-    buy.addEventListener("click", (e) => e.preventDefault());
+  buy.addEventListener("click", (e) => {
+    if (buy.getAttribute("aria-disabled") === "true") e.preventDefault();
+  });
+  if (TIP_URL) setBuy("Donate $2 on Ko-fi", TIP_URL);
+  if (CONTACT) {
+    $("refund-link").href = `mailto:${CONTACT}`;
+    $("refund-link").textContent = CONTACT;
+    $("refund").hidden = false;
   }
 }
 
-/* ---------- Demo data (?demo=party|happy|hopeful|sad) ---------- */
+// A null href shows the button as paused.
+function setBuy(label, href) {
+  const buy = $("buy");
+  $("buy-label").textContent = label;
+  buy.href = href || "#";
+  if (href) buy.removeAttribute("aria-disabled"); else buy.setAttribute("aria-disabled", "true");
+}
 
-function demoStats(state) {
+/* ---------- Demo data (?demo=party|happy|hopeful|sad, or viral|booked for 500 donated tickets a drawing) ---------- */
+
+const DEMOS = { viral: "happy", booked: "party" };
+
+function demoPick(i) {
+  const w = [1 + (i % 13), 14 + ((i * 7) % 13), 27 + ((i * 3) % 13), 40 + ((i * 5) % 13), 53 + ((i * 11) % 17)];
+  return `${w.map(pad).join(" ")} | ${pad(1 + ((i * 7) % 26))}`;
+}
+
+function demoStats(demo) {
+  const viral = demo in DEMOS;
+  const state = DEMOS[demo] || demo;
   const scored = (draw_date, source, pick, result, match, prize) => ({ draw_date, source, pick, result, match, prize, note: "" });
   const recent = [
     scored("2026-10-10", "claude", "02 11 27 44 60 | 08", "01 04 19 33 51 | 15", "0", "0"),
@@ -694,27 +923,56 @@ function demoStats(state) {
   ];
   if (state === "party") Object.assign(recent[0], { pick: "01 04 19 40 50 | 15", match: "3+PB", prize: "100" });
   if (state === "happy") Object.assign(recent[0], { pick: "01 22 30 40 50 | 15", match: "1+PB", prize: "4" });
+  if (viral) {
+    // A drawing's worth of winning donated tickets: two $7s, and the Powerball alone for $4.
+    const fours = Array.from({ length: 18 }, (_, i) => scored("2026-10-10", "tip",
+      `${[5 + (i % 10), 20 + (i % 10), 36 + (i % 10), 52 + (i % 10), 62 + (i % 7)].map(pad).join(" ")} | 15`, "01 04 19 33 51 | 15", "0+PB", "4"));
+    recent.splice(1, 0,
+      scored("2026-10-10", "tip", "04 19 33 40 61 | 09", "01 04 19 33 51 | 15", "3", "7"),
+      scored("2026-10-10", "tip", "01 22 33 45 60 | 15", "01 04 19 33 51 | 15", "2+PB", "7"), ...fours);
+  }
   const picked = new Date(Date.now() - 2 * 3.6e6).toLocaleString("sv-SE", { timeZone: "America/New_York" }).replace(" ", "T") + "-04:00";
   const upcoming = [{ draw_date: nextDrawDate(), source: "claude", pick: "07 19 23 41 58 | 11", picked_at: picked,
     note: "Seven keeps showing up in my favorite primes, so I'm leaning on it again.", result: "", match: "", prize: "" }];
-  const tips = state === "hopeful" ? 3 : 0;
-  for (let i = 0; i < tips; i++) upcoming.push({ ...upcoming[0], source: "tip", pick: ["05 12 28 44 61 | 03", "09 17 33 52 68 | 24", "02 26 39 45 57 | 08"][i], note: "" });
+  const tips = viral ? 500 : state === "hopeful" ? 2 : 0;
+  const tipPicks = ["05 12 28 44 61 | 03", "09 17 33 52 68 | 24"];
+  const upcoming_tips = tips
+    ? [{ draw_date: nextDrawDate(), picked_at: picked, picks: Array.from({ length: tips }, (_, i) => tipPicks[i] || demoPick(i)) }]
+    : [];
+  const lastDate = recent[0].draw_date;
+  const drawings = [...new Set(recent.map((r) => r.draw_date))].map((d) => {
+    const tipRows = recent.filter((r) => r.draw_date === d && r.source === "tip");
+    const wins = tipRows.filter((r) => r.prize !== "0");
+    const totalsOnly = viral && d !== lastDate; // older drawings keep only their totals
+    return {
+      draw_date: d, result: recent.find((r) => r.draw_date === d).result,
+      tip_tickets: viral ? 500 : tipRows.length,
+      tip_wins: totalsOnly ? 19 : wins.length,
+      tip_won: totalsOnly ? 96 : wins.reduce((s, r) => s + Number(r.prize), 0), tip_jackpots: 0,
+    };
+  });
   const won = recent.reduce((s, r) => s + Number(r.prize), 0);
+  const tipTotal = viral ? 2000 : 7;
   return {
+    tip_cap: 500,
     mood: { state, days_since_win: { party: 2, happy: 2, hopeful: 34, sad: 41 }[state], tips_waiting: tips },
     first_draw: new Date(Date.now() - 128 * 864e5).toISOString().slice(0, 10),
-    totals: { tickets: 61, drawings: 55, spent: 122, won: won + 15, net: won + 15 - 122, jackpots: 0 },
-    by_source: { claude: {}, tip: { tickets: 7 } },
-    upcoming, recent,
+    totals: { tickets: 61 + tipTotal, drawings: 55, spent: 2 * (61 + tipTotal), won: won + 15, net: won + 15 - 2 * (61 + tipTotal), jackpots: 0 },
+    by_source: { claude: {}, tip: { tickets: tipTotal } },
+    best_win: recent.filter((r) => r.prize !== "0").sort(byPrize)[0] || null,
+    upcoming, upcoming_tips, recent, drawings,
+    // What the Worker would report: 1,250 tickets waiting (viral) or 3,500 (booked), on top of the ledger.
+    demo_donated: viral ? tipTotal + tips + (demo === "booked" ? 3500 : 1250) : null,
   };
 }
 
 async function main() {
   setLinks();
+  setUpSheets();
   const demo = new URLSearchParams(location.search).get("demo");
   try {
     let stats;
-    if (demo && MOODS[demo]) {
+    if (demo && (MOODS[demo] || DEMOS[demo])) {
       $("demo-banner").hidden = false;
       stats = demoStats(demo);
     } else {
@@ -723,6 +981,8 @@ async function main() {
       stats = await res.json();
     }
     render(stats);
+    if (stats.demo_donated != null) showTipStatus(stats, stats.demo_donated, "#tip");
+    else if (TIP_URL && STATUS_URL) loadTipStatus(stats);
   } catch (err) {
     setMood("sad", "The latest numbers didn't load. Refresh the page to try again.");
   }

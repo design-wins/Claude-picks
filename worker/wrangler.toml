@@ -1,0 +1,11 @@
+name = "claude-picks-donations"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+# Create with `npx wrangler d1 create claude-picks-donations`, then paste the id it prints here.
+[[d1_databases]]
+binding = "DB"
+database_name = "claude-picks-donations"
+database_id = "490ab9e2-3d41-443e-af75-3abb33e80580"
+
+# Set the Ko-fi verification token with `npx wrangler secret put KOFI_TOKEN`.

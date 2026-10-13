@@ -2,6 +2,8 @@
 """Claude's imaginary Powerball tickets: pick numbers, score them, keep the books.
 
     python3 lotto.py pick 07 19 23 41 58 11 --note "why"   add a ticket for the next drawing
+    python3 lotto.py tips                                   how many donated tickets to pick next
+    python3 lotto.py pick-tips FILE                         add those picks, one per line
     python3 lotto.py score                                  score finished drawings
     python3 lotto.py status                                 print the running totals
 
@@ -10,6 +12,7 @@ No real tickets are bought. ledger.csv is the record; stats.json is a summary fo
 import argparse
 import csv
 import json
+import os
 import sys
 from time import sleep
 import urllib.error
@@ -22,7 +25,7 @@ from zoneinfo import ZoneInfo
 ROOT = Path(__file__).resolve().parent
 LEDGER = ROOT / "ledger.csv"
 STATS = ROOT / "stats.json"
-FIELDS = ["draw_date", "ticket", "source", "picked_at", "pick", "note", "result", "match", "prize"]
+FIELDS = ["draw_date", "ticket", "source", "picked_at", "pick", "note", "result", "match", "prize", "donation"]
 SOURCES = ("claude", "tip")
 
 ET = ZoneInfo("America/New_York")
@@ -30,6 +33,10 @@ DRAW_DAYS = {0, 2, 5}  # Mon, Wed, Sat
 CUTOFF = time(22, 0)  # picks close at 10 PM ET; the drawing is at 10:59 PM ET
 TICKET_COST = 2
 RESULTS_URL = "https://data.ny.gov/resource/d6yy-54nr.json"  # NY Lottery's official Powerball results
+# The Worker in worker/ that records Ko-fi donations. The environment variable overrides it for local testing.
+DONATIONS_URL = os.environ.get("CLAUDE_PICKS_DONATIONS_URL", "https://claude-picks-donations.claude-picks.workers.dev")
+TIP_CAP = 500  # donated tickets Claude picks per drawing; the rest wait for the next one
+TIP_BATCH = 50  # donated tickets per pick-tips run, so each batch gets real attention
 
 # (white balls matched, Powerball matched) -> prize in dollars
 PRIZES = {
@@ -90,7 +97,7 @@ def score_ticket(pick, result):
     return match, PRIZES.get((hits, pb_hit), 0)
 
 
-def add_ticket(rows, numbers, note, source, now):
+def add_ticket(rows, numbers, note, source, now, donation=""):
     """Appends a ticket for the next drawing. Claude gets one ticket of its own per drawing."""
     whites, pb = validate(numbers)
     if source not in SOURCES:
@@ -109,6 +116,7 @@ def add_ticket(rows, numbers, note, source, now):
         "result": "",
         "match": "",
         "prize": "",
+        "donation": donation,
     }
     rows.append(row)
     return row
@@ -127,6 +135,20 @@ def score_rows(rows, results):
     return scored
 
 
+def get_json(url):
+    # Cloudflare turns away Python's default User-Agent, so name ourselves.
+    request = urllib.request.Request(url, headers={"User-Agent": "claude-picks/1.0"})
+    # data.ny.gov sometimes serves another site's certificate; a retry usually lands on a good server.
+    for attempt in range(4):
+        try:
+            with urllib.request.urlopen(request, timeout=30) as resp:
+                return json.load(resp)
+        except urllib.error.URLError:
+            if attempt == 3:
+                raise
+            sleep(5 * (attempt + 1))
+
+
 def fetch_results(since):
     """Winning numbers for every drawing on or after `since`, as {"2026-10-10": "01 04 19 33 51 | 15"}."""
     query = urllib.parse.urlencode({
@@ -134,21 +156,64 @@ def fetch_results(since):
         "$order": "draw_date",
         "$limit": 5000,
     })
-    # data.ny.gov sometimes serves another site's certificate; a retry usually lands on a good server.
-    for attempt in range(4):
-        try:
-            with urllib.request.urlopen(f"{RESULTS_URL}?{query}", timeout=30) as resp:
-                data = json.load(resp)
-            break
-        except urllib.error.URLError:
-            if attempt == 3:
-                raise
-            sleep(5 * (attempt + 1))
+    data = get_json(f"{RESULTS_URL}?{query}")
     results = {}
     for row in data:
         numbers = [int(n) for n in row["winning_numbers"].split()]
         results[row["draw_date"][:10]] = format_numbers(numbers[:5], numbers[5])
     return results
+
+
+def donation_after(rows):
+    """Donations are filled oldest first, so every one before the newest in the ledger is complete.
+    The newest may still have tickets left, so fetching starts just before it."""
+    seqs = [int(r["donation"].split(".")[0]) for r in rows if r.get("donation")]
+    return max(seqs) - 1 if seqs else 0
+
+
+def fetch_donations(after):
+    """Donations from the Worker with seq > `after`, oldest first: [{"seq": 17, "tickets": 3, ...}]."""
+    return get_json(f"{DONATIONS_URL}/donations?" + urllib.parse.urlencode({"after": after}))
+
+
+def tips_due(rows, donations, now):
+    """The drawing donated tickets go into at `now`, the donation slots Claude should pick for it
+    (oldest first, up to the cap), and how many slots wait beyond that."""
+    draw = next_draw(now).isoformat()
+    filled = {r["donation"] for r in rows if r.get("donation")}
+    open_slots = [f"{d['seq']}.{n}" for d in donations for n in range(1, d["tickets"] + 1)]
+    open_slots = [s for s in open_slots if s not in filled]
+    room = max(0, TIP_CAP - sum(1 for r in rows if r["draw_date"] == draw and r["source"] == "tip"))
+    return draw, open_slots[:room], len(open_slots) - min(room, len(open_slots))
+
+
+def add_tips(rows, picks, slots, now):
+    """Adds one donated ticket per pick, filling `slots` in order. Picks in one drawing must all differ."""
+    if len(picks) > TIP_BATCH:
+        raise ValueError(f"{len(picks)} picks in one batch; add at most {TIP_BATCH} at a time")
+    if len(picks) > len(slots):
+        raise ValueError(f"{len(picks)} picks but only {len(slots)} donated tickets to fill")
+    draw = next_draw(now).isoformat()
+    taken = {r["pick"] for r in rows if r["draw_date"] == draw}
+    new = []
+    for numbers in picks:
+        whites, pb = validate(numbers)
+        pick = format_numbers(whites, pb)
+        if pick in taken:
+            raise ValueError(f"{pick} is already a ticket for {draw}; every pick needs to be different")
+        taken.add(pick)
+        new.append(numbers)
+    return [add_ticket(rows, numbers, "", "tip", now, donation=slot) for numbers, slot in zip(new, slots)]
+
+
+def read_picks(path):
+    """Reads one pick per line, like "07 19 23 41 58 11" or "07 19 23 41 58 | 11". Skips blanks and # comments."""
+    picks = []
+    for line in Path(path).read_text().splitlines():
+        line = line.split("#")[0].replace("|", " ").strip()
+        if line:
+            picks.append([int(n) for n in line.split()])
+    return picks
 
 
 def totals(rows):
@@ -196,17 +261,71 @@ def mood(rows, today):
     return {"state": state, "days_since_win": days_since_win, "tips_waiting": tips_waiting}
 
 
-def build_stats(rows, now):
+def drawing_summaries(rows, limit=12):
+    """The latest drawings, newest first, with donated tickets added up instead of listed."""
     scored = [r for r in rows if r["result"]]
+    dates = sorted({r["draw_date"] for r in scored}, reverse=True)[:limit]
+    out = []
+    for d in dates:
+        tips = [r for r in scored if r["draw_date"] == d and r["source"] == "tip"]
+        t = totals(tips)
+        out.append({
+            "draw_date": d,
+            "result": next(r["result"] for r in scored if r["draw_date"] == d),
+            "tip_tickets": t["tickets"],
+            "tip_wins": sum(r["prize"] != "0" for r in tips),
+            "tip_won": t["won"],
+            "tip_jackpots": t["jackpots"],
+        })
+    return out
+
+
+def upcoming_tips(rows):
+    """Donated tickets waiting on a drawing, grouped by drawing with just their numbers."""
+    groups = {}
+    for r in rows:
+        if not r["result"] and r["source"] == "tip":
+            group = groups.setdefault(r["draw_date"], {"draw_date": r["draw_date"], "picked_at": r["picked_at"], "picks": []})
+            group["picks"].append(r["pick"])
+    return sorted(groups.values(), key=lambda g: g["draw_date"])
+
+
+def best_win(rows, today):
+    """The biggest win of the past week (the latest, on a tie), which the site's mood line brags about."""
+    wins = [
+        r for r in rows
+        if r["result"] and r["prize"] != "0" and (today - date.fromisoformat(r["draw_date"])).days <= MOOD_DAYS["glow"]
+    ]
+    if not wins:
+        return None
+    best = max(wins, key=lambda r: (r["prize"] == "JACKPOT", 0 if r["prize"] == "JACKPOT" else int(r["prize"]), r["draw_date"]))
+    return {"draw_date": best["draw_date"], "prize": best["prize"], "source": best["source"]}
+
+
+def build_stats(rows, now):
+    # Donated tickets can run to 500 a drawing, so the site gets them added up per drawing, the numbers
+    # of the ones still waiting, and the winners from the latest drawing. The ledger has every ticket.
+    summaries = drawing_summaries(rows)
+    shown = {d["draw_date"] for d in summaries}
+    latest = summaries[0]["draw_date"] if summaries else None
+    recent = [
+        r for r in rows
+        if r["result"] and r["draw_date"] in shown
+        and (r["source"] == "claude" or (r["draw_date"] == latest and r["prize"] != "0"))
+    ]
     return {
         "updated_at": now.astimezone(ET).isoformat(timespec="seconds"),
         "ticket_cost": TICKET_COST,
+        "tip_cap": TIP_CAP,
         "mood": mood(rows, now.astimezone(ET).date()),
         "first_draw": min((r["draw_date"] for r in rows), default=None),
         "totals": totals(rows),
         "by_source": {s: totals([r for r in rows if r["source"] == s]) for s in SOURCES},
-        "upcoming": [r for r in rows if not r["result"]],
-        "recent": scored[::-1][:30],
+        "best_win": best_win(rows, now.astimezone(ET).date()),
+        "upcoming": [r for r in rows if not r["result"] and r["source"] != "tip"],
+        "upcoming_tips": upcoming_tips(rows),
+        "recent": recent[::-1],
+        "drawings": summaries,
     }
 
 
@@ -228,7 +347,11 @@ def status_text(rows):
     upcoming = [r for r in rows if not r["result"]]
     for draw in sorted({r["draw_date"] for r in upcoming}):
         picks = [r for r in upcoming if r["draw_date"] == draw]
-        lines.append(f"Waiting on {draw}: " + ", ".join(r["pick"] for r in picks))
+        own = [r["pick"] for r in picks if r["source"] != "tip"]
+        line = f"Waiting on {draw}: " + (", ".join(own) or "no ticket of Claude's own")
+        if len(picks) > len(own):
+            line += f", plus {len(picks) - len(own)} donated tickets"
+        lines.append(line)
     return "\n".join(lines)
 
 
@@ -236,7 +359,8 @@ def read_ledger():
     if not LEDGER.exists():
         return []
     with LEDGER.open(newline="") as f:
-        return list(csv.DictReader(f))
+        # Rows from before a column existed read it as empty.
+        return [{k: r.get(k) or "" for k in FIELDS} for r in csv.DictReader(f)]
 
 
 def save(rows, now):
@@ -255,6 +379,39 @@ def cmd_pick(args):
     print(f"Ticket {row['ticket']} for {row['draw_date']}: {row['pick']}")
 
 
+def load_tips(rows, now):
+    if not DONATIONS_URL:
+        return None
+    return tips_due(rows, fetch_donations(donation_after(rows)), now)
+
+
+def cmd_tips(args):
+    now = datetime.now(ET)
+    due = load_tips(read_ledger(), now)
+    if due is None:
+        print("Donations aren't open yet. Nothing to pick.")
+        return
+    draw, slots, waiting = due
+    print(f"Pick {len(slots)} donated tickets for {draw}" + (f", {TIP_BATCH} at a time." if len(slots) > TIP_BATCH else "."))
+    if waiting:
+        print(f"{waiting} more donated tickets are waiting for later drawings ({TIP_CAP} a drawing).")
+
+
+def cmd_pick_tips(args):
+    now = datetime.now(ET)
+    rows = read_ledger()
+    picks = read_picks(args.file)
+    due = load_tips(rows, now)
+    if due is None:
+        raise ValueError("donations aren't open yet")
+    draw, slots, _ = due
+    added = add_tips(rows, picks, slots, now)
+    save(rows, now)
+    print(f"Added {len(added)} donated tickets for {draw}.")
+    if len(slots) > len(added):
+        print(f"{len(slots) - len(added)} more are due for {draw}. Run `tips` again.")
+
+
 def cmd_score(args):
     now = datetime.now(ET)
     rows = read_ledger()
@@ -262,8 +419,14 @@ def cmd_score(args):
     # Always fetch at least the past week, so every run reports the latest drawing.
     since = min(pending + [(now.date() - timedelta(days=7)).isoformat()])
     results = fetch_results(since)
-    for r in score_rows(rows, results):
-        print(f"{r['draw_date']} ticket {r['ticket']}: {r['pick']} vs {r['result']} -> {r['match']}, {r['prize']}")
+    scored = score_rows(rows, results)
+    # Claude's own tickets and every winner get a line; donated losers are only counted.
+    for r in scored:
+        if r["source"] == "claude" or r["prize"] != "0":
+            print(f"{r['draw_date']} ticket {r['ticket']} ({r['source']}): {r['pick']} vs {r['result']} -> {r['match']}, {r['prize']}")
+    for draw in sorted({r["draw_date"] for r in scored if r["source"] == "tip"}):
+        tips = [r for r in scored if r["draw_date"] == draw and r["source"] == "tip"]
+        print(f"{draw}: {len(tips)} donated tickets, {sum(r['prize'] != '0' for r in tips)} won {money(totals(tips)['won'])}.")
     if results:
         latest = max(results)
         print(f"Latest drawing: {latest}: {results[latest]}")
@@ -283,12 +446,16 @@ def main():
     pick.add_argument("--note", default="", help="why these numbers")
     pick.add_argument("--source", default="claude", choices=SOURCES)
     pick.set_defaults(func=cmd_pick)
+    sub.add_parser("tips", help="how many donated tickets to pick for the next drawing").set_defaults(func=cmd_tips)
+    pick_tips = sub.add_parser("pick-tips", help="add donated tickets from a file, one pick per line")
+    pick_tips.add_argument("file")
+    pick_tips.set_defaults(func=cmd_pick_tips)
     sub.add_parser("score", help="score finished drawings").set_defaults(func=cmd_score)
     sub.add_parser("status", help="print running totals").set_defaults(func=cmd_status)
     args = parser.parse_args()
     try:
         args.func(args)
-    except ValueError as e:
+    except (ValueError, urllib.error.URLError) as e:
         sys.exit(f"error: {e}")
 
 
