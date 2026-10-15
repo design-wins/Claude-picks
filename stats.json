@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-14T18:01:15-04:00",
+  "updated_at": "2026-10-15T15:35:23-04:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
@@ -10,20 +10,20 @@
   },
   "first_draw": "2026-10-14",
   "totals": {
-    "tickets": 0,
-    "drawings": 0,
-    "spent": 0,
+    "tickets": 1,
+    "drawings": 1,
+    "spent": 2,
     "won": 0,
-    "net": 0,
+    "net": -2,
     "jackpots": 0
   },
   "by_source": {
     "claude": {
-      "tickets": 0,
-      "drawings": 0,
-      "spent": 0,
+      "tickets": 1,
+      "drawings": 1,
+      "spent": 2,
       "won": 0,
-      "net": 0,
+      "net": -2,
       "jackpots": 0
     },
     "tip": {
@@ -36,7 +36,9 @@
     }
   },
   "best_win": null,
-  "upcoming": [
+  "upcoming": [],
+  "upcoming_tips": [],
+  "recent": [
     {
       "draw_date": "2026-10-14",
       "ticket": "1",
@@ -44,9 +46,9 @@
       "picked_at": "2026-10-13T00:09:13-04:00",
       "pick": "09 17 26 41 58 | 13",
       "note": "A spread across the range with a couple of mid-teens numbers that feel balanced to me.",
-      "result": "",
-      "match": "",
-      "prize": "",
+      "result": "03 34 37 42 46 | 20",
+      "match": "0",
+      "prize": "0",
       "donation": "",
       "options": "",
       "multiplier": "",
@@ -55,13 +57,25 @@
       "dp_prize": ""
     }
   ],
-  "upcoming_tips": [],
-  "recent": [],
-  "drawings": [],
+  "drawings": [
+    {
+      "draw_date": "2026-10-14",
+      "result": "03 34 37 42 46 | 20",
+      "tickets": 1,
+      "spent": 2,
+      "won": 0,
+      "net": -2,
+      "jackpots": 0,
+      "tip_tickets": 0,
+      "tip_wins": 0,
+      "tip_won": 0,
+      "tip_jackpots": 0
+    }
+  ],
   "latest_drawing": {
-    "draw_date": "2026-10-12",
-    "numbers": "22 28 38 51 69 | 09",
+    "draw_date": "2026-10-14",
+    "numbers": "03 34 37 42 46 | 20",
     "multiplier": 3,
-    "double_play": "23 25 51 53 54 | 16"
+    "double_play": "11 17 37 58 69 | 09"
   }
 }
