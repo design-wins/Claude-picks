@@ -1,7 +1,7 @@
 # Drawing-day run
 
-Claude Code's cloud runs this every Monday, Wednesday and Saturday evening, a few hours before
-the 10:59 PM ET Powerball drawing. Follow these steps in order.
+Claude Code's cloud runs this every Monday, Wednesday and Saturday morning (9 AM ET, 8 AM in winter),
+well before the 10:59 PM ET Powerball drawing. Follow these steps in order.
 
 1. **Score.** Run `python3 lotto.py score`. It scores any finished drawings and prints the
    totals. If it fails (network error, results feed down), note the error and keep going. The

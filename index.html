@@ -475,8 +475,8 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
       <div class="tip-fine">
       <p class="buy-note">You can't win anything, and no real ticket is bought. Not affiliated with Powerball or Anthropic.</p>
       <p class="timing band-2">Every full $2 you donate is one more ticket, and Claude picks the numbers for each one.
-        Claude picks up to 500 donated tickets a drawing, first come, first served, in the early evening ET on Mondays,
-        Wednesdays and Saturdays. Once a drawing is full or Claude has picked, new tickets go into the next one with room.
+        Claude picks up to 500 donated tickets a drawing, first come, first served, on the morning of each drawing (Mondays,
+        Wednesdays and Saturdays). Once a drawing is full or Claude has picked, new tickets go into the next one with room.
         <span id="refund" hidden>Tips are final: every $2 becomes a ticket in the next drawing. If you were charged by
         mistake, email <a id="refund-link" href="#"></a>.</span></p>
       </div>
@@ -546,7 +546,7 @@ const REPO = "https://github.com/design-wins/Claude-picks";
 const TIP_URL = "https://ko-fi.com/claude_picks";
 const STATUS_URL = "https://claude-picks-donations.claude-picks.workers.dev"; // the donations Worker (worker/)
 const CONTACT = "claudepicks.tickets@gmail.com"; // where refund requests go
-const ROUTINE_UTC = "22:00"; // when the drawing-day routine runs (its cron is in UTC)
+const ROUTINE_UTC = "13:00"; // when the drawing-day routine runs (its cron is in UTC): 9 AM ET, 8 AM in winter
 const BOOKED_DRAWINGS = 6; // about two weeks; past this, the Donate button pauses
 const BIG_WIN_ODDS = 10251; // 1 in 10,251 tickets wins $100 or more
 const DRAWS_PER_YEAR = 156;
@@ -603,6 +603,21 @@ function nextDrawDate() {
   if (+p.hour >= 23) d.setUTCDate(d.getUTCDate() + 1);
   while (![1, 3, 6].includes(d.getUTCDay())) d.setUTCDate(d.getUTCDate() + 1);
   return d.toISOString().slice(0, 10);
+}
+
+// When Claude picks for the drawing on `iso`, in New York time: "9 AM ET" (8 AM in winter).
+function pickTimeET(iso) {
+  return new Date(`${iso}T${ROUTINE_UTC}:00Z`).toLocaleTimeString("en-US", { hour: "numeric", timeZone: "America/New_York" }) + " ET";
+}
+
+// What the picks section says before Claude's ticket for the drawing on `iso` is in.
+function pickingSoon(iso) {
+  const days = daysFromTodayET(iso);
+  if (Date.now() >= Date.parse(`${iso}T${ROUTINE_UTC}:00Z`)) return "Claude's numbers for this drawing are on their way.";
+  if (days === 0) return `Claude picks tonight's numbers this morning at ${pickTimeET(iso)}.`;
+  if (days === 1) return `Claude picks tomorrow morning at ${pickTimeET(iso)}.`;
+  const day = new Date(iso + "T12:00:00Z").toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" });
+  return `Claude picks ${day} morning at ${pickTimeET(iso)}.`;
 }
 
 // Today's date in New York.
@@ -949,7 +964,7 @@ function render(stats) {
   }
   $("picks-body").innerHTML = total
     ? ticketCards + tipsHtml
-    : `<p>Claude hasn't picked yet. It picks in the early evening (ET) on drawing days.</p>`;
+    : `<p>${pickingSoon(drawDate)}</p>`;
 
   // The running tab
   const t = stats.totals;
@@ -1102,7 +1117,7 @@ function showTipStatus(stats, donated, href) {
   const next = nextDrawDate();
   const inLedger = donatedInLedger(stats);
   const queued = Math.max(0, donated - inLedger);
-  // The drawing-day run picks donated tickets at 22:00 UTC. After that, or once a drawing already has
+  // The drawing-day run picks donated tickets at ROUTINE_UTC. After that, or once a drawing already has
   // donated tickets, new donations go to the drawing after it.
   const runAt = Date.parse(`${next}T${ROUTINE_UTC}:00Z`);
   const picked = Date.now() >= runAt || (stats.upcoming_tips || []).some((g) => g.draw_date === next);
