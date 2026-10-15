@@ -4,7 +4,9 @@ name: Score
 
 on:
   schedule:
-    - cron: "0 16 * * 0,2,4" # noon ET (11 AM in winter) on Sun, Tue, Thu
+    # 6 AM ET (5 AM in winter) on Sun, Tue, Thu. New York posts results around 3:30 AM ET, and GitHub can
+    # start scheduled jobs a few hours late, so results still land by mid-morning.
+    - cron: "0 10 * * 0,2,4"
   workflow_dispatch:
 
 permissions:
