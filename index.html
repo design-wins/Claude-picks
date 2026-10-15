@@ -64,7 +64,7 @@
 }
 
 * { box-sizing: border-box; }
-html { scrollbar-color: var(--ink-2) var(--page); }
+html { scrollbar-color: var(--ink-2) var(--page); scroll-behavior: smooth; }
 body {
   margin: 0;
   background: var(--page);
@@ -117,7 +117,9 @@ p { margin: 0; }
 .top-buy:hover { background: color-mix(in srgb, var(--hero-ink) 85%, var(--mood)); }
 
 .monitor > * { min-width: 0; }
-.monitor { display: grid; grid-template-columns: auto 1fr; gap: 32px; align-items: center; padding: 16px 0 40px; }
+/* One-line summary of the site, between the logo bar and the mood monitor */
+.intro { margin-top: var(--space-3); max-width: 76ch; font-size: 17px; line-height: 1.5; font-weight: 500; }
+.monitor { display: grid; grid-template-columns: auto 1fr; gap: 32px; align-items: center; padding: var(--space-5) 0 40px; }
 .face { width: 190px; height: 190px; display: block; overflow: visible; }
 .mood-head {
   font-size: calc(clamp(38px, 6.4vw, 68px) * var(--k, 1)); letter-spacing: -0.02em;
@@ -181,6 +183,8 @@ section.block h2 { font-size: clamp(30px, 5vw, 40px); font-weight: 750; font-str
   font: 700 13px var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--red); }
 .eyebrow .live { width: 8px; height: 8px; border-radius: 50%; background: var(--red); animation: live 1.6s ease-in-out infinite; }
 @keyframes live { 50% { opacity: .25; } }
+/* The same label over the drawing that's already happened; its dot holds still. */
+.eyebrow-past .live { animation: none; }
 .sub { color: var(--ink-2); margin-top: 8px; }
 .block-body { margin-top: var(--space-5); }
 
@@ -354,7 +358,8 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
 
 @media (max-width: 680px) {
   body { font-size: 16px; }
-  .monitor { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 4px; padding: 4px 0 32px; }
+  .intro { font-size: 15px; text-align: center; margin-left: auto; margin-right: auto; }
+  .monitor { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 4px; padding: var(--space-4) 0 32px; }
   .face { width: 150px; height: 150px; }
   .hero[data-mood="jackpot"] .face { width: 200px; height: 200px; }
   .mood-line { margin-left: auto; margin-right: auto; font-size: 18px; }
@@ -367,15 +372,24 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
   .last-card { padding: 18px; }
   .tix-dialog { width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0; border-radius: 0; }
 }
-@media (max-width: 360px) {
+/* Phones: the logo and "Help Claude win" share one row, so both tighten up */
+@media (max-width: 480px) {
+  .top { gap: var(--space-3); }
   .wordmark { font-size: 17px; gap: 8px; }
-  .top-buy { padding: 8px 13px; font-size: 14px; }
+  .wordmark i { width: 17px; height: 17px; }
+  .top-buy { font-size: 13.5px; font-stretch: 100%; padding: 8px 12px; }
+}
+@media (max-width: 360px) {
+  .wordmark { font-size: 15px; gap: 6px; }
+  .wordmark i { width: 15px; height: 15px; }
+  .top-buy { font-size: 12.5px; padding: 7px 10px; }
   .hero[data-mood="party"] .mood-head { --k: 0.8; }
   .hero[data-mood="huge"] .mood-head, .hero[data-mood="jackpot"] .mood-head { --k: 0.85; }
   .meter li { font-size: 12px; }
   .buy { white-space: normal; text-align: left; }
 }
 @media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .confetti, .rain, .tear, .bolt { display: none; }
   .eyebrow .live { opacity: 1; }
@@ -389,8 +403,10 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
   <div class="wrap">
     <div class="top">
       <a class="wordmark" href="./"><i></i>Claude picks</a>
-      <a class="top-buy" href="#tip">Buy a ticket</a>
+      <a class="top-buy" href="#tip">Help Claude win</a>
     </div>
+    <p class="intro">Before every Powerball drawing, Claude picks the numbers it thinks will win, and a script scores them
+      the morning after. No real tickets are bought, so Claude can only win in spirit.</p>
     <div class="monitor">
       <div id="face"></div>
       <div>
@@ -407,6 +423,7 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
 
 <main>
   <section class="block wrap" id="last" hidden>
+    <p class="eyebrow eyebrow-past"><span class="live" aria-hidden="true"></span>Last drawing</p>
     <h2 id="last-title">Last drawing</h2>
     <div class="block-body last-grid">
       <div class="last-card last-own" id="last-own"></div>
@@ -990,7 +1007,7 @@ function render(stats) {
       : !stats.first_draw || stats.first_draw > d
         ? `Claude wasn't playing yet.${firstOwn ? ` Its first ticket is in the drawing on ${fmtDate(firstOwn.draw_date, true)}.` : ""}`
         : "Claude didn't have a ticket in this drawing.";
-    $("last-title").textContent = `Last drawing: ${fmtDate(d, true)}`;
+    $("last-title").textContent = fmtDate(d, true);
     $("last-own").innerHTML = `
         <p class="card-label">Claude's ticket</p>
         <p class="verdict-sub">${why}</p>
@@ -1003,7 +1020,7 @@ function render(stats) {
     const lastTickets = stats.recent.filter((r) => r.draw_date === last.draw_date).reverse();
     const ownLast = lastTickets.filter((r) => r.source !== "tip");
     const winners = lastTickets.filter((r) => r.source === "tip").sort(byPrize);
-    $("last-title").textContent = `Last drawing: ${fmtDate(last.draw_date, true)}`;
+    $("last-title").textContent = fmtDate(last.draw_date, true);
 
     // Claude's ticket: the verdict, the ticket with its hits ringed, and the winning numbers under it.
     const drawnRow = (numbers) => `<div class="drawn-row"><span>Drawn</span>${balls(numbers, null, true)}</div>`;
