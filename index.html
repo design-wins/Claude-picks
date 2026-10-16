@@ -118,8 +118,9 @@ p { margin: 0; }
 
 .monitor > * { min-width: 0; }
 /* One-line summary of the site, between the logo bar and the mood monitor */
-.intro { margin-top: var(--space-3); max-width: 76ch; font-size: 17px; line-height: 1.5; font-weight: 500; }
-.monitor { display: grid; grid-template-columns: auto 1fr; gap: 32px; align-items: center; padding: var(--space-5) 0 40px; }
+/* The explainer sits under the mood, set off by a hairline so it reads as a footnote to it */
+.intro { padding: var(--space-4) 0 var(--space-7); border-top: 1px solid color-mix(in srgb, var(--hero-ink) 18%, transparent); max-width: 76ch; font-size: 17px; line-height: 1.5; font-weight: 500; }
+.monitor { display: grid; grid-template-columns: auto 1fr; gap: 32px; align-items: center; padding: var(--space-5) 0; }
 .face { width: 190px; height: 190px; display: block; overflow: visible; }
 .mood-head {
   font-size: calc(clamp(38px, 6.4vw, 68px) * var(--k, 1)); letter-spacing: -0.02em;
@@ -180,13 +181,14 @@ section.block { padding-top: var(--space-9); }
 section.block h2 { font-size: clamp(30px, 5vw, 40px); font-weight: 750; font-stretch: 105%; letter-spacing: -0.015em; }
 /* "Up next" label over the coming drawing's picks, with a live dot */
 .eyebrow { display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2);
-  font: 700 13px var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--red); }
+  font: 700 13px var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
 .eyebrow .live { width: 8px; height: 8px; border-radius: 50%; background: var(--red); animation: live 1.6s ease-in-out infinite; }
 @keyframes live { 50% { opacity: .25; } }
 /* The same label over the drawing that's already happened; its dot holds still. */
 .eyebrow-past .live { animation: none; }
 /* Up next pulses only on drawing day; days out, nothing is live yet. */
 .eyebrow-still .live { animation: none; }
+.eyebrow-past .live, .eyebrow-still .live { background: var(--ink-2); }
 .sub { color: var(--ink-2); margin-top: 8px; }
 .block-body { margin-top: var(--space-5); }
 
@@ -283,10 +285,9 @@ body:has(.tix-dialog[open]) { overflow: hidden; }
 
 /* ---------- Tip band ---------- */
 .band { margin-top: var(--space-9); background: var(--band); color: var(--band-ink); padding: var(--space-9) 0; }
-.band h2 { font-size: clamp(44px, 8.5vw, 100px); font-weight: 900; font-stretch: 125%; letter-spacing: -0.02em; line-height: .92; color: var(--marigold); text-transform: uppercase; max-width: 12ch; }
-.band .chances { font: 800 clamp(26px, 4.4vw, 40px)/1.1 var(--display); font-stretch: 110%; letter-spacing: -0.015em; margin-top: var(--space-4); text-wrap: balance; }
+.band h2 { font-size: clamp(34px, 6vw, 64px); font-weight: 900; font-stretch: 115%; letter-spacing: -0.02em; line-height: 1; color: var(--marigold); max-width: 14ch; text-wrap: balance; }
 .band .lede strong { color: var(--band-ink); font-weight: 700; }
-.band .lede { font-size: 20px; line-height: 1.55; margin-top: var(--space-7); max-width: 46ch; color: var(--band-ink-2); }
+.band .lede { font-size: 20px; line-height: 1.55; margin-top: var(--space-5); max-width: 46ch; color: var(--band-ink-2); }
 .band-2 { color: var(--band-ink-2); }
 /* Action cluster: the button with its status right under it */
 .tip-action { margin-top: var(--space-7); display: grid; justify-items: start; gap: var(--space-4); }
@@ -400,7 +401,7 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
   .last-card, .next-card { padding: 18px; }
   .tix-dialog { width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0; border-radius: 0; }
 }
-/* Phones: the logo and "Help Claude win" share one row, so both tighten up */
+/* Phones: the logo and "Donate a ticket" share one row, so both tighten up */
 @media (max-width: 480px) {
   .top { gap: var(--space-3); }
   .wordmark { font-size: 17px; gap: 8px; }
@@ -431,10 +432,8 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
   <div class="wrap">
     <div class="top">
       <a class="wordmark" href="./"><i></i>Claude picks</a>
-      <a class="top-buy" href="#tip">Help Claude win</a>
+      <a class="top-buy" href="#tip">Donate a ticket</a>
     </div>
-    <p class="intro">Before every Powerball drawing, Claude picks the numbers it thinks will win, and a script scores them
-      the morning after. No real tickets are bought, so Claude can only win in spirit.</p>
     <div class="monitor">
       <div id="face"></div>
       <div>
@@ -446,6 +445,8 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
         </div>
       </div>
     </div>
+    <p class="intro">Before every Powerball drawing, Claude picks the numbers it thinks will win, and a script scores them
+      the morning after. No real tickets are bought, so Claude can only win in spirit.</p>
   </div>
 </header>
 
@@ -480,6 +481,15 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
     </div>
   </section>
 
+  <section class="block wrap">
+    <h2>How it works</h2>
+    <ol class="steps block-body">
+      <li><div><h3>Claude picks.</h3><p>On drawing days, Claude chooses five numbers and a Powerball (no random number generator) and writes down why.</p></div></li>
+      <li><div><h3>The pick is locked in.</h3><p>It's uploaded to GitHub hours before the drawing, and GitHub logs when it arrived.</p></div></li>
+      <li><div><h3>A script keeps score.</h3><p>After the drawing, a script checks the official results and adds up what the ticket would have cost and won. Claude never does the math.</p></div></li>
+    </ol>
+  </section>
+
   <section class="block wrap" id="score">
     <h2>If these were real tickets</h2>
     <p class="sub" id="tab-since"></p>
@@ -498,8 +508,7 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
   <section class="band" id="tip">
     <div class="wrap">
       <div class="tip-head">
-        <h2>Buy Claude another ticket</h2>
-        <p class="chances">Increase Claude's chances.</p>
+        <h2>Give Claude more chances</h2>
       </div>
       <p class="lede"><strong id="party">Claude's next party is 66&nbsp;years away.</strong> A win of $100 or more
         is a 1 in 10,251 shot. <span id="chances">Right now Claude has 1 chance a drawing: its own ticket.</span>
@@ -513,13 +522,13 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
       </div>
       <div class="tip-fine">
       <p class="buy-note">You can't win anything, and no real ticket is bought. Not affiliated with Powerball or Anthropic.</p>
-      <p class="band-2">Tip $10 in one go and PayPal takes about 79¢, instead of $2.75 for five separate $2 tips. Same five tickets.</p>
+      <p class="band-2">Donate $10 in one go and PayPal takes about 79¢, instead of $2.75 for five separate $2 donations. Same five tickets.</p>
       <details class="fold">
       <summary>How donated tickets work</summary>
       <p class="timing band-2">Every full $2 you donate is one more ticket, and Claude picks the numbers for each one.
         Claude picks up to 500 donated tickets a drawing, first come, first served, on the morning of each drawing (Mondays,
         Wednesdays and Saturdays). Once a drawing is full or Claude has picked, new tickets go into the next one with room.
-        <span id="refund" hidden>Tips are final: every $2 becomes a ticket in the next drawing. If you were charged by
+        <span id="refund" hidden>Donations are final: every $2 becomes a ticket in the next drawing. If you were charged by
         mistake, email <a id="refund-link" href="#"></a>.</span></p>
       </details>
       </div>
@@ -532,9 +541,9 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
           <div class="group"><dt>To mega corps</dt><span class="lead"></span><dd>$0.55</dd></div>
           <div><dt>PayPal</dt><span class="lead"></span><dd>$0.55</dd>
             <p class="band-2">For handling your payment. Mostly a flat 49¢, which is why $2 hurts. Fight the power
-              with one bigger tip (see above).</p></div>
+              with one bigger donation (see above).</p></div>
           <div><dt>Ko-fi</dt><span class="lead"></span><dd>$0.00</dd>
-            <p class="band-2">Ko-fi doesn't take a cut of one-off tips.</p></div>
+            <p class="band-2">Ko-fi doesn't take a cut of one-off donations.</p></div>
           <div><dt>Anthropic</dt><span class="lead"></span><dd>About 0.1¢</dd>
             <p class="band-2">What picking one ticket costs at Anthropic's API prices. It's paid out of the human's share, through a $20-a-month Claude plan.</p></div>
           <div class="group"><dt>To the human</dt><span class="lead"></span><dd>$1.45</dd></div>
@@ -561,14 +570,6 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
     </div>
   </section>
 
-  <section class="block wrap">
-    <h2>How it works</h2>
-    <ol class="steps block-body">
-      <li><div><h3>Claude picks.</h3><p>On drawing days, Claude chooses five numbers and a Powerball (no random number generator) and writes down why.</p></div></li>
-      <li><div><h3>The pick is locked in.</h3><p>It's uploaded to GitHub hours before the drawing, and GitHub logs when it arrived.</p></div></li>
-      <li><div><h3>A script keeps score.</h3><p>After the drawing, a script checks the official results and adds up what the ticket would have cost and won. Claude never does the math.</p></div></li>
-    </ol>
-  </section>
 </main>
 
 <footer class="wrap">
@@ -1173,7 +1174,7 @@ function showTipStatus(stats, donated, href) {
     live.textContent = `Every drawing through ${fmtDate(addDraws(first, ahead - 1), true)} is full. Check back soon.`;
     return;
   }
-  setBuy("Buy Claude more tickets", href);
+  setBuy("Donate a ticket", href);
   live.textContent = `${ahead ? "The next drawings are full. " : ""}${cap - (queued % cap)} of ${cap} spots left for ${fmtDate(addDraws(first, ahead), true)}.`;
 }
 
@@ -1238,7 +1239,7 @@ function setLinks() {
   buy.addEventListener("click", (e) => {
     if (buy.getAttribute("aria-disabled") === "true") e.preventDefault();
   });
-  if (TIP_URL) setBuy("Buy Claude more tickets", TIP_URL);
+  if (TIP_URL) setBuy("Donate a ticket", TIP_URL);
   if (CONTACT) {
     $("refund-link").href = `mailto:${CONTACT}`;
     $("refund-link").textContent = CONTACT;
