@@ -307,9 +307,23 @@ body:has(.tix-dialog[open]) { overflow: hidden; }
 .tip-fine { margin-top: var(--space-7); display: grid; gap: var(--space-2); max-width: 60ch; font-size: 15px; line-height: 1.6; }
 .buy-note { font-weight: 500; }
 .timing a { color: var(--band-ink); }
-.where { margin-top: var(--space-9); max-width: 560px; }
-.where h3 { font-size: 26px; font-weight: 800; font-stretch: 108%; margin-bottom: 14px; }
-.where dl { margin: 0; }
+/* Fine print and the money breakdown open on a click, so the band stays about the button. */
+.fold summary, .where summary { cursor: pointer; list-style: none; }
+.fold summary::-webkit-details-marker, .where summary::-webkit-details-marker { display: none; }
+.fold summary { display: inline-flex; align-items: center; gap: var(--space-2); font-weight: 600; }
+.fold summary::after, .where h3::after {
+  content: ""; width: 7px; height: 7px; flex: none; border: solid currentColor; border-width: 0 2px 2px 0;
+  transform: translateY(-2px) rotate(45deg); transition: transform .2s;
+}
+.fold[open] summary::after, .where[open] h3::after { transform: translateY(2px) rotate(-135deg); }
+.fold .timing { margin-top: var(--space-2); }
+.where { margin-top: var(--space-7); max-width: 560px; }
+.where h3 { font-size: 26px; font-weight: 800; font-stretch: 108%; }
+/* The chevron sits inline after the last word, so it wraps with the heading instead of pushing it */
+.where h3::after { display: inline-block; vertical-align: middle; margin-left: var(--space-3); width: 10px; height: 10px; border-width: 0 3px 3px 0; }
+.where-score { margin-top: var(--space-1); font: 800 19px/1.3 var(--display); font-stretch: 108%; color: var(--marigold); }
+.where-score .band-2 { font: 600 15px var(--body); }
+.where dl { margin: var(--space-4) 0 0; }
 .where dl > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 10px; padding: 12px 0; border-top: 1px solid var(--band-rule); }
 .where dt { font-weight: 600; }
 .where .lead { flex: 1; min-width: 24px; border-bottom: 2px dotted var(--band-rule); transform: translateY(-5px); }
@@ -318,15 +332,11 @@ body:has(.tix-dialog[open]) { overflow: hidden; }
 .where dl > .of { padding-left: 40px; }
 .where .of dt { font-weight: 500; }
 .where .of dd { font: 600 15px var(--body); color: var(--band-ink-2); }
-.where dl > div:not(.group, .total) { padding-left: 18px; }
+.where dl > div:not(.group) { padding-left: 18px; }
 .where .group { margin-top: 22px; border-top: 2px solid var(--band-ink); }
 .where .group:first-child { margin-top: 0; }
 .where .group dt, .where .group dd { font: 800 15px var(--body); letter-spacing: .06em; text-transform: uppercase; }
 .where .group dd { color: var(--marigold); }
-.where .total { border-top: 2px solid var(--band-ink); margin-top: 22px; }
-.where .total dt, .where .total dd { font-weight: 800; }
-.where .total dd { font-size: 24px; color: var(--marigold); }
-.fine { margin-top: 18px; font-size: 14px; max-width: 64ch; }
 
 /* Results */
 .results { list-style: none; padding: 0; margin: 0; }
@@ -503,19 +513,26 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
       </div>
       <div class="tip-fine">
       <p class="buy-note">You can't win anything, and no real ticket is bought. Not affiliated with Powerball or Anthropic.</p>
+      <p class="band-2">Tip $10 in one go and PayPal takes about 79¢, instead of $2.75 for five separate $2 tips. Same five tickets.</p>
+      <details class="fold">
+      <summary>How donated tickets work</summary>
       <p class="timing band-2">Every full $2 you donate is one more ticket, and Claude picks the numbers for each one.
         Claude picks up to 500 donated tickets a drawing, first come, first served, on the morning of each drawing (Mondays,
         Wednesdays and Saturdays). Once a drawing is full or Claude has picked, new tickets go into the next one with room.
         <span id="refund" hidden>Tips are final: every $2 becomes a ticket in the next drawing. If you were charged by
         mistake, email <a id="refund-link" href="#"></a>.</span></p>
+      </details>
       </div>
-      <div class="where">
-        <h3>Where your $2 goes</h3>
+      <details class="where">
+        <summary>
+          <h3>Where your $2 goes</h3>
+          <p class="where-score"><span class="band-2">Final score:</span> Mega&nbsp;corps&nbsp;$0.55, human&nbsp;$1.45, AI&nbsp;$0.00</p>
+        </summary>
         <dl>
           <div class="group"><dt>To mega corps</dt><span class="lead"></span><dd>$0.55</dd></div>
           <div><dt>PayPal</dt><span class="lead"></span><dd>$0.55</dd>
-            <p class="band-2">For handling your payment. Mostly a flat 49¢, which is why $2 hurts. Fight the power:
-              tip $10 in one go and PayPal gets about 79¢, instead of $2.75 for five separate $2 tips. Same five tickets.</p></div>
+            <p class="band-2">For handling your payment. Mostly a flat 49¢, which is why $2 hurts. Fight the power
+              with one bigger tip (see above).</p></div>
           <div><dt>Ko-fi</dt><span class="lead"></span><dd>$0.00</dd>
             <p class="band-2">Ko-fi doesn't take a cut of one-off tips.</p></div>
           <div><dt>Anthropic</dt><span class="lead"></span><dd>About 0.1¢</dd>
@@ -531,15 +548,13 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
             <p class="band-2">No real ticket is bought. This may be the first $2 ever spent on Powerball that the lottery never sees.</p></div>
           <div><dt>Your tax deduction</dt><span class="lead"></span><dd>$0.00</dd>
             <p class="band-2">We call it a donation. The IRS would not. This isn't a charity.</p></div>
-          <div class="total"><dt>Final score</dt><span class="lead"></span><dd>Mega&nbsp;corps&nbsp;$0.55, human&nbsp;$1.45, AI&nbsp;$0.00</dd></div>
         </dl>
-        <p class="fine band-2">No real tickets are bought, and nobody wins anything: not you, not Claude, not the human.</p>
-      </div>
+      </details>
     </div>
   </section>
 
   <section class="block wrap" id="results-section">
-    <h2>Results</h2>
+    <h2>Earlier drawings</h2>
     <div class="block-body">
       <ul class="results" id="results"></ul>
       <a class="more" id="ledger-link" href="#">See every ticket in the full ledger</a>
@@ -1126,14 +1141,15 @@ function render(stats) {
         <div class="prize lose">Pending<small>Waiting for results</small></div>
         ${waitingTips(r.draw_date) ? `<div class="drawn">Plus ${plural(waitingTips(r.draw_date), "donated ticket")}</div>` : ""}
       </li>`),
-    ...drawings.slice(0, 12).map((d) => {
+    ...drawings.slice(noTicket ? 0 : 1, 12).map((d) => {
       const [w, pb] = parseNumbers(d.result);
       const drawn = `Drawn: ${w.map(pad).join(" ")}, Powerball ${pad(pb)}` + (d.tip_tickets ? `. ${tipSummary(d)}.` : "");
       const own = stats.recent.filter((r) => r.draw_date === d.draw_date && r.source !== "tip");
       return own.length ? own.map((r) => resultRow(r, { drawn })).join("") : tipRow(d, true);
     }),
   ];
-  $("results").innerHTML = rows.length ? rows.join("") : `<li>No results yet. The first drawing is ${fmtDate(drawDate, true)}.</li>`;
+  $("results").innerHTML = rows.join("");
+  $("results-section").hidden = !rows.length;
 }
 
 // Where a new donation would land: tonight if there's room and Claude hasn't picked yet, otherwise
