@@ -357,7 +357,8 @@ body:has(.tix-dialog[open]) { overflow: hidden; }
 /* Missed numbers are panel-grey, so on a panel card they need the page color to show. */
 .last-card .balls.scored .ball:not(.hit):not(.pb) { background: var(--page); }
 .card-label { font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 10px; }
-.verdict { font: 800 clamp(26px, 4.4vw, 38px)/1.1 var(--display); font-stretch: 110%; letter-spacing: -0.01em; }
+/* Card-level type, like the timeline times and "None this drawing": the date above stays the one headline. */
+.verdict { font: 750 clamp(22px, 3.4vw, 28px)/1.15 var(--display); font-stretch: 105%; }
 .verdict.win { color: var(--win); }
 .verdict-sub { margin-top: 6px; color: var(--ink-2); }
 .last-own .dp { margin-top: var(--space-5); padding-top: var(--space-5); border-top: 1px solid var(--rule); }
@@ -708,10 +709,18 @@ const prizeDetail = (r) => matchText(r.match) + (r.multiplier ? ` · Power Play 
   + (r.dp_result ? ` · Double Play ${money(Number(r.dp_prize || 0))}` : "");
 const sourceTag = (r) => (r.source === "tip" ? `<span class="tag tip">Donated by someone</span>` : `<span class="tag">Claude's ticket</span>`);
 
+// The line under the "Claude's ticket" label, so it doesn't repeat it: "Won $200.", "Matched 2. Not enough.", "Not one number."
+function verdictText(r) {
+  if (r.prize === "JACKPOT") return "Jackpot.";
+  if (isWin(r)) return `Won ${prizeText(r)}.`;
+  const n = parseInt(r.match, 10) || 0;
+  return n ? `Matched ${n}. Not enough.` : "Not one number.";
+}
+
 // "3 numbers + Powerball", "Powerball only", "2 numbers"
 function matchText(match) {
   const n = parseInt(match, 10), pb = match.includes("PB");
-  if (!n) return pb ? "Powerball only" : "No numbers";
+  if (!n) return pb ? "Powerball only" : "No matches";
   return plural(n, "number") + (pb ? " + Powerball" : "");
 }
 
@@ -1084,13 +1093,12 @@ function render(stats) {
     const amount = (prize) => (prize === "JACKPOT" ? "the jackpot" : prize === "0" ? "no prize" : money(Number(prize)));
     $("last-own").innerHTML = ownLast.length ? ownLast.map((r) => {
       const won = isWin(r);
-      const verdict = r.prize === "JACKPOT" ? "Claude's ticket hit the jackpot."
-        : won ? `Claude's ticket won ${prizeText(r)}.` : "Claude's ticket missed.";
       const main = `${matchText(r.match)}${r.multiplier ? `, Power Play ${r.multiplier}×` : ""}: ${amount(r.prize)}.`;
+      // A miss says it all in the verdict; a win spells out how it got there.
       return `
         <p class="card-label">Claude's ticket</p>
-        <p class="verdict${won ? " win" : ""}">${verdict}</p>
-        <p class="verdict-sub">${r.dp_result ? "Main drawing: " : ""}${main}</p>
+        <p class="verdict${won ? " win" : ""}">${verdictText(r)}</p>
+        ${won ? `<p class="verdict-sub">${r.dp_result ? "Main drawing: " : ""}${main}</p>` : ""}
         ${balls(r.pick, r.result)}
         ${drawnRow(r.result)}
         ${r.dp_result ? `
