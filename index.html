@@ -185,6 +185,8 @@ section.block h2 { font-size: clamp(30px, 5vw, 40px); font-weight: 750; font-str
 @keyframes live { 50% { opacity: .25; } }
 /* The same label over the drawing that's already happened; its dot holds still. */
 .eyebrow-past .live { animation: none; }
+/* Up next pulses only on drawing day; days out, nothing is live yet. */
+.eyebrow-still .live { animation: none; }
 .sub { color: var(--ink-2); margin-top: 8px; }
 .block-body { margin-top: var(--space-5); }
 
@@ -207,23 +209,39 @@ section.block h2 { font-size: clamp(30px, 5vw, 40px); font-weight: 750; font-str
 .tag { display: inline-block; font-size: 13px; font-weight: 600; padding: 2px 9px; border-radius: 999px; background: var(--panel); color: var(--ink-2); }
 .tag.tip { background: color-mix(in srgb, var(--marigold) 40%, var(--page)); color: var(--ink); }
 
-/* Picks */
-.ticket { display: grid; gap: 12px; padding: 22px 0; border-top: 1px solid var(--rule); }
+/* Picks: one card, like the last drawing's. A two-step timeline on top, the tickets under it once they're in. */
+.timeline { list-style: none; margin: 0; padding: 0; position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-5); }
+/* The track: a dot for each moment, joined by a line from the first dot to the second */
+.timeline::before { content: ""; position: absolute; top: 5px; left: 6px; width: calc(50% + var(--space-3)); height: 2px; background: var(--rule); }
+.tl-step { position: relative; min-width: 0; padding-top: var(--space-6); }
+.tl-step::before { content: ""; position: absolute; top: 0; left: 0; width: 12px; height: 12px; box-sizing: border-box; border-radius: 50%; border: 2px solid var(--ink-2); background: var(--panel); }
+.tl-step.done::before { border-color: var(--ink); background: var(--ink); }
+.tl-step .card-label { margin-bottom: var(--space-2); }
+/* Tags are panel-grey, so on the card they need the page color to show. */
+.next-card .tag:not(.tip) { background: var(--page); }
+.tl-when { font: 750 clamp(19px, 5vw, 26px)/1.15 var(--display); font-stretch: 105%; }
+.tl-note { margin-top: var(--space-1); font-size: 15px; color: var(--ink-2); }
+.tl-countdown { color: var(--ink); font-weight: 600; }
+#picks-body:not(:empty) { margin-top: var(--space-5); padding-top: var(--space-5); border-top: 1px solid var(--rule); }
+.ticket { display: grid; gap: var(--space-3); padding: var(--space-5) 0; border-top: 1px solid var(--rule); }
 .ticket:first-child { border-top: 0; padding-top: 0; }
+.ticket:last-child { padding-bottom: 0; }
+.ticket-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); }
+.ticket-head .card-label { margin: 0; }
 /* Claude's reason for its pick, set off with a label and a rule so it reads as Claude's words */
 .reason { margin: var(--space-2) 0 0; padding-left: var(--space-4); border-left: 3px solid var(--marigold); }
 .reason .card-label { margin-bottom: var(--space-1); }
 .note { margin: 0; font: 500 21px/1.35 var(--display); font-stretch: 95%; max-width: 40ch; }
-.meta { font-size: 15px; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
-.proof { margin-top: var(--space-5); font-size: 15px; color: var(--ink-2); max-width: 60ch; }
-.tip-picks { display: grid; gap: 14px; padding: 22px 0; border-top: 1px solid var(--rule); }
+.meta { font-size: 15px; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-3); align-items: center; }
+.tip-picks { display: grid; gap: var(--space-3); padding: var(--space-5) 0 0; border-top: 1px solid var(--rule); }
 .tip-picks:first-child { border-top: 0; padding-top: 0; }
-.tip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 256px), 1fr)); gap: 12px 24px; }
+.tip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 256px), 1fr)); gap: var(--space-3) var(--space-5); }
 .tip-sum p { font-size: 15px; color: var(--ink-2); }
 
 /* Lots of tickets: a count, and a window with all the numbers */
-.tix-count { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; margin-top: 22px; padding: 22px 24px; border-radius: 18px; background: var(--panel); }
-.tix-num { font: 900 clamp(60px, 14vw, 104px)/.85 var(--display); font-stretch: 140%; letter-spacing: -0.03em; }
+.tix-count { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-5); padding-top: var(--space-5); border-top: 1px solid var(--rule); }
+.tix-count:first-child { border-top: 0; padding-top: 0; }
+.tix-num { font: 900 clamp(48px, 11vw, 72px)/.85 var(--display); font-stretch: 140%; letter-spacing: -0.03em; }
 .tix-label { font: 750 22px/1.15 var(--display); font-stretch: 105%; }
 .tix-sub { font-size: 15px; color: var(--ink-2); margin-top: 4px; max-width: 44ch; }
 .see {
@@ -323,7 +341,7 @@ body:has(.tix-dialog[open]) { overflow: hidden; }
 .drawn-label { font-size: 15px; color: var(--ink-2); margin-bottom: 10px; }
 /* Last drawing: how Claude's ticket did, how the donated ones did, and the day's net */
 .last-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.last-card { background: var(--panel); border-radius: 18px; padding: 22px 24px; min-width: 0; }
+.last-card, .next-card { background: var(--panel); border-radius: 18px; padding: 22px 24px; min-width: 0; }
 .last-own { grid-column: 1 / -1; }
 /* Missed numbers are panel-grey, so on a panel card they need the page color to show. */
 .last-card .balls.scored .ball:not(.hit):not(.pb) { background: var(--page); }
@@ -369,7 +387,7 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
   .buy { font-size: 17px; font-stretch: 100%; gap: 10px; padding: 14px 20px 14px 14px; max-width: 100%; }
   .band { padding: var(--space-8) 0; margin-top: var(--space-8); }
   .last-grid { grid-template-columns: 1fr; }
-  .last-card { padding: 18px; }
+  .last-card, .next-card { padding: 18px; }
   .tix-dialog { width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0; border-radius: 0; }
 }
 /* Phones: the logo and "Help Claude win" share one row, so both tighten up */
@@ -433,12 +451,23 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
   </section>
 
   <section class="block wrap" id="picks">
-    <p class="eyebrow"><span class="live" aria-hidden="true"></span><span id="picks-eyebrow">Up next</span></p>
+    <p class="eyebrow" id="picks-eyebrow-row"><span class="live" aria-hidden="true"></span><span id="picks-eyebrow">Up next</span></p>
     <h2 id="picks-title">Next picks</h2>
-    <p class="sub" id="picks-sub">The drawing is at 10:59 PM ET.</p>
-    <div class="block-body" id="picks-body"></div>
-    <p class="proof">Every pick is uploaded to GitHub hours before its drawing, and GitHub logs when it arrived.
-      <a id="proof-link" href="#">See the upload log</a></p>
+    <div class="block-body next-card">
+      <ol class="timeline" aria-label="When it happens">
+        <li class="tl-step" id="tl-pick">
+          <p class="card-label">Claude picks</p>
+          <p class="tl-when" id="tl-pick-when">9 AM ET</p>
+          <p class="tl-note" id="tl-pick-note"></p>
+        </li>
+        <li class="tl-step" id="tl-draw">
+          <p class="card-label">The drawing</p>
+          <p class="tl-when">10:59 PM ET</p>
+          <p class="tl-note tl-countdown" id="picks-sub"></p>
+        </li>
+      </ol>
+      <div id="picks-body"></div>
+    </div>
   </section>
 
   <section class="block wrap" id="score">
@@ -586,14 +615,6 @@ function fmtTimeET(isoWithOffset) {
   return new Date(isoWithOffset).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/New_York" }) + " ET";
 }
 
-function leadTime(ticket) {
-  const offset = ticket.picked_at.slice(-6);
-  const ms = new Date(`${ticket.draw_date}T22:59:00${offset}`) - new Date(ticket.picked_at);
-  if (ms <= 0) return "";
-  const h = Math.floor(ms / 3.6e6), m = Math.round((ms % 3.6e6) / 6e4);
-  return h ? `${h}h ${m}m before the drawing` : `${m}m before the drawing`;
-}
-
 // Today's date in New York, rolled forward past tonight's drawing, to the next Mon/Wed/Sat.
 function nextDrawDate() {
   const p = Object.fromEntries(new Intl.DateTimeFormat("en-US", {
@@ -610,14 +631,12 @@ function pickTimeET(iso) {
   return new Date(`${iso}T${ROUTINE_UTC}:00Z`).toLocaleTimeString("en-US", { hour: "numeric", timeZone: "America/New_York" }) + " ET";
 }
 
-// What the picks section says before Claude's ticket for the drawing on `iso` is in.
-function pickingSoon(iso) {
-  const days = daysFromTodayET(iso);
-  if (Date.now() >= Date.parse(`${iso}T${ROUTINE_UTC}:00Z`)) return "Claude's numbers for this drawing are on their way.";
-  if (days === 0) return `Claude picks tonight's numbers this morning at ${pickTimeET(iso)}.`;
-  if (days === 1) return `Claude picks tomorrow morning at ${pickTimeET(iso)}.`;
-  const day = new Date(iso + "T12:00:00Z").toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" });
-  return `Claude picks ${day} morning at ${pickTimeET(iso)}.`;
+// When a pick came in, in New York time: "9:02 AM ET" on drawing day, "Thu 12:09 AM ET" if it came in earlier.
+function pickedWhen(isoWithOffset, drawDate) {
+  const d = new Date(isoWithOffset);
+  const day = d.toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+  // No-break spaces keep "6:08 PM ET" in one piece; only the weekday can wrap away from it.
+  return (day === drawDate ? "" : d.toLocaleDateString("en-US", { weekday: "short", timeZone: "America/New_York" }) + " ") + fmtTimeET(isoWithOffset).replace(/\s/g, "\u00a0");
 }
 
 // Today's date in New York.
@@ -920,28 +939,37 @@ function render(stats) {
   // Up next: name the drawing by how soon it is, and count down to it.
   const days = daysFromTodayET(drawDate);
   const dayName = new Date(drawDate + "T12:00:00Z").toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" });
-  $("picks-eyebrow").textContent = days === 0 ? "Tonight" : "Up next";
+  const monthDay = new Date(drawDate + "T12:00:00Z").toLocaleDateString("en-US", { month: "long", day: "numeric", timeZone: "UTC" });
+  $("picks-eyebrow").textContent = `${days === 0 ? "Tonight" : "Up next"} · ${monthDay}`;
+  $("picks-eyebrow-row").classList.toggle("eyebrow-still", days > 0);
   $("picks-title").textContent = days === 0 ? "Tonight's picks" : days === 1 ? "Tomorrow's picks" : `${dayName}'s picks`;
+  // The timeline: when Claude picks (or picked), then the drawing, counting down.
+  const pickedAt = nextOwn.length ? nextOwn[0].picked_at : nextTips.length ? nextGroup.picked_at : null;
+  $("tl-pick").classList.toggle("done", !!pickedAt);
+  $("tl-pick-when").textContent = pickedAt ? pickedWhen(pickedAt, drawDate) : pickTimeET(drawDate);
+  $("tl-pick-note").innerHTML = pickedAt
+    ? `Locked in on <a href="${REPO}/activity">GitHub</a>`
+    : Date.now() >= Date.parse(`${drawDate}T${ROUTINE_UTC}:00Z`) ? "Any minute now"
+    : days === 0 ? "This morning" : days === 1 ? "Tomorrow morning" : `${dayName} morning`;
   const showCountdown = () => {
-    const when = days === 0 ? "tonight" : days === 1 ? "tomorrow" : fmtDate(drawDate, true);
     const left = countdown(drawDate);
-    $("picks-sub").textContent = `The drawing is ${when} at 10:59 PM ET${left ? `, ${left} from now` : ""}.`;
+    $("picks-sub").textContent = left ? `in ${left}` : "Happening now";
   };
   showCountdown();
   clearInterval(render.timer);
   render.timer = setInterval(showCountdown, 60_000);
   const ticketCards = nextOwn.map((t) => `
       <div class="ticket">
+        <div class="ticket-head"><p class="card-label">Claude's ticket</p>${addOnTag(t)}</div>
         ${balls(t.pick)}
         ${t.note ? `<figure class="reason"><figcaption class="card-label">Claude's reason</figcaption><blockquote class="note">“${esc(t.note)}”</blockquote></figure>` : ""}
-        <p class="meta">${sourceTag(t)}${addOnTag(t)}<span>Picked at ${fmtTimeET(t.picked_at)}, ${leadTime(t)}.</span></p>
       </div>`).join("");
   const total = nextOwn.length + nextTips.length;
   let tipsHtml = "";
   if (nextTips.length && total <= INLINE_TICKETS) {
     tipsHtml = `
       <div class="tip-picks">
-        <p class="meta"><span class="tag tip">Donated by someone</span><span>${plural(nextTips.length, "donated ticket")}, picked by Claude at ${fmtTimeET(nextGroup.picked_at)}.</span></p>
+        <div class="ticket-head"><p class="card-label">Donated tickets</p><span class="tag tip">${plural(nextTips.length, "ticket")}</span></div>
         <div class="tip-grid">${nextTips.map((p) => balls(p, null, true)).join("")}</div>
       </div>`;
   } else if (nextTips.length) {
@@ -956,15 +984,13 @@ function render(stats) {
       <div class="tix-count">
         <p class="tix-num">${total.toLocaleString("en-US")}</p>
         <div>
-          <p class="tix-label">tickets for ${fmtDate(drawDate, true)}</p>
-          <p class="tix-sub">${nextOwn.length ? "Claude's own, plus " : ""}${plural(nextTips.length, "donated ticket")}. Claude picked them all by hand, at ${fmtTimeET(nextGroup.picked_at)}.</p>
+          <p class="tix-label">tickets in this drawing</p>
+          <p class="tix-sub">${nextOwn.length ? "Claude's own, plus " : ""}${plural(nextTips.length, "donated ticket")}. Claude picked them all by hand.</p>
           <button type="button" class="see" data-sheet="next">See the numbers</button>
         </div>
       </div>`;
   }
-  $("picks-body").innerHTML = total
-    ? ticketCards + tipsHtml
-    : `<p>${pickingSoon(drawDate)}</p>`;
+  $("picks-body").innerHTML = ticketCards + tipsHtml;
 
   // The running tab
   const t = stats.totals;
@@ -1190,7 +1216,6 @@ async function loadTipStatus(stats) {
 }
 
 function setLinks() {
-  $("proof-link").href = `${REPO}/activity`;
   $("repo-link").href = REPO;
   $("ledger-link").href = $("ledger-link-2").href = `${REPO}/blob/main/ledger.csv`;
   const buy = $("buy");
