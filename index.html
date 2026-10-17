@@ -607,6 +607,7 @@ const TIP_URL = "https://ko-fi.com/claude_picks";
 const STATUS_URL = "https://claude-picks-donations.claude-picks.workers.dev"; // the donations Worker (worker/)
 const CONTACT = "claudepicks.tickets@gmail.com"; // where refund requests go
 const ROUTINE_UTC = "13:00"; // when the drawing-day routine runs (its cron is in UTC): 9 AM ET, 8 AM in winter
+const SPOTS_SHOWN_UNDER = 50; // the spots-left line under the Donate button shows only below this many
 const BOOKED_DRAWINGS = 6; // about two weeks; past this, the Donate button pauses
 const BIG_WIN_ODDS = 10251; // 1 in 10,251 tickets wins $100 or more
 const DRAWS_PER_YEAR = 156;
@@ -1224,7 +1225,19 @@ function showTipStatus(stats, donated, href) {
     return;
   }
   setBuy("Donate a ticket", href);
-  live.textContent = `${ahead ? "The next drawings are full. " : ""}${cap - (queued % cap)} of ${cap} spots left for ${fmtDate(addDraws(first, ahead), true)}.`;
+  // Only worth saying when a drawing is nearly full: "12 spots left". The count above it then talks about that
+  // same drawing ("488 tickets donated for Monday's drawing"), so the two lines add up to the cap.
+  const filling = addDraws(first, ahead);
+  const inDrawing = queued % cap;
+  const left = cap - inDrawing;
+  live.hidden = left >= SPOTS_SHOWN_UNDER;
+  live.textContent = `${plural(left, "spot")} left`;
+  if (!live.hidden) {
+    const days = daysFromTodayET(filling);
+    const which = days === 0 ? "tonight's" : days === 1 ? "tomorrow's"
+      : new Date(filling + "T12:00:00Z").toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" }) + "'s";
+    $("tip-count").textContent = `${plural(inDrawing, "ticket")} donated for ${which} drawing.`;
+  }
 }
 
 // Donated tickets already picked: scored ones plus those waiting on a drawing.
