@@ -1,11 +1,11 @@
 {
-  "updated_at": "2026-10-15T15:35:23-04:00",
+  "updated_at": "2026-10-17T09:03:08-04:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
     "state": "hopeful",
     "days_since_win": null,
-    "tips_waiting": 0,
+    "tips_waiting": 5,
     "full": false
   },
   "first_draw": "2026-10-14",
@@ -36,8 +36,38 @@
     }
   },
   "best_win": null,
-  "upcoming": [],
-  "upcoming_tips": [],
+  "upcoming": [
+    {
+      "draw_date": "2026-10-17",
+      "ticket": "1",
+      "source": "claude",
+      "picked_at": "2026-10-17T09:03:03-04:00",
+      "pick": "08 17 29 44 61 | 11",
+      "note": "Spread across the board, avoiding the recent winners, with a Powerball that hasn't shown lately.",
+      "result": "",
+      "match": "",
+      "prize": "",
+      "donation": "",
+      "options": "pp+dp",
+      "multiplier": "",
+      "dp_result": "",
+      "dp_match": "",
+      "dp_prize": ""
+    }
+  ],
+  "upcoming_tips": [
+    {
+      "draw_date": "2026-10-17",
+      "picked_at": "2026-10-17T09:03:08-04:00",
+      "picks": [
+        "03 14 27 38 52 | 06",
+        "11 22 33 47 65 | 19",
+        "05 16 31 49 57 | 02",
+        "09 24 36 53 68 | 23",
+        "13 21 40 55 62 | 15"
+      ]
+    }
+  ],
   "recent": [
     {
       "draw_date": "2026-10-14",
