@@ -1,0 +1,54 @@
+<!doctype html>
+<!-- The link preview image (Open Graph / Twitter card). Not linked from the site.
+     Regenerate share/card.png after editing:
+     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless --hide-scrollbars \
+       --window-size=1200,630 --virtual-time-budget=5000 --screenshot=share/card.png share/card.html -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Claude picks share card</title>
+<link href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,100..900&display=block" rel="stylesheet">
+<style>
+  /* Same tokens as index.html: the hopeful mood, the hero ink, the Powerball red */
+  :root { --mood: #9fcbff; --ink: #1b1f2a; --ink-2: #33405a; --red: #e0322b; --display: "Anybody", ui-sans-serif, system-ui, sans-serif; --body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  * { margin: 0; box-sizing: border-box; animation: none !important; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  body { background: var(--mood); color: var(--ink); font-family: var(--body); padding: 0 72px; display: grid; align-items: center; }
+  .main { display: grid; grid-template-columns: 360px 1fr; gap: 56px; align-items: center; }
+  .face { width: 360px; height: 360px; display: block; }
+  .face .stroke { fill: none; stroke: var(--ink); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+  .face .thin { stroke-width: 4; }
+  h1 { font: 800 76px/0.98 var(--display); font-stretch: 112%; letter-spacing: -0.02em; }
+  p { margin-top: 20px; font-size: 29px; line-height: 1.35; font-weight: 500; color: var(--ink-2); max-width: 26ch; }
+  .balls { display: flex; gap: 12px; margin-top: 30px; }
+  .ball { width: 62px; height: 62px; border-radius: 50%; display: grid; place-items: center; font: 800 25px var(--display); font-stretch: 112%; color: var(--ink);
+    background: radial-gradient(circle at 35% 30%, #fff 0, #f2f3f5 58%, #cfd4dc 100%); box-shadow: 0 3px 6px rgba(27, 31, 42, .16), inset 0 -2px 4px rgba(27, 31, 42, .08); }
+  .ball.pb { background: radial-gradient(circle at 30% 25%, #ec5a4f 0, var(--red) 40%, #a8241f 100%); color: #fff; text-shadow: 0 1px 2px rgba(80, 10, 8, .45); }
+</style>
+</head>
+<body>
+  <div class="main">
+    <!-- The hopeful face, copied from the page's own drawing -->
+    <svg class="face" viewBox="0 0 200 200" aria-hidden="true">
+      <defs><radialGradient id="shade" cx="38%" cy="30%" r="75%">
+        <stop offset="0" stop-color="#ffffff"/><stop offset=".65" stop-color="#f2f3f5"/><stop offset="1" stop-color="#d3d8df"/>
+      </radialGradient></defs>
+      <ellipse cx="100" cy="192" rx="52" ry="6" fill="#1b1f2a" opacity=".16"/>
+      <path d="M166 33 Q166 44 177 44 Q166 44 166 55 Q166 44 155 44 Q166 44 166 33Z" fill="#fff"/>
+      <path d="M34 55 Q34 62 41 62 Q34 62 34 69 Q34 62 27 62 Q34 62 34 55Z" fill="#fff"/>
+      <circle cx="100" cy="114" r="70" fill="url(#shade)"/>
+      <path d="M66 84 Q77 77 88 82 M112 82 Q123 77 134 84" class="stroke thin"/>
+      <ellipse cx="78" cy="103" rx="7" ry="9.5" fill="#1b1f2a"/>
+      <ellipse cx="122" cy="103" rx="7" ry="9.5" fill="#1b1f2a"/>
+      <circle cx="80.5" cy="97.5" r="2.6" fill="#fff"/><circle cx="124.5" cy="97.5" r="2.6" fill="#fff"/>
+      <path d="M87 132 Q100 141 113 132" class="stroke"/>
+    </svg>
+    <div>
+      <h1>Claude picks Powerball numbers.</h1>
+      <p>A script keeps score. No real tickets, so Claude can only win in spirit.</p>
+      <!-- Claude's first ticket, Oct 14 -->
+      <div class="balls"><span class="ball">09</span><span class="ball">17</span><span class="ball">26</span><span class="ball">41</span><span class="ball">58</span><span class="ball pb">13</span></div>
+    </div>
+  </div>
+</body>
+</html>
