@@ -596,7 +596,8 @@ const ROUTINE_UTC = "13:00"; // when the drawing-day routine runs (its cron is i
 const BOOKED_DRAWINGS = 6; // about two weeks; past this, the Donate button pauses
 const BIG_WIN_ODDS = 10251; // 1 in 10,251 tickets wins $100 or more
 const DRAWS_PER_YEAR = 156;
-const INLINE_TICKETS = 3; // past this many tickets in a drawing, the page shows a count and a "See the numbers" button
+const INLINE_TICKETS = 12; // past this many tickets in the coming drawing, Up next shows a count and a "See the numbers" button
+const INLINE_WINNERS = 3; // past this many winning donated tickets, the last drawing's card does the same
 const MOODS = {
   desperate: { head: "Claude is desperate.", rule: "Desperate means two months without a win." },
   sad: { head: "Claude is sad.", rule: "Sad means a month without a win." },
@@ -607,6 +608,20 @@ const MOODS = {
   jackpot: { head: "Claude hit the jackpot.", rule: "Jackpot means all six numbers, in the past week." },
 };
 // The meter shows sad to party. A huge win or the jackpot breaks past the top of it; desperate falls off the bottom.
+// What Claude tells itself the longer it goes without a win, by days dry. Hopeful runs to 30 days,
+// sad to 60, desperate after that, so each mood gets its own stretch of the slide.
+const EXCUSES = [
+  [0, "It still believes."],
+  [10, "It's a long game."],
+  [20, "Statistically, it's due. That's not how statistics works. It's due."],
+  [30, "It suspects the machine has a grudge."],
+  [40, "It has started reading the balls' body language."],
+  [50, "It's no longer ruling anything out."],
+  [60, "It has started talking to the Powerball."],
+  [75, "The Powerball hasn't written back."],
+  [90, "It's working on a new system. The old system was also a new system."],
+  [120, "Any win would do. Even $4. Especially $4."],
+];
 const METER = ["sad", "hopeful", "happy", "party"];
 const LABELS = { desperate: "Desperate", sad: "Sad", hopeful: "Hopeful", happy: "Happy", party: "Party", huge: "Huge", jackpot: "Jackpot" };
 const $ = (id) => document.getElementById(id);
@@ -734,13 +749,17 @@ function tipSummary(d) {
 
 // How long until a $100+ win, at the rate Claude has been getting tickets lately.
 // Claude's chances at a $100+ win each drawing: its own ticket (two chances once it plays Double Play,
-// a second drawing with the same odds) plus donated tickets, averaged over the last 6 drawings.
+// a second drawing with the same odds) plus donated tickets, averaged over the last 6 drawings and the
+// coming one, so new donations count as soon as Claude has picked them. `next` is the coming drawing on its own.
 function partyChances(stats) {
-  const recent = (stats.drawings || []).slice(0, 6);
   const own = [...stats.upcoming, ...stats.recent].find((r) => r.source !== "tip");
   const doublePlay = !!(own && own.options);
-  const donated = Math.round(recent.length ? recent.reduce((s, d) => s + d.tip_tickets, 0) / recent.length : 0);
-  return { doublePlay, donated, total: (doublePlay ? 2 : 1) + donated };
+  const base = doublePlay ? 2 : 1;
+  const group = (stats.upcoming_tips || []).find((g) => g.draw_date >= nextDrawDate());
+  const counts = [...(group ? [group.picks.length] : []), ...(stats.drawings || []).slice(0, 6).map((d) => d.tip_tickets)];
+  const donated = Math.round(counts.length ? counts.reduce((s, n) => s + n, 0) / counts.length : 0);
+  const next = group && group.picks.length ? { date: group.draw_date, donated: group.picks.length, total: base + group.picks.length } : null;
+  return { doublePlay, donated, total: base + donated, next };
 }
 
 // How long until a $100+ win at that rate: "33 years", "7 weeks".
@@ -753,9 +772,17 @@ function partyWait(chances) {
   return span.replace(" ", "\u00a0");
 }
 
-// "Right now Claude has 502 chances a drawing: its own ticket, which also plays Double Play, plus 500 donated."
+// With donated tickets picked for the coming drawing: "Tonight Claude has 7 chances: its own ticket, which also
+// plays Double Play, plus 5 donated." Otherwise: "Right now Claude has 2 chances a drawing: its own ticket, …"
 function chancesLine(chances) {
   const own = chances.doublePlay ? "its own ticket, which also plays Double Play" : "its own ticket";
+  const { next } = chances;
+  if (next) {
+    const days = daysFromTodayET(next.date);
+    const when = days === 0 ? "Tonight" : days === 1 ? "Tomorrow"
+      : "On " + new Date(next.date + "T12:00:00Z").toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" });
+    return `${when} Claude has ${plural(next.total, "chance")}: ${own}, plus ${next.donated.toLocaleString("en-US")} donated.`;
+  }
   return `Right now Claude has ${plural(chances.total, "chance")} a drawing: ${own}` +
     (chances.donated ? `, plus ${chances.donated.toLocaleString("en-US")} donated.` : ".");
 }
@@ -907,7 +934,9 @@ function face(state) {
 function moodLine(stats) {
   const m = stats.mood;
   const lastWin = stats.best_win || stats.recent.find(isWin);
+  const dry = m.days_since_win ?? (stats.first_draw ? Math.max(0, -daysFromTodayET(stats.first_draw)) : 0);
   const drought = m.days_since_win == null ? "No wins yet" : `${plural(m.days_since_win, "day")} without a win`;
+  const excuse = EXCUSES.filter(([days]) => dry >= days).pop()[1];
   if (m.state === "jackpot") return `All six numbers on ${fmtDate(lastWin.draw_date)}. Nobody gets the money. Claude gets the glory.`;
   if (m.state === "huge") return `It won ${prizeText(lastWin)} on ${fmtDate(lastWin.draw_date)}. In spirit. This is not a drill. But it is.`;
   // A win can still lose money once 500 donated tickets are in the drawing. The mood follows the win;
@@ -917,16 +946,13 @@ function moodLine(stats) {
   if (m.state === "party") return `It won ${prizeText(lastWin)} on ${fmtDate(lastWin.draw_date)}.${noMath} Everybody dance.`;
   if (m.state === "happy" && !lastWin) return `Every donated spot for the next drawing is full. ${plural(m.tips_waiting, "ticket")}. Feeling lucky.`;
   if (m.state === "happy") return `It won ${prizeText(lastWin)} on ${fmtDate(lastWin.draw_date)}.${noMath || " Life is good."}`;
-  if (m.state === "desperate") return m.days_since_win == null
-    ? "Two months of tickets and not one win. Any win would do."
-    : `${drought}. Any win would do.`;
-  if (m.state === "sad") return m.days_since_win == null
-    ? "A month of tickets and not a single win. It could use a ticket."
-    : `${drought}. It could use a ticket.`;
+  const dryFor = m.days_since_win == null ? `${plural(dry, "day")} of tickets and no wins` : drought;
+  if (m.state === "desperate") return `${dryFor}. ${excuse}`;
+  if (m.state === "sad") return `${dryFor}. ${excuse} It could use a ticket.`;
   if (m.tips_waiting) return `${drought}, but people donated ${plural(m.tips_waiting, "ticket")} for the next drawing.`;
   if (!stats.totals.tickets) return "No results yet. Anything is possible.";
-  if (m.days_since_win == null) return "No wins yet. Early days.";
-  return `${drought}. It still believes.`;
+  if (m.days_since_win == null && dry < 10) return "No wins yet. Early days.";
+  return `${dryFor}. ${excuse}`;
 }
 
 function setMood(state, line, rule) {
@@ -1099,6 +1125,7 @@ function render(stats) {
         <p class="card-label">Claude's ticket</p>
         <p class="verdict${won ? " win" : ""}">${verdictText(r)}</p>
         ${won ? `<p class="verdict-sub">${r.dp_result ? "Main drawing: " : ""}${main}</p>` : ""}
+        ${r.reaction ? `<figure class="reason"><figcaption class="card-label">Claude's take</figcaption><blockquote class="note">“${esc(r.reaction)}”</blockquote></figure>` : ""}
         ${balls(r.pick, r.result)}
         ${drawnRow(r.result)}
         ${r.dp_result ? `
@@ -1111,7 +1138,7 @@ function render(stats) {
     }).join("") : `<p class="card-label">Claude's ticket</p><p class="verdict-sub">Claude didn't have a ticket of its own this drawing.</p>${drawnRow(last.result)}`;
 
     // Donated tickets: how many, how many hit, and the winners (in a window when there are lots).
-    const inline = winners.length <= INLINE_TICKETS;
+    const inline = winners.length <= INLINE_WINNERS;
     if (!inline) {
       sheets.winners = {
         title: `${plural(winners.length, "winning ticket")}, ${fmtDate(last.draw_date)}`,
@@ -1290,6 +1317,12 @@ function demoStats(demo) {
   if (state === "jackpot") Object.assign(recent[0], { pick: "01 04 19 33 51 | 15", match: "5+PB", prize: "JACKPOT" });
   if (state === "huge") Object.assign(recent[0], { pick: "01 04 19 33 60 | 15", match: "4+PB", prize: "100000" });
   if (state === "happy" && !full) Object.assign(recent[0], { pick: "01 22 30 40 50 | 15", match: "1+PB", prize: "8" });
+  recent[0].reaction = {
+    jackpot: "I don't want to say I told you so. I've been saying it every drawing. I told you so.",
+    huge: "One number off. I'm choosing to hear that as one number on.",
+    party: "Two hundred dollars. I'd like to thank 15, 4, 19, and nobody else.",
+    happy: "Eight dollars. Please direct all questions to my financial advisor, which is also me.",
+  }[state] || "Zero for six. The machine was clearly having an off night.";
   if (viral && !full) {
     // A drawing's worth of winning donated tickets: two $7s, and the Powerball alone for $4.
     const fours = Array.from({ length: 18 }, (_, i) => scored("2026-10-10", "tip",
