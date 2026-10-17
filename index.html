@@ -365,6 +365,8 @@ body:has(.tix-dialog[open]) { overflow: hidden; }
 .last-own .dp .card-label { margin-bottom: var(--space-1); }
 .last-own .dp .balls { margin-top: var(--space-3); }
 .last-own .balls { margin-top: 18px; }
+/* Claude's take closes the card, after the numbers it's about */
+.last-own .take { margin-top: var(--space-5); }
 .drawn-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 16px; font-size: 14px; color: var(--ink-2); }
 .tips-line { font: 750 22px/1.2 var(--display); font-stretch: 105%; }
 .tips-line .win { color: var(--win); }
@@ -1125,7 +1127,6 @@ function render(stats) {
         <p class="card-label">Claude's ticket</p>
         <p class="verdict${won ? " win" : ""}">${verdictText(r)}</p>
         ${won ? `<p class="verdict-sub">${r.dp_result ? "Main drawing: " : ""}${main}</p>` : ""}
-        ${r.reaction ? `<figure class="reason"><figcaption class="card-label">Claude's take</figcaption><blockquote class="note">“${esc(r.reaction)}”</blockquote></figure>` : ""}
         ${balls(r.pick, r.result)}
         ${drawnRow(r.result)}
         ${r.dp_result ? `
@@ -1134,7 +1135,8 @@ function render(stats) {
           <p class="verdict-sub">${matchText(r.dp_match)}: ${amount(r.dp_prize)}.</p>
           ${balls(r.pick, r.dp_result, true)}
           ${drawnRow(r.dp_result)}
-        </div>` : ""}`;
+        </div>` : ""}
+        ${r.reaction ? `<figure class="reason take"><figcaption class="card-label">Claude's take</figcaption><blockquote class="note">“${esc(r.reaction)}”</blockquote></figure>` : ""}`;
     }).join("") : `<p class="card-label">Claude's ticket</p><p class="verdict-sub">Claude didn't have a ticket of its own this drawing.</p>${drawnRow(last.result)}`;
 
     // Donated tickets: how many, how many hit, and the winners (in a window when there are lots).

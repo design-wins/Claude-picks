@@ -5,6 +5,7 @@
     python3 lotto.py tips                                   how many donated tickets to pick next
     python3 lotto.py pick-tips FILE                         add those picks, one per line
     python3 lotto.py score                                  score finished drawings
+    python3 lotto.py react "line"                           Claude's take on the last drawing
     python3 lotto.py status                                 print the running totals
 
 No real tickets are bought. ledger.csv is the record; stats.json is a summary for the site.
@@ -27,7 +28,7 @@ LEDGER = ROOT / "ledger.csv"
 STATS = ROOT / "stats.json"
 FIELDS = [
     "draw_date", "ticket", "source", "picked_at", "pick", "note", "result", "match", "prize", "donation",
-    "options", "multiplier", "dp_result", "dp_match", "dp_prize",
+    "options", "multiplier", "dp_result", "dp_match", "dp_prize", "reaction",
 ]
 SOURCES = ("claude", "tip")
 
@@ -171,6 +172,7 @@ def add_ticket(rows, numbers, note, source, now, donation="", options=""):
         "dp_result": "",
         "dp_match": "",
         "dp_prize": "",
+        "reaction": "",
     }
     rows.append(row)
     return row
@@ -199,6 +201,28 @@ def score_rows(rows, results):
             r["dp_prize"] = str(dp_prize)
         scored.append(r)
     return scored
+
+
+def to_react(rows):
+    """Claude's ticket in the latest scored drawing, if it doesn't have a reaction yet."""
+    scored = [r for r in rows if r["result"]]
+    if not scored:
+        return None
+    latest = max(r["draw_date"] for r in scored)
+    own = [r for r in scored if r["draw_date"] == latest and r["source"] == "claude"]
+    return own[0] if own and not own[0]["reaction"] else None
+
+
+def add_reaction(rows, text):
+    """Saves Claude's one-line take on the latest scored drawing, on its own ticket. One per drawing."""
+    text = " ".join(text.split())
+    if not text:
+        raise ValueError("the reaction is empty")
+    row = to_react(rows)
+    if row is None:
+        raise ValueError("nothing to react to: Claude already reacted to the latest drawing, or had no ticket in it")
+    row["reaction"] = text
+    return row
 
 
 def get_json(url):
@@ -538,6 +562,16 @@ def cmd_score(args):
         print(f"Latest drawing: {latest}: {d['numbers']}, Power Play {d['multiplier']}x, Double Play {d['double_play'] or 'not out yet'}")
     save(rows, now, latest_drawing)
     print(status_text(rows))
+    if to_react(rows):
+        print(f"Claude hasn't reacted to the {to_react(rows)['draw_date']} drawing yet.")
+
+
+def cmd_react(args):
+    now = datetime.now(ET)
+    rows = read_ledger()
+    row = add_reaction(rows, args.text)
+    save(rows, now)
+    print(f"Reaction saved for {row['draw_date']}.")
 
 
 def cmd_status(args):
@@ -557,6 +591,9 @@ def main():
     pick_tips.add_argument("file")
     pick_tips.set_defaults(func=cmd_pick_tips)
     sub.add_parser("score", help="score finished drawings").set_defaults(func=cmd_score)
+    react = sub.add_parser("react", help="Claude's one-line take on the latest scored drawing")
+    react.add_argument("text")
+    react.set_defaults(func=cmd_react)
     sub.add_parser("status", help="print running totals").set_defaults(func=cmd_status)
     args = parser.parse_args()
     try:

@@ -472,6 +472,41 @@ class Tips(unittest.TestCase):
         self.assertEqual(len(stats["drawings"]), 2)
 
 
+class Reactions(unittest.TestCase):
+    def rows(self):
+        rows = []
+        lotto.add_ticket(rows, [1, 60, 61, 62, 63, 15], "", "claude", et(2026, 10, 10, 18))
+        lotto.add_ticket(rows, [1, 2, 3, 4, 5, 6], "", "claude", et(2026, 10, 12, 18))
+        lotto.score_rows(rows, {"2026-10-10": drawn("01 04 19 33 51 | 15")})
+        return rows
+
+    def test_reacts_to_the_latest_scored_drawing(self):
+        rows = self.rows()
+        row = lotto.add_reaction(rows, "  Four dollars.\n I am  unstoppable. ")
+        self.assertEqual((row["draw_date"], row["reaction"]), ("2026-10-10", "Four dollars. I am unstoppable."))
+        self.assertEqual(rows[1]["reaction"], "")
+
+    def test_one_reaction_per_drawing(self):
+        rows = self.rows()
+        lotto.add_reaction(rows, "Four dollars.")
+        self.assertIsNone(lotto.to_react(rows))
+        with self.assertRaises(ValueError):
+            lotto.add_reaction(rows, "Again.")
+
+    def test_nothing_to_react_to(self):
+        rows = []
+        lotto.add_ticket(rows, [1, 2, 3, 4, 5, 6], "", "tip", et(2026, 10, 10, 18))
+        with self.assertRaises(ValueError):
+            lotto.add_reaction([], "Hello?")
+        lotto.score_rows(rows, {"2026-10-10": drawn("01 04 19 33 51 | 15")})
+        with self.assertRaises(ValueError):
+            lotto.add_reaction(rows, "Not my ticket.")
+
+    def test_rejects_an_empty_reaction(self):
+        with self.assertRaises(ValueError):
+            lotto.add_reaction(self.rows(), "   ")
+
+
 class LedgerFile(unittest.TestCase):
     def test_round_trip(self):
         self.addCleanup(setattr, lotto, "LEDGER", lotto.LEDGER)
