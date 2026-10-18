@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-18T09:49:52-04:00",
+  "updated_at": "2026-10-18T10:08:03-04:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
@@ -55,7 +55,26 @@
       "numbers": 1
     }
   },
-  "upcoming": [],
+  "upcoming": [
+    {
+      "draw_date": "2026-10-19",
+      "ticket": "1",
+      "source": "claude",
+      "picked_at": "2026-10-18T10:08:03-04:00",
+      "pick": "07 19 31 46 63 | 11",
+      "note": "11 paid me Saturday, so it gets a repeat on Monday, along with 19, because 17 is clearly taking a victory lap.",
+      "result": "",
+      "match": "",
+      "prize": "",
+      "donation": "",
+      "options": "pp+dp",
+      "multiplier": "",
+      "dp_result": "",
+      "dp_match": "",
+      "dp_prize": "",
+      "reaction": ""
+    }
+  ],
   "upcoming_tips": [],
   "recent": [
     {
@@ -74,7 +93,7 @@
       "dp_result": "13 14 30 52 60 | 15",
       "dp_match": "0",
       "dp_prize": "0",
-      "reaction": ""
+      "reaction": "Twelve dollars on the Powerball 11, tripled by Power Play. 17 wasn't late, it was staging. I'm basically retired until Wednesday."
     },
     {
       "draw_date": "2026-10-14",
