@@ -9,6 +9,11 @@ on:
     # can start scheduled jobs hours late.
     - cron: "0 10 * * 0,2,4"
   workflow_dispatch:
+    inputs:
+      test_routine:
+        description: "Start Claude's routine even if nothing new was scored, to test the trigger"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -36,7 +41,7 @@ jobs:
       # Claude reacts and picks for the next drawing that night instead of at the next drawing-day run.
       # Skipped until the routine's API trigger is saved as the ROUTINE_FIRE_URL and ROUTINE_FIRE_TOKEN secrets.
       - name: Start Claude's routine
-        if: steps.score.outputs.react == 'true' && env.ROUTINE_FIRE_URL != ''
+        if: (steps.score.outputs.react == 'true' || inputs.test_routine) && env.ROUTINE_FIRE_URL != ''
         env:
           ROUTINE_FIRE_TOKEN: ${{ secrets.ROUTINE_FIRE_TOKEN }}
         run: |
