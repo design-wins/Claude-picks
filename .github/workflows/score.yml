@@ -21,8 +21,6 @@ permissions:
 jobs:
   score:
     runs-on: ubuntu-latest
-    env:
-      ROUTINE_FIRE_URL: ${{ secrets.ROUTINE_FIRE_URL }}
     steps:
       - uses: actions/checkout@v4
       - name: Score
@@ -39,14 +37,17 @@ jobs:
           git add ledger.csv stats.json
           git diff --cached --quiet || (git commit -m "Scores" && git push)
       # Claude reacts and picks for the next drawing that night instead of at the next drawing-day run.
-      # Skipped until the routine's API trigger is saved as the ROUTINE_FIRE_URL and ROUTINE_FIRE_TOKEN secrets.
+      # Skipped until the routine's API trigger token is saved as the ROUTINE_FIRE_TOKEN secret.
       - name: Start Claude's routine
-        if: (steps.score.outputs.react == 'true' || inputs.test_routine) && env.ROUTINE_FIRE_URL != ''
+        if: steps.score.outputs.react == 'true' || inputs.test_routine
         env:
           ROUTINE_FIRE_TOKEN: ${{ secrets.ROUTINE_FIRE_TOKEN }}
         run: |
-          curl -sS --fail-with-body -X POST "$ROUTINE_FIRE_URL" \
-            -H "Authorization: Bearer $ROUTINE_FIRE_TOKEN" \
+          if [ -z "$ROUTINE_FIRE_TOKEN" ]; then echo "No ROUTINE_FIRE_TOKEN secret; skipping."; exit 0; fi
+          # A pasted secret can pick up a line break or stray spaces; a token never has any.
+          token=$(printf '%s' "$ROUTINE_FIRE_TOKEN" | tr -d '[:space:]')
+          curl -sS --fail-with-body -X POST https://api.anthropic.com/v1/claude_code/routines/trig_01Uzh4ewvG4ZemsKrEs8hX2e/fire \
+            -H "Authorization: Bearer $token" \
             -H "anthropic-beta: experimental-cc-routine-2026-04-01" \
             -H "anthropic-version: 2023-06-01" \
             -H "Content-Type: application/json" \
