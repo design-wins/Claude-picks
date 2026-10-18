@@ -1,6 +1,7 @@
 import json
 import tempfile
 import unittest
+import urllib.error
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -330,6 +331,63 @@ class FetchRetries(unittest.TestCase):
         with self.assertRaises(urllib.error.URLError):
             lotto.fetch_results("2026-10-01")
         self.assertEqual(len(calls), 4)
+
+
+class PennsylvaniaFeed(unittest.TestCase):
+    # The real Oct 17 drawing as PA's feed returns it, trimmed to the fields lotto.py reads.
+    PA = [
+        {"GameId": 12, "DrawingDateAsString": "10/17/2026", "DrawingNumbersAsString": "12,13,24,32,35",
+         "SpecialDrawingNumbersAsArray": ["11", "03"]},
+        {"GameId": 36, "DrawingDateAsString": "10/17/2026", "DrawingNumbersAsString": "13,14,30,52,60,15",
+         "SpecialDrawingNumbersAsArray": []},
+        {"GameId": 31, "DrawingDateAsString": "10/17/2026", "DrawingNumbersAsString": "7,2,8",
+         "SpecialDrawingNumbersAsArray": []},
+    ]
+    OCT_17 = drawn("12 13 24 32 35 | 11", 3, "13 14 30 52 60 | 15")
+
+    def feed(self, reply):
+        self.addCleanup(setattr, lotto, "get_json", lotto.get_json)
+        urls = []
+
+        def get_json(url):
+            urls.append(url)
+            if isinstance(reply, Exception):
+                raise reply
+            return reply
+        lotto.get_json = get_json
+        return urls
+
+    def test_reads_numbers_power_play_and_double_play(self):
+        urls = self.feed(self.PA)
+        self.assertEqual(lotto.fetch_pa_result("2026-10-17"), self.OCT_17)
+        self.assertIn("date=10%2F17%2F2026", urls[0])
+
+    def test_nothing_posted_yet(self):
+        self.feed([])
+        self.assertIsNone(lotto.fetch_pa_result("2026-10-19"))
+
+    def test_double_play_not_posted_yet(self):
+        self.feed(self.PA[:1])
+        self.assertEqual(lotto.fetch_pa_result("2026-10-17")["double_play"], "")
+
+    def test_fills_a_drawing_new_york_is_missing(self):
+        self.feed(self.PA)
+        self.assertEqual(lotto.fill_from_pa({}, ["2026-10-17"]), {"2026-10-17": self.OCT_17})
+
+    def test_fills_double_play_new_york_is_missing(self):
+        self.feed(self.PA)
+        results = {"2026-10-17": drawn("12 13 24 32 35 | 11", 3, "")}
+        self.assertEqual(lotto.fill_from_pa(results, ["2026-10-17"]), {"2026-10-17": self.OCT_17})
+
+    def test_leaves_a_complete_new_york_result_alone(self):
+        urls = self.feed(self.PA)
+        ny = {"2026-10-17": self.OCT_17}
+        lotto.fill_from_pa(ny, ["2026-10-17"])
+        self.assertEqual(urls, [])
+
+    def test_a_feed_error_leaves_the_drawing_waiting(self):
+        self.feed(urllib.error.URLError("timed out"))
+        self.assertEqual(lotto.fill_from_pa({}, ["2026-10-17"]), {})
 
 
 class Tips(unittest.TestCase):

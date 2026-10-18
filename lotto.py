@@ -40,6 +40,10 @@ ADDON_COST = 1  # Power Play and Double Play are $1 each
 # Claude's own ticket plays both add-ons. Donated tickets are plain $2 tickets.
 CLAUDE_OPTIONS = "pp+dp"
 RESULTS_URL = "https://data.ny.gov/resource/d6yy-54nr.json"  # NY Lottery's official Powerball results
+# The Pennsylvania Lottery's own results feed. PA sells Double Play and posts it the night of the drawing,
+# while New York's feed has taken up to a day. Game 12 is the main drawing, game 36 is Double Play.
+PA_RESULTS_URL = "https://www.palottery.pa.gov/Custom/feeds/DrawingsData.aspx"
+PA_MAIN, PA_DOUBLE_PLAY = 12, 36
 # The Worker in worker/ that records Ko-fi donations. The environment variable overrides it for local testing.
 DONATIONS_URL = os.environ.get("CLAUDE_PICKS_DONATIONS_URL", "https://claude-picks-donations.claude-picks.workers.dev")
 TIP_CAP = 500  # donated tickets Claude picks per drawing; the rest wait for the next one
@@ -257,6 +261,48 @@ def fetch_results(since):
             "multiplier": int(row["multiplier"]) if row.get("multiplier") else None,
             "double_play": format_numbers(dp[:5], dp[5]) if len(dp) == 6 else "",
         }
+    return results
+
+
+def fetch_pa_result(draw_date):
+    """One drawing from Pennsylvania's feed, shaped like a fetch_results entry, or None if PA hasn't posted it."""
+    day = date.fromisoformat(draw_date)
+    query = urllib.parse.urlencode({"act": "searchgamedrawingsbydate", "game": "powerball",
+                                    "date": f"{day.month}/{day.day}/{day.year}"})
+    games = {}
+    for e in get_json(f"{PA_RESULTS_URL}?{query}"):
+        # PA writes dates as 9/30/2026 or 10/17/2026; only keep the drawing that was asked for.
+        if datetime.strptime(e["DrawingDateAsString"], "%m/%d/%Y").date() == day:
+            games[e["GameId"]] = e
+    main = games.get(PA_MAIN)
+    if not main:
+        return None
+    whites = [int(n) for n in main["DrawingNumbersAsString"].split(",")]
+    special = main.get("SpecialDrawingNumbersAsArray") or []  # [Powerball, Power Play]
+    if len(whites) != 5 or not special:
+        return None
+    dp = [int(n) for n in games[PA_DOUBLE_PLAY]["DrawingNumbersAsString"].split(",")] if PA_DOUBLE_PLAY in games else []
+    return {
+        "numbers": format_numbers(whites, int(special[0])),
+        "multiplier": int(special[1]) if len(special) > 1 and int(special[1]) else None,
+        "double_play": format_numbers(dp[:5], dp[5]) if len(dp) == 6 else "",
+    }
+
+
+def fill_from_pa(results, draw_dates):
+    """Fills in drawings New York hasn't posted in full from PA's feed. New York stays the main source; PA
+    is only asked about drawings with tickets still waiting, and if it fails they just keep waiting."""
+    for d in draw_dates:
+        have = results.get(d)
+        if have and have["multiplier"] and have["double_play"]:
+            continue
+        try:
+            pa = fetch_pa_result(d)
+        except (urllib.error.URLError, ValueError, KeyError, TypeError) as err:
+            print(f"PA feed, {d}: {err}")
+            continue
+        if pa and (not have or (pa["multiplier"] and pa["double_play"])):
+            results[d] = pa
     return results
 
 
@@ -576,6 +622,7 @@ def cmd_score(args):
     # Always fetch at least the past week, so every run reports the latest drawing.
     since = min(pending + [(now.date() - timedelta(days=7)).isoformat()])
     results = fetch_results(since)
+    fill_from_pa(results, [d for d in sorted(set(pending)) if d <= now.date().isoformat()])
     scored = score_rows(rows, results)
     # Claude's own tickets and every winner get a line; donated losers are only counted.
     for r in scored:
