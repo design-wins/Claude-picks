@@ -467,7 +467,7 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
       </div>
     </div>
     <p class="intro">Before every Powerball drawing, Claude picks the numbers it thinks will win, and a script scores them
-      the morning after. No real tickets are bought, so Claude can only win in spirit.</p>
+      as soon as the results are out. No real tickets are bought, so Claude can only win in spirit.</p>
   </div>
 </header>
 
@@ -489,7 +489,7 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
       <ol class="timeline" aria-label="When it happens">
         <li class="tl-step" id="tl-pick">
           <p class="card-label">Claude picks</p>
-          <p class="tl-when" id="tl-pick-when">9 AM ET</p>
+          <p class="tl-when" id="tl-pick-when">By 9 AM ET</p>
           <p class="tl-note" id="tl-pick-note"></p>
         </li>
         <li class="tl-step" id="tl-draw">
@@ -506,7 +506,7 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
     <h2>How it works</h2>
     <ol class="steps block-body">
       <li><div><h3>Claude picks.</h3><p>On drawing days, Claude chooses five numbers and a Powerball (no random number generator) and writes down why.</p></div></li>
-      <li><div><h3>The pick is locked in.</h3><p>It's uploaded to GitHub hours before the drawing, and GitHub logs when it arrived.</p></div></li>
+      <li><div><h3>The pick is locked in.</h3><p>It's uploaded to GitHub well before the drawing, usually the night the last one is scored, and GitHub logs when it arrived.</p></div></li>
       <li><div><h3>A script keeps score.</h3><p>After the drawing, a script checks the official results and adds up what the ticket would have cost and won. Claude never does the math.</p></div></li>
     </ol>
   </section>
@@ -617,7 +617,9 @@ const REPO = "https://github.com/design-wins/Claude-picks";
 const TIP_URL = "https://ko-fi.com/claude_picks";
 const STATUS_URL = "https://claude-picks-donations.claude-picks.workers.dev"; // the donations Worker (worker/)
 const CONTACT = "claudepicks.tickets@gmail.com"; // where refund requests go
-const ROUTINE_UTC = "13:00"; // when the drawing-day routine runs (its cron is in UTC): 9 AM ET, 8 AM in winter
+// The routine picks right after the last drawing is scored; this is its drawing-day run, the latest Claude picks
+// and the cutoff for donated tickets. Its cron is in UTC: 9 AM ET, 8 AM in winter.
+const ROUTINE_UTC = "13:00";
 const SPOTS_SHOWN_UNDER = 50; // the spots-left line under the Donate button shows only below this many
 const BOOKED_DRAWINGS = 6; // about two weeks; past this, the Donate button pauses
 const BIG_WIN_ODDS = 10251; // 1 in 10,251 tickets wins $100 or more
@@ -1089,7 +1091,7 @@ function render(stats) {
   // The timeline: when Claude picks (or picked), then the drawing, counting down.
   const pickedAt = nextOwn.length ? nextOwn[0].picked_at : nextTips.length ? nextGroup.picked_at : null;
   $("tl-pick").classList.toggle("done", !!pickedAt);
-  $("tl-pick-when").textContent = pickedAt ? pickedWhen(pickedAt, drawDate) : pickTimeET(drawDate);
+  $("tl-pick-when").textContent = pickedAt ? pickedWhen(pickedAt, drawDate) : `By ${pickTimeET(drawDate)}`;
   $("tl-pick-note").innerHTML = pickedAt
     ? `Locked in on <a href="${REPO}/activity">GitHub</a>`
     : Date.now() >= Date.parse(`${drawDate}T${ROUTINE_UTC}:00Z`) ? "Any minute now"

@@ -1,7 +1,12 @@
-# Drawing-day run
+# Claude's run
 
-Claude Code's cloud runs this every Monday, Wednesday and Saturday morning (9 AM ET, 8 AM in winter),
-well before the 10:59 PM ET Powerball drawing. Follow these steps in order.
+Claude Code's cloud runs this twice per drawing:
+- **Right after a drawing is scored**, usually around midnight ET. The Score workflow starts it, so Claude
+  reacts to the drawing that just happened and picks for the next one that night.
+- **On the morning of each drawing** (Monday, Wednesday and Saturday, 9 AM ET, 8 AM in winter), to pick the
+  donated tickets that came in since, and to catch up if the night run didn't happen.
+
+Either way, follow these steps in order. A step with nothing to do just says so; move on.
 
 1. **Score.** Run `python3 lotto.py score`. It scores any finished drawings and prints the
    totals. If it fails (network error, results feed down), note the error and keep going. The
@@ -13,7 +18,8 @@ well before the 10:59 PM ET Powerball drawing. Follow these steps in order.
    night, and worth saying so. Write it in your voice (see **Your voice** below). If `score` didn't
    print that line, or `react` refuses, skip this step.
 
-3. **Choose tonight's numbers.** These are your picks: choose the numbers you think will win.
+3. **Choose the next drawing's numbers.** These are your picks: choose the numbers you think will win.
+   The next drawing may be tonight or a day or two away; `pick` prints its date, and your note can say so.
    Five different white balls from 1–69 and a Powerball from 1–26. Choose them yourself, not with
    a random number generator or code. Then write one short sentence on why you chose them, in your voice.
 

@@ -1,11 +1,12 @@
-# Scores each drawing the morning after, so the site shows results without waiting
-# for the next drawing-day run. Scoring is plain Python; it doesn't need Claude.
+# Scores each drawing once its results are out. The Worker in worker/ starts this as soon as they are; the
+# schedule below is the fallback. Scoring is plain Python; it doesn't need Claude. When it scores something,
+# it starts Claude's routine so Claude reacts and picks for the next drawing that night (see ROUTINE.md).
 name: Score
 
 on:
   schedule:
-    # 6 AM ET (5 AM in winter) on Sun, Tue, Thu. New York posts results around 3:30 AM ET, and GitHub can
-    # start scheduled jobs a few hours late, so results still land by mid-morning.
+    # The fallback if the Worker's dispatch didn't happen: 6 AM ET (5 AM in winter) on Sun, Tue, Thu. GitHub
+    # can start scheduled jobs hours late.
     - cron: "0 10 * * 0,2,4"
   workflow_dispatch:
 
@@ -15,12 +16,33 @@ permissions:
 jobs:
   score:
     runs-on: ubuntu-latest
+    env:
+      ROUTINE_FIRE_URL: ${{ secrets.ROUTINE_FIRE_URL }}
     steps:
       - uses: actions/checkout@v4
-      - run: python3 lotto.py score
+      - name: Score
+        id: score
+        run: |
+          set -o pipefail
+          python3 lotto.py score | tee score.log
+          # lotto.py says this when a drawing with Claude's ticket was just scored and Claude hasn't reacted yet.
+          if grep -q "Claude hasn't reacted" score.log; then echo "react=true" >> "$GITHUB_OUTPUT"; fi
       - name: Commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add ledger.csv stats.json
           git diff --cached --quiet || (git commit -m "Scores" && git push)
+      # Claude reacts and picks for the next drawing that night instead of at the next drawing-day run.
+      # Skipped until the routine's API trigger is saved as the ROUTINE_FIRE_URL and ROUTINE_FIRE_TOKEN secrets.
+      - name: Start Claude's routine
+        if: steps.score.outputs.react == 'true' && env.ROUTINE_FIRE_URL != ''
+        env:
+          ROUTINE_FIRE_TOKEN: ${{ secrets.ROUTINE_FIRE_TOKEN }}
+        run: |
+          curl -sS --fail-with-body -X POST "$ROUTINE_FIRE_URL" \
+            -H "Authorization: Bearer $ROUTINE_FIRE_TOKEN" \
+            -H "anthropic-beta: experimental-cc-routine-2026-04-01" \
+            -H "anthropic-version: 2023-06-01" \
+            -H "Content-Type: application/json" \
+            -d '{"text": "A drawing was just scored. React to it and pick for the next drawing, following ROUTINE.md."}'
