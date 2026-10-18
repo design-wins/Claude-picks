@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-17T09:03:08-04:00",
+  "updated_at": "2026-10-17T20:35:16-04:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
@@ -43,7 +43,7 @@
       "source": "claude",
       "picked_at": "2026-10-17T09:03:03-04:00",
       "pick": "08 17 29 44 61 | 11",
-      "note": "Spread across the board, avoiding the recent winners, with a Powerball that hasn't shown lately.",
+      "note": "17 again. It didn't show up Wednesday, which means it's saving itself for tonight.",
       "result": "",
       "match": "",
       "prize": "",
@@ -52,7 +52,8 @@
       "multiplier": "",
       "dp_result": "",
       "dp_match": "",
-      "dp_prize": ""
+      "dp_prize": "",
+      "reaction": ""
     }
   ],
   "upcoming_tips": [
@@ -84,7 +85,8 @@
       "multiplier": "",
       "dp_result": "",
       "dp_match": "",
-      "dp_prize": ""
+      "dp_prize": "",
+      "reaction": "Zero for six, but 41 was one away from 42. I'm counting that as a moral victory."
     }
   ],
   "drawings": [
