@@ -180,6 +180,11 @@ p { margin: 0; }
 .confetti { transform-box: fill-box; transform-origin: center; animation: fall var(--d, 2.4s) linear infinite; animation-delay: var(--delay, 0s); }
 .rain { animation: rain 1.1s linear infinite; animation-delay: var(--delay, 0s); }
 .tear { animation: tear 3.2s ease-in infinite; }
+/* Extras on the face: a ticket while donated ones wait, sweat on drawing night, stubble when desperate */
+.sweat { animation: sweat 2.6s ease-in infinite; }
+@keyframes sweat { 0%, 20% { transform: translateY(0); } 100% { transform: translateY(5px); } }
+.held { transform-box: fill-box; transform-origin: 30% 80%; animation: wave 2.4s ease-in-out infinite; }
+@keyframes wave { 50% { rotate: -6deg; } }
 .twinkle { transform-box: fill-box; transform-origin: center; animation: twinkle 2.6s ease-in-out infinite; animation-delay: var(--delay, 0s); }
 @keyframes bounce { from { transform: translateY(0) scaleY(0.96); } to { transform: translateY(-12px) scaleY(1.02); } }
 @keyframes bob { 50% { transform: translateY(-5px); } }
@@ -294,6 +299,9 @@ body:has(.tix-dialog[open]) { overflow: hidden; }
 .tab .neg dd { color: var(--red); }
 .tab .pos dd { color: var(--win); }
 .tab-note { margin-top: var(--space-4); font-size: 15px; color: var(--ink-2); }
+.records { margin-top: var(--space-6); max-width: 520px; }
+.records ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); font-size: 15px; color: var(--ink-2); }
+.records strong { color: var(--ink); font-weight: 600; }
 
 /* ---------- Tip band ---------- */
 .band { margin-top: var(--space-9); background: var(--band); color: var(--band-ink); padding: var(--space-9) 0; }
@@ -517,6 +525,10 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
         <div class="total" id="net-row"><dt>Net</dt><span class="lead"></span><dd id="net">$0</dd></div>
       </dl>
       <p class="tab-note" id="tab-note"></p>
+      <div class="records" id="records" hidden>
+        <p class="card-label">Personal records</p>
+        <ul id="records-list"></ul>
+      </div>
     </div>
   </section>
 
@@ -533,6 +545,7 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
         <div class="tip-status">
           <p class="tip-count" id="tip-count"></p>
           <p class="tip-live" id="tip-live" hidden></p>
+          <p class="band-2" id="tip-milestone" hidden></p>
         </div>
       </div>
       <div class="tip-fine">
@@ -636,6 +649,17 @@ const EXCUSES = [
   [75, "The Powerball hasn't written back."],
   [90, "It's working on a new system. The old system was also a new system."],
   [120, "Any win would do. Even $4. Especially $4."],
+];
+// Donated-ticket milestones. The page shows the latest one reached.
+const MILESTONES = [
+  [1, "The first donated ticket. Claude has framed it, which is hard without hands."],
+  [10, "Ten donated tickets. Claude would like to thank its agent. It doesn't have an agent."],
+  [50, "Fifty donated tickets. Claude has prepared remarks. They're three pages long. You've been spared."],
+  [100, "100 donated tickets. Claude isn't crying. It's Powerball dust."],
+  [500, "500 donated tickets, a whole drawing's worth. Claude now calls you all \u201cthe syndicate.\u201d"],
+  [1000, "1,000 donated tickets. Claude has hired a pretend accountant to look at it disapprovingly."],
+  [5000, "5,000 donated tickets. At this point Claude is a lottery pool with a face."],
+  [10000, "10,000 donated tickets. Claude has run out of ways to say thank you. Picture 10,000 of them."],
 ];
 const METER = ["sad", "hopeful", "happy", "party"];
 const LABELS = { desperate: "Desperate", sad: "Sad", hopeful: "Hopeful", happy: "Happy", party: "Party", huge: "Huge", jackpot: "Jackpot" };
@@ -822,7 +846,28 @@ function star(cx, cy, r) {
   return `M${cx} ${cy - r} Q${cx} ${cy} ${cx + r} ${cy} Q${cx} ${cy} ${cx} ${cy + r} Q${cx} ${cy} ${cx - r} ${cy} Q${cx} ${cy} ${cx} ${cy - r}Z`;
 }
 
-function face(state) {
+// Drawing night in New York: from 6 PM on a drawing day, when Claude starts to sweat. ?night forces it, for demos.
+function drawingNight() {
+  if (new URLSearchParams(location.search).has("night")) return true;
+  const parts = Object.fromEntries(new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", weekday: "short", hour: "numeric", hourCycle: "h23" })
+    .formatToParts(new Date()).map((p) => [p.type, p.value]));
+  return ["Mon", "Wed", "Sat"].includes(parts.weekday) && Number(parts.hour) >= 18;
+}
+
+// Small things the face picks up from what's going on, drawn over it.
+function faceExtras({ ticket, sweat, stubble }) {
+  return (stubble ? `<g fill="var(--face-ink)" opacity=".35">${[[78, 160], [88, 166], [100, 168], [112, 166], [122, 160], [84, 172], [96, 175], [106, 175], [116, 172], [70, 152], [130, 152]]
+      .map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.6"/>`).join("")}</g>` : "") +
+    (sweat ? `<path class="sweat" d="M154 58 Q144 76 154 83 Q164 76 154 58 Z" fill="#8cc4f2" stroke="var(--tear)" stroke-width="1.5"/>` : "") +
+    (ticket ? `<g class="held">
+        <rect x="146" y="146" width="44" height="26" rx="3" transform="rotate(-14 168 159)" fill="var(--marigold)" stroke="var(--face-ink)" stroke-width="2.5"/>
+        <g transform="rotate(-14 168 159)"><line x1="154" y1="155" x2="172" y2="155" stroke="var(--face-ink)" stroke-width="2" stroke-linecap="round"/>
+        <line x1="154" y1="162" x2="166" y2="162" stroke="var(--face-ink)" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="181" cy="159" r="4.5" fill="var(--red)"/></g>
+      </g>` : "");
+}
+
+function face(state, extras = {}) {
   const confettiColors = ["#ffffff", "var(--red)", "#1b1f2a", "#3f6fb5"];
   const confettiOf = (n) => Array.from({ length: n }, (_, i) => {
     const x = 12 + ((i * 47) % 176), y = -10 + ((i * 29) % 60);
@@ -940,6 +985,7 @@ function face(state) {
     <g class="body">
       <circle cx="100" cy="114" r="70" fill="url(#shade)"/>
       ${parts.face}
+      ${faceExtras(extras)}
     </g>
   </svg>`;
 }
@@ -970,10 +1016,10 @@ function moodLine(stats) {
   return `${dryFor}. ${excuse}`;
 }
 
-function setMood(state, line, rule) {
+function setMood(state, line, rule, extras) {
   const hero = $("hero");
   hero.dataset.mood = state;
-  $("face").innerHTML = face(state);
+  $("face").innerHTML = face(state, extras);
   $("mood-head").textContent = MOODS[state].head;
   $("mood-line").textContent = line;
   $("meter-rule").textContent = rule || MOODS[state].rule;
@@ -990,7 +1036,8 @@ function setMood(state, line, rule) {
 function render(stats) {
   const m = stats.mood;
   const tipHope = m.state === "hopeful" && m.tips_waiting && (m.days_since_win == null || m.days_since_win >= 30);
-  setMood(m.state, moodLine(stats), tipHope ? "A donated ticket keeps Claude hopeful until its drawing." : "");
+  setMood(m.state, moodLine(stats), tipHope ? "A donated ticket keeps Claude hopeful until its drawing." : "",
+    { ticket: m.tips_waiting > 0, sweat: drawingNight(), stubble: m.state === "desperate" });
 
   // Picks for the next drawing; tickets for drawings already held wait in the results list.
   // Donated tickets come grouped by drawing, as just their numbers (`upcoming_tips`).
@@ -1071,11 +1118,22 @@ function render(stats) {
     ? "Every ticket counts at what it would cost: $2, plus $1 each for Power Play and Double Play on Claude's own." + (t.jackpots ? ` Plus ${plural(t.jackpots, "jackpot")}, which isn't counted above!` : "")
     : "The first results come in after the first drawing.";
 
+  // Personal records, from lotto.py
+  const rec = stats.records;
+  const recs = rec ? [
+    rec.favorite && `<strong>Favorite number:</strong> ${pad(rec.favorite.number)}. Picked ${plural(rec.favorite.picked, "time")}, drawn ${rec.favorite.drawn ? plural(rec.favorite.drawn, "time") : "never"}.${!rec.favorite.drawn && rec.favorite.picked > 1 ? " Claude is loyal." : ""}`,
+    rec.nemesis && `<strong>Nemesis:</strong> ${pad(rec.nemesis.number)}. Claude has missed it by one ${rec.nemesis.missed_by_one === 1 ? "once" : plural(rec.nemesis.missed_by_one, "time")}.`,
+    rec.best && `<strong>Closest to the jackpot:</strong> ${rec.best.numbers} of 6, on ${fmtDate(rec.best.draw_date)}. ${rec.best.numbers === 6 ? "That's all of them." : `Only ${6 - rec.best.numbers} to go.`}`,
+  ].filter(Boolean) : [];
+  $("records-list").innerHTML = recs.map((r) => `<li>${r}</li>`).join("");
+  $("records").hidden = !recs.length;
+
   // Tip count
   const tipTickets = donatedInLedger(stats);
   $("tip-count").textContent = tipTickets
     ? `People have donated ${plural(tipTickets, "ticket")} so far.`
     : "Nobody has donated yet. Be the first.";
+  setMilestone(tipTickets);
   const chances = partyChances(stats);
   $("party").textContent = `Claude's next party is ${partyWait(chances)} away.`;
   $("chances").textContent = chancesLine(chances);
@@ -1219,6 +1277,7 @@ function showTipStatus(stats, donated, href) {
   const live = $("tip-live");
   live.hidden = false;
   if (donated > inLedger) $("tip-count").textContent = `People have donated ${plural(donated, "ticket")} so far.`;
+  setMilestone(Math.max(donated, inLedger));
   if (ahead >= BOOKED_DRAWINGS) {
     setBuy("Booked up", null);
     live.textContent = `Every drawing through ${fmtDate(addDraws(first, ahead - 1), true)} is full. Check back soon.`;
@@ -1241,6 +1300,12 @@ function showTipStatus(stats, donated, href) {
 }
 
 // Donated tickets already picked: scored ones plus those waiting on a drawing.
+function setMilestone(donated) {
+  const reached = MILESTONES.filter(([n]) => donated >= n).pop();
+  $("tip-milestone").hidden = !reached;
+  if (reached) $("tip-milestone").textContent = reached[1];
+}
+
 function donatedInLedger(stats) {
   return stats.by_source.tip.tickets + (stats.upcoming_tips || []).reduce((n, g) => n + g.picks.length, 0);
 }
@@ -1395,6 +1460,7 @@ function demoStats(demo) {
     totals: { tickets: 61 + tipTotal, drawings: 55, spent: 2 * (61 + tipTotal), won: won + 15, net: won + 15 - 2 * (61 + tipTotal), jackpots: state === "jackpot" ? 1 : 0 },
     by_source: { claude: {}, tip: { tickets: tipTotal } },
     best_win: recent.filter(isWin).sort(byPrize)[0] || null,
+    records: { favorite: { number: 7, picked: 14, drawn: 0 }, nemesis: { number: 42, missed_by_one: 5 }, best: { draw_date: "2026-10-05", numbers: 2 } },
     upcoming, upcoming_tips, recent, drawings,
     // What the Worker would report: 1,250 tickets waiting (viral) or 3,500 (booked), on top of the ledger.
     demo_donated: viral ? tipTotal + tips + (demo === "booked" ? 3500 : full ? 0 : 1250) : null,

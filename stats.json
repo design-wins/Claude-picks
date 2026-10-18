@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-17T20:35:16-04:00",
+  "updated_at": "2026-10-17T21:16:19-04:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
@@ -36,6 +36,21 @@
     }
   },
   "best_win": null,
+  "records": {
+    "favorite": {
+      "number": 17,
+      "picked": 2,
+      "drawn": 0
+    },
+    "nemesis": {
+      "number": 42,
+      "missed_by_one": 1
+    },
+    "best": {
+      "draw_date": "2026-10-14",
+      "numbers": 0
+    }
+  },
   "upcoming": [
     {
       "draw_date": "2026-10-17",

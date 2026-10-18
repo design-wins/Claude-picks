@@ -507,6 +507,30 @@ class Reactions(unittest.TestCase):
             lotto.add_reaction(self.rows(), "   ")
 
 
+class Records(unittest.TestCase):
+    def test_records(self):
+        rows = []
+        lotto.add_ticket(rows, [9, 17, 26, 41, 58, 13], "", "claude", et(2026, 10, 13, 18))
+        lotto.add_ticket(rows, [3, 34, 37, 50, 60, 20], "", "tip", et(2026, 10, 13, 18))  # not Claude's
+        lotto.add_ticket(rows, [8, 17, 29, 44, 61, 11], "", "claude", et(2026, 10, 17, 9))
+        lotto.score_rows(rows, {"2026-10-14": drawn("03 34 37 42 46 | 20")})
+        self.assertEqual(lotto.records(rows), {
+            "favorite": {"number": 17, "picked": 2, "drawn": 0},
+            "nemesis": {"number": 42, "missed_by_one": 1},
+            "best": {"draw_date": "2026-10-14", "numbers": 0},
+        })
+
+    def test_best_counts_the_powerball(self):
+        rows = []
+        lotto.add_ticket(rows, [1, 60, 61, 62, 63, 15], "", "claude", et(2026, 10, 10, 18))
+        lotto.score_rows(rows, {"2026-10-10": drawn("01 04 19 33 51 | 15")})
+        self.assertEqual(lotto.records(rows)["best"]["numbers"], 2)
+        self.assertIsNone(lotto.records(rows)["nemesis"])
+
+    def test_no_tickets(self):
+        self.assertIsNone(lotto.records([]))
+
+
 class LedgerFile(unittest.TestCase):
     def test_round_trip(self):
         self.addCleanup(setattr, lotto, "LEDGER", lotto.LEDGER)

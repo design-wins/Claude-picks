@@ -415,6 +415,39 @@ def best_win(rows, today):
     return {"draw_date": best["draw_date"], "prize": prize, "source": best["source"]}
 
 
+def records(rows):
+    """Claude's personal records from its own tickets: the white ball it picks most, the one it keeps missing
+    by one, and its best ticket so far. Ties go to the most recent."""
+    own = [r for r in rows if r["source"] == "claude"]
+    scored = [r for r in own if r["result"]]
+    if not own:
+        return None
+    picked, drawn, near = {}, {}, {}
+    for r in sorted(own, key=lambda r: r["draw_date"]):
+        whites, _ = parse_numbers(r["pick"])
+        for n in whites:
+            picked[n] = picked.get(n, 0) + 1
+        if r["result"]:
+            result_whites, _ = parse_numbers(r["result"])
+            for n in result_whites:
+                drawn[n] = drawn.get(n, 0) + 1
+                if n not in whites and (n - 1 in whites or n + 1 in whites):
+                    near[n] = near.get(n, 0) + 1
+    # dicts keep insertion order, and max() keeps the first it finds, so reverse to favour the latest.
+    favorite = max(reversed(list(picked)), key=picked.get)
+    nemesis = max(reversed(list(near)), key=near.get) if near else None
+
+    def numbers_hit(r):
+        return int(r["match"].split("+")[0]) + ("+PB" in r["match"])
+
+    best = max(reversed(sorted(scored, key=lambda r: r["draw_date"])), key=numbers_hit) if scored else None
+    return {
+        "favorite": {"number": favorite, "picked": picked[favorite], "drawn": drawn.get(favorite, 0)},
+        "nemesis": {"number": nemesis, "missed_by_one": near[nemesis]} if nemesis else None,
+        "best": {"draw_date": best["draw_date"], "numbers": numbers_hit(best)} if best else None,
+    }
+
+
 def build_stats(rows, now, latest_drawing=None):
     # Donated tickets can run to 500 a drawing, so the site gets them added up per drawing, the numbers
     # of the ones still waiting, and the winners from the latest drawing. The ledger has every ticket.
@@ -435,6 +468,7 @@ def build_stats(rows, now, latest_drawing=None):
         "totals": totals(rows),
         "by_source": {s: totals([r for r in rows if r["source"] == s]) for s in SOURCES},
         "best_win": best_win(rows, now.astimezone(ET).date()),
+        "records": records(rows),
         "upcoming": [r for r in rows if not r["result"] and r["source"] != "tip"],
         "upcoming_tips": upcoming_tips(rows),
         "recent": recent[::-1],
