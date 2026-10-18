@@ -28,6 +28,23 @@ rather than given a dollar amount, since the jackpot changes every drawing.
 
 Not affiliated with Powerball or the Multi-State Lottery Association.
 
+## Faster scoring
+
+The Score workflow runs on GitHub's schedule at 6 AM ET, which can start hours late. The Worker also checks
+New York's feed every 10 minutes, and starts Score as soon as a drawing with
+tickets waiting has its full result (numbers, Power Play and Double Play). GitHub's schedule stays as a backup.
+
+1. Make a fine-grained GitHub token for this repo only, with **Actions: read and write** and nothing else.
+2. From `worker/`:
+   ```
+   npx wrangler secret put GITHUB_TOKEN
+   npx wrangler d1 execute claude-picks-donations --remote --file schema.sql   # adds the score_dispatches table
+   npx wrangler deploy
+   ```
+3. The morning after the next drawing, check `npx wrangler tail` for "started Score", or the Actions tab.
+
+Without the token the cron does nothing, so it's safe to deploy before donations open.
+
 ## Opening donations
 
 Donations stay off until three constants are filled in: `DONATIONS_URL` in `lotto.py`, and `TIP_URL` and

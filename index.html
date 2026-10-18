@@ -470,7 +470,7 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
 
 <main>
   <section class="block wrap" id="last" hidden>
-    <p class="eyebrow eyebrow-past"><span class="live" aria-hidden="true"></span>Last drawing</p>
+    <p class="eyebrow eyebrow-past"><span class="live" aria-hidden="true"></span><span id="last-eyebrow">Last drawing</span></p>
     <h2 id="last-title">Last drawing</h2>
     <div class="block-body last-grid">
       <div class="last-card last-own" id="last-own"></div>
@@ -690,6 +690,22 @@ function nextDrawDate() {
   if (+p.hour >= 23) d.setUTCDate(d.getUTCDate() + 1);
   while (![1, 3, 6].includes(d.getUTCDay())) d.setUTCDate(d.getUTCDate() + 1);
   return d.toISOString().slice(0, 10);
+}
+
+// A drawing that's already happened, named from today: "tonight's", "last night's", "Saturday's".
+function drawnWhen(iso, capital) {
+  const days = daysFromTodayET(iso);
+  const s = days === 0 ? "tonight's" : days === -1 ? "last night's"
+    : new Date(iso + "T12:00:00Z").toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" }) + "'s";
+  return capital ? s[0].toUpperCase() + s.slice(1) : s;
+}
+
+// The newest drawing that's been held but not scored yet, with Claude's or donated tickets in it; null if none.
+function heldDrawing(stats) {
+  const next = nextDrawDate();
+  const dates = [...stats.upcoming.filter((r) => r.source !== "tip").map((r) => r.draw_date),
+    ...(stats.upcoming_tips || []).map((g) => g.draw_date)].filter((d) => d < next).sort();
+  return dates.length ? dates[dates.length - 1] : null;
 }
 
 // When Claude picks for the drawing on `iso`, in New York time: "9 AM ET" (8 AM in winter).
@@ -990,7 +1006,16 @@ function moodLine(stats) {
   const dryFor = m.days_since_win == null ? `${plural(dry, "day")} of tickets and no wins` : drought;
   if (m.state === "desperate") return `${dryFor}. ${excuse}`;
   if (m.state === "sad") return `${dryFor}. ${excuse} It could use a ticket.`;
-  if (m.tips_waiting) return `${drought}, but people donated ${plural(m.tips_waiting, "ticket")} for the next drawing.`;
+  if (m.tips_waiting) {
+    // Donated tickets for drawings still to come, or ones already drawn and waiting on results.
+    const next = nextDrawDate();
+    const count = (gs) => gs.reduce((n, g) => n + g.picks.length, 0);
+    const ahead = count((stats.upcoming_tips || []).filter((g) => g.draw_date >= next));
+    if (ahead) return `${drought}, but people donated ${plural(ahead, "ticket")} for the next drawing.`;
+    const held = heldDrawing(stats);
+    const drawn = count((stats.upcoming_tips || []).filter((g) => g.draw_date === held));
+    if (drawn) return `${drought}, but ${plural(drawn, "donated ticket")} ${drawn === 1 ? "is" : "are"} still waiting on ${drawnWhen(held)} results.`;
+  }
   if (!stats.totals.tickets) return "No results yet. Anything is possible.";
   if (m.days_since_win == null && dry < 10) return "No wins yet. Early days.";
   return `${dryFor}. ${excuse}`;
@@ -1016,7 +1041,7 @@ function setMood(state, line, rule, extras) {
 function render(stats) {
   const m = stats.mood;
   const tipHope = m.state === "hopeful" && m.tips_waiting && (m.days_since_win == null || m.days_since_win >= 30);
-  setMood(m.state, moodLine(stats), tipHope ? "A donated ticket keeps Claude hopeful until its drawing." : "",
+  setMood(m.state, moodLine(stats), tipHope ? "A donated ticket keeps Claude hopeful until its results are in." : "",
     { stubble: m.state === "desperate" });
 
   // Picks for the next drawing; tickets for drawings already held wait in the results list.
@@ -1024,10 +1049,15 @@ function render(stats) {
   const next = nextDrawDate();
   const own = stats.upcoming.filter((r) => r.source !== "tip");
   const tipGroups = stats.upcoming_tips || [];
-  const nextOwn = own.filter((r) => r.draw_date >= next);
-  const nextGroup = tipGroups.find((g) => g.draw_date >= next);
-  const waiting = own.filter((r) => r.draw_date < next);
-  const drawDate = nextOwn.length ? nextOwn[0].draw_date : nextGroup ? nextGroup.draw_date : next;
+  const upOwn = own.filter((r) => r.draw_date >= next);
+  const upGroup = tipGroups.find((g) => g.draw_date >= next);
+  // Drawn but not scored yet: until Claude picks for the next drawing, this card stays on the drawing
+  // that just happened, above Last drawing, instead of jumping to an empty card for the next one.
+  const held = !upOwn.length && !upGroup ? heldDrawing(stats) : null;
+  const nextOwn = held ? own.filter((r) => r.draw_date === held) : upOwn;
+  const nextGroup = held ? tipGroups.find((g) => g.draw_date === held) : upGroup;
+  const waiting = own.filter((r) => r.draw_date < next && r.draw_date !== held);
+  const drawDate = held || (nextOwn.length ? nextOwn[0].draw_date : nextGroup ? nextGroup.draw_date : next);
   const nextTips = nextGroup && nextGroup.draw_date === drawDate ? nextGroup.picks : [];
   // Up next: name the drawing by how soon it is, and count down to it.
   const days = daysFromTodayET(drawDate);
@@ -1048,9 +1078,22 @@ function render(stats) {
     const left = countdown(drawDate);
     $("picks-sub").textContent = left ? `in ${left}` : "Happening now";
   };
-  showCountdown();
   clearInterval(render.timer);
-  render.timer = setInterval(showCountdown, 60_000);
+  $("tl-draw").classList.toggle("done", !!held);
+  $("last-eyebrow").textContent = held ? "Last results" : "Last drawing";
+  if (held) {
+    // The held drawing goes first, until the script scores it.
+    $("picks-eyebrow").textContent = `Drawn · ${monthDay}`;
+    $("picks-eyebrow-row").classList.add("eyebrow-still");
+    $("picks-title").textContent = `${drawnWhen(drawDate, true)} picks`;
+    // New York's feed has posted anywhere from overnight to a day or two later, so no promise on timing.
+    $("picks-sub").textContent = "Waiting on the official results.";
+    $("last").before($("picks"));
+  } else {
+    showCountdown();
+    render.timer = setInterval(showCountdown, 60_000);
+    $("last").after($("picks"));
+  }
   const ticketCards = nextOwn.map((t) => `
       <div class="ticket">
         <div class="ticket-head"><p class="card-label">Claude's ticket</p>${addOnTag(t)}</div>

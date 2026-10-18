@@ -9,3 +9,10 @@ database_name = "claude-picks-donations"
 database_id = "490ab9e2-3d41-443e-af75-3abb33e80580"
 
 # Set the Ko-fi verification token with `npx wrangler secret put KOFI_TOKEN`.
+
+# Every 10 minutes. Starts the Score workflow once New York's feed has a result for a drawing with tickets
+# waiting; the feed has posted anywhere from overnight to a day or more after a drawing. When nothing is waiting
+# it stops after reading stats.json. Needs `wrangler secret put GITHUB_TOKEN`: a fine-grained token for
+# design-wins/claude-picks with Actions: read and write, nothing else.
+[triggers]
+crons = ["*/10 * * * *"]

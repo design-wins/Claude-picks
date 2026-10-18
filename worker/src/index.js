@@ -20,7 +20,53 @@ export default {
       return new Response("Server error", { status: 500 });
     }
   },
+
+  // Cron (wrangler.toml): every 10 minutes. Starts the Score workflow as soon
+  // as New York's feed has a full result for a drawing that still has tickets waiting, instead of waiting
+  // for GitHub's own schedule, which can start hours late.
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(checkResults(env).catch((err) => console.error("results:", err)));
+  },
 };
+
+const RESULTS_URL = "https://data.ny.gov/resource/d6yy-54nr.json";
+const STATS_URL = "https://design-wins.github.io/Claude-picks/stats.json";
+const REPO = "design-wins/claude-picks";
+const RETRY_AFTER_MS = 30 * 60 * 1000; // if a drawing still isn't scored this long after a dispatch, try again
+
+async function checkResults(env) {
+  if (!env.GITHUB_TOKEN) return console.log("results: no GITHUB_TOKEN set, skipping");
+  const stats = await (await fetch(`${STATS_URL}?t=${Date.now()}`, { cache: "no-store" })).json();
+  // Drawings with Claude's or donated tickets still waiting on a result.
+  const waiting = [...new Set([...stats.upcoming.map((r) => r.draw_date),
+    ...(stats.upcoming_tips || []).map((g) => g.draw_date)])].sort();
+  if (!waiting.length) return;
+  const query = new URLSearchParams({ $where: `draw_date >= '${waiting[0]}T00:00:00'`, $order: "draw_date" });
+  const res = await fetch(`${RESULTS_URL}?${query}`, { headers: { "User-Agent": "claude-picks/1.0" } });
+  if (!res.ok) return console.log(`results: feed returned ${res.status}`);
+  // lotto.py only scores Claude's ticket once the Power Play and Double Play numbers are out too.
+  const ready = (await res.json())
+    .filter((r) => r.multiplier && (r.double_play_winning_numbers || "").trim().split(/\s+/).length === 6)
+    .map((r) => r.draw_date.slice(0, 10))
+    .filter((d) => waiting.includes(d));
+  if (!ready.length) return;
+  const last = await env.DB.prepare("SELECT dispatched_at FROM score_dispatches WHERE draw_date = ?").bind(ready[0]).first();
+  if (last && Date.now() - last.dispatched_at < RETRY_AFTER_MS) return; // already started; Pages may just be catching up
+  const gh = await fetch(`https://api.github.com/repos/${REPO}/actions/workflows/score.yml/dispatches`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      "User-Agent": "claude-picks",
+    },
+    body: JSON.stringify({ ref: "main" }),
+  });
+  if (gh.status !== 204) return console.log(`results: dispatch failed, ${gh.status} ${await gh.text()}`);
+  await env.DB.prepare("INSERT OR REPLACE INTO score_dispatches (draw_date, dispatched_at) VALUES (?, ?)")
+    .bind(ready[0], Date.now()).run();
+  console.log(`results: ${ready.join(", ")} ready, started Score`);
+}
 
 async function kofi(request, env) {
   let data;

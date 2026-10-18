@@ -15,3 +15,9 @@ CREATE TABLE IF NOT EXISTS totals (
   tickets INTEGER NOT NULL
 );
 INSERT OR IGNORE INTO totals (id, tickets) SELECT 1, COALESCE(SUM(tickets), 0) FROM donations;
+
+-- When the Worker's cron last started the Score workflow for a drawing, so it doesn't start it every 5 minutes.
+CREATE TABLE IF NOT EXISTS score_dispatches (
+  draw_date TEXT PRIMARY KEY,
+  dispatched_at INTEGER NOT NULL
+);
