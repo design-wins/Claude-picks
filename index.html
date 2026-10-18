@@ -180,11 +180,6 @@ p { margin: 0; }
 .confetti { transform-box: fill-box; transform-origin: center; animation: fall var(--d, 2.4s) linear infinite; animation-delay: var(--delay, 0s); }
 .rain { animation: rain 1.1s linear infinite; animation-delay: var(--delay, 0s); }
 .tear { animation: tear 3.2s ease-in infinite; }
-/* Extras on the face: a ticket while donated ones wait, sweat on drawing night, stubble when desperate */
-.sweat { animation: sweat 2.6s ease-in infinite; }
-@keyframes sweat { 0%, 20% { transform: translateY(0); } 100% { transform: translateY(5px); } }
-.held { transform-box: fill-box; transform-origin: 30% 80%; animation: wave 2.4s ease-in-out infinite; }
-@keyframes wave { 50% { rotate: -6deg; } }
 .twinkle { transform-box: fill-box; transform-origin: center; animation: twinkle 2.6s ease-in-out infinite; animation-delay: var(--delay, 0s); }
 @keyframes bounce { from { transform: translateY(0) scaleY(0.96); } to { transform: translateY(-12px) scaleY(1.02); } }
 @keyframes bob { 50% { transform: translateY(-5px); } }
@@ -846,25 +841,10 @@ function star(cx, cy, r) {
   return `M${cx} ${cy - r} Q${cx} ${cy} ${cx + r} ${cy} Q${cx} ${cy} ${cx} ${cy + r} Q${cx} ${cy} ${cx - r} ${cy} Q${cx} ${cy} ${cx} ${cy - r}Z`;
 }
 
-// Drawing night in New York: from 6 PM on a drawing day, when Claude starts to sweat. ?night forces it, for demos.
-function drawingNight() {
-  if (new URLSearchParams(location.search).has("night")) return true;
-  const parts = Object.fromEntries(new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", weekday: "short", hour: "numeric", hourCycle: "h23" })
-    .formatToParts(new Date()).map((p) => [p.type, p.value]));
-  return ["Mon", "Wed", "Sat"].includes(parts.weekday) && Number(parts.hour) >= 18;
-}
-
-// Small things the face picks up from what's going on, drawn over it.
-function faceExtras({ ticket, sweat, stubble }) {
+// Small things the face picks up from what's going on, drawn over it: stubble when desperate.
+function faceExtras({ stubble }) {
   return (stubble ? `<g fill="var(--face-ink)" opacity=".35">${[[78, 160], [88, 166], [100, 168], [112, 166], [122, 160], [84, 172], [96, 175], [106, 175], [116, 172], [70, 152], [130, 152]]
-      .map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.6"/>`).join("")}</g>` : "") +
-    (sweat ? `<path class="sweat" d="M154 58 Q144 76 154 83 Q164 76 154 58 Z" fill="#8cc4f2" stroke="var(--tear)" stroke-width="1.5"/>` : "") +
-    (ticket ? `<g class="held">
-        <rect x="146" y="146" width="44" height="26" rx="3" transform="rotate(-14 168 159)" fill="var(--marigold)" stroke="var(--face-ink)" stroke-width="2.5"/>
-        <g transform="rotate(-14 168 159)"><line x1="154" y1="155" x2="172" y2="155" stroke="var(--face-ink)" stroke-width="2" stroke-linecap="round"/>
-        <line x1="154" y1="162" x2="166" y2="162" stroke="var(--face-ink)" stroke-width="2" stroke-linecap="round"/>
-        <circle cx="181" cy="159" r="4.5" fill="var(--red)"/></g>
-      </g>` : "");
+      .map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.6"/>`).join("")}</g>` : "");
 }
 
 function face(state, extras = {}) {
@@ -1037,7 +1017,7 @@ function render(stats) {
   const m = stats.mood;
   const tipHope = m.state === "hopeful" && m.tips_waiting && (m.days_since_win == null || m.days_since_win >= 30);
   setMood(m.state, moodLine(stats), tipHope ? "A donated ticket keeps Claude hopeful until its drawing." : "",
-    { ticket: m.tips_waiting > 0, sweat: drawingNight(), stubble: m.state === "desperate" });
+    { stubble: m.state === "desperate" });
 
   // Picks for the next drawing; tickets for drawings already held wait in the results list.
   // Donated tickets come grouped by drawing, as just their numbers (`upcoming_tips`).
