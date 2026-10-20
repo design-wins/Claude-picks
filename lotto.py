@@ -104,6 +104,15 @@ def validate(numbers):
     return whites, pb
 
 
+def last_drawn(now):
+    """The most recent drawing that has already been held at `now` (10:59 PM ET), as an ISO date."""
+    now = now.astimezone(ET)
+    day = now.date() if now.time() >= time(23, 0) else now.date() - timedelta(days=1)
+    while day.weekday() not in DRAW_DAYS:
+        day -= timedelta(days=1)
+    return day.isoformat()
+
+
 def next_draw(now):
     """The next drawing still open for picks at `now`, as a date."""
     now = now.astimezone(ET)
@@ -622,7 +631,9 @@ def cmd_score(args):
     # Always fetch at least the past week, so every run reports the latest drawing.
     since = min(pending + [(now.date() - timedelta(days=7)).isoformat()])
     results = fetch_results(since)
-    fill_from_pa(results, [d for d in sorted(set(pending)) if d <= now.date().isoformat()])
+    # Ask PA about drawings with tickets waiting, and about the newest drawing even once it's scored, so a
+    # run while New York is still behind doesn't report an older drawing as the latest.
+    fill_from_pa(results, sorted({d for d in pending if d <= now.date().isoformat()} | {last_drawn(now)}))
     scored = score_rows(rows, results)
     # Claude's own tickets and every winner get a line; donated losers are only counted.
     for r in scored:

@@ -385,6 +385,12 @@ class PennsylvaniaFeed(unittest.TestCase):
         lotto.fill_from_pa(ny, ["2026-10-17"])
         self.assertEqual(urls, [])
 
+    def test_last_drawn(self):
+        self.assertEqual(lotto.last_drawn(et(2026, 10, 19, 22, 30)), "2026-10-17")  # Monday, before the drawing
+        self.assertEqual(lotto.last_drawn(et(2026, 10, 19, 23, 40)), "2026-10-19")  # Monday night, after it
+        self.assertEqual(lotto.last_drawn(et(2026, 10, 20, 0, 5)), "2026-10-19")  # Tuesday
+        self.assertEqual(lotto.last_drawn(et(2026, 10, 18, 12)), "2026-10-17")  # Sunday
+
     def test_a_feed_error_leaves_the_drawing_waiting(self):
         self.feed(urllib.error.URLError("timed out"))
         self.assertEqual(lotto.fill_from_pa({}, ["2026-10-17"]), {})
