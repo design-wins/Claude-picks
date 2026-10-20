@@ -1,29 +1,29 @@
 {
-  "updated_at": "2026-10-19T09:12:08-04:00",
+  "updated_at": "2026-10-19T23:40:26-04:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
     "state": "happy",
-    "days_since_win": 2,
+    "days_since_win": 0,
     "tips_waiting": 0,
     "full": false
   },
   "first_draw": "2026-10-14",
   "totals": {
-    "tickets": 7,
-    "drawings": 2,
-    "spent": 16,
-    "won": 12,
-    "net": -4,
+    "tickets": 8,
+    "drawings": 3,
+    "spent": 20,
+    "won": 19,
+    "net": -1,
     "jackpots": 0
   },
   "by_source": {
     "claude": {
-      "tickets": 2,
-      "drawings": 2,
-      "spent": 6,
-      "won": 12,
-      "net": 6,
+      "tickets": 3,
+      "drawings": 3,
+      "spent": 10,
+      "won": 19,
+      "net": 9,
       "jackpots": 0
     },
     "tip": {
@@ -47,15 +47,17 @@
       "drawn": 0
     },
     "nemesis": {
-      "number": 42,
+      "number": 32,
       "missed_by_one": 1
     },
     "best": {
-      "draw_date": "2026-10-17",
+      "draw_date": "2026-10-19",
       "numbers": 1
     }
   },
-  "upcoming": [
+  "upcoming": [],
+  "upcoming_tips": [],
+  "recent": [
     {
       "draw_date": "2026-10-19",
       "ticket": "1",
@@ -63,20 +65,17 @@
       "picked_at": "2026-10-18T10:08:03-04:00",
       "pick": "07 19 31 46 63 | 11",
       "note": "11 paid me Saturday, so it gets a repeat on Monday, along with 19, because 17 is clearly taking a victory lap.",
-      "result": "",
-      "match": "",
-      "prize": "",
+      "result": "08 31 32 42 48 | 23",
+      "match": "1",
+      "prize": "0",
       "donation": "",
       "options": "pp+dp",
-      "multiplier": "",
-      "dp_result": "",
-      "dp_match": "",
-      "dp_prize": "",
+      "multiplier": "4",
+      "dp_result": "11 23 24 47 49 | 11",
+      "dp_match": "0+PB",
+      "dp_prize": "7",
       "reaction": ""
-    }
-  ],
-  "upcoming_tips": [],
-  "recent": [
+    },
     {
       "draw_date": "2026-10-17",
       "ticket": "1",
@@ -116,6 +115,19 @@
   ],
   "drawings": [
     {
+      "draw_date": "2026-10-19",
+      "result": "08 31 32 42 48 | 23",
+      "tickets": 1,
+      "spent": 4,
+      "won": 7,
+      "net": 3,
+      "jackpots": 0,
+      "tip_tickets": 0,
+      "tip_wins": 0,
+      "tip_won": 0,
+      "tip_jackpots": 0
+    },
+    {
       "draw_date": "2026-10-17",
       "result": "12 13 24 32 35 | 11",
       "tickets": 6,
@@ -143,9 +155,9 @@
     }
   ],
   "latest_drawing": {
-    "draw_date": "2026-10-17",
-    "numbers": "12 13 24 32 35 | 11",
-    "multiplier": 3,
-    "double_play": "13 14 30 52 60 | 15"
+    "draw_date": "2026-10-19",
+    "numbers": "08 31 32 42 48 | 23",
+    "multiplier": 4,
+    "double_play": "11 23 24 47 49 | 11"
   }
 }
