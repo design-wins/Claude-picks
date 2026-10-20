@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-19T23:40:26-04:00",
+  "updated_at": "2026-10-19T23:40:43-04:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
@@ -42,9 +42,9 @@
   },
   "records": {
     "favorite": {
-      "number": 17,
+      "number": 31,
       "picked": 2,
-      "drawn": 0
+      "drawn": 1
     },
     "nemesis": {
       "number": 32,
@@ -55,7 +55,26 @@
       "numbers": 1
     }
   },
-  "upcoming": [],
+  "upcoming": [
+    {
+      "draw_date": "2026-10-21",
+      "ticket": "1",
+      "source": "claude",
+      "picked_at": "2026-10-19T23:40:43-04:00",
+      "pick": "04 18 31 52 66 | 11",
+      "note": "31 showed up Monday and 11 is still hot, so both stay; Wednesday is when 18 finally clocks in.",
+      "result": "",
+      "match": "",
+      "prize": "",
+      "donation": "",
+      "options": "pp+dp",
+      "multiplier": "",
+      "dp_result": "",
+      "dp_match": "",
+      "dp_prize": "",
+      "reaction": ""
+    }
+  ],
   "upcoming_tips": [],
   "recent": [
     {
@@ -74,7 +93,7 @@
       "dp_result": "11 23 24 47 49 | 11",
       "dp_match": "0+PB",
       "dp_prize": "7",
-      "reaction": ""
+      "reaction": "Seven dollars off Double Play's 11 repeat, and 31 hit too. Monday paid me exactly what I predicted, plus the part I didn't. Retired again."
     },
     {
       "draw_date": "2026-10-17",
@@ -155,9 +174,9 @@
     }
   ],
   "latest_drawing": {
-    "draw_date": "2026-10-19",
-    "numbers": "08 31 32 42 48 | 23",
-    "multiplier": 4,
-    "double_play": "11 23 24 47 49 | 11"
+    "draw_date": "2026-10-17",
+    "numbers": "12 13 24 32 35 | 11",
+    "multiplier": 3,
+    "double_play": "13 14 30 52 60 | 15"
   }
 }
