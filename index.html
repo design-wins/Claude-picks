@@ -535,9 +535,9 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
       <div class="tip-head">
         <h2>Give Claude more chances</h2>
       </div>
-      <p class="lede"><strong id="party">Claude's next party is 66&nbsp;years away.</strong> A win of $100 or more
-        is a 1 in 10,251 shot. <span id="chances">Right now Claude has 1 chance a drawing: its own ticket.</span>
-        Every $2 you donate adds one more.</p>
+      <p class="lede">Claude throws a party when a ticket wins $100 or more, about a 1 in 10,251 shot.
+        <span id="chances">Claude has 2 chances in the next drawing: its own ticket, which plays twice with Double Play.</span>
+        <strong id="party">At that rate, the next party is 33&nbsp;years away.</strong> Every $2 you donate is one more chance.</p>
       <div class="tip-action">
         <a class="buy" id="buy" href="#" aria-disabled="true"><span class="mini"></span><span id="buy-label">Donations open soon</span></a>
         <div class="tip-status">
@@ -803,19 +803,15 @@ function tipSummary(d) {
   return `${plural(d.tip_tickets, "donated ticket")}, ${won}`;
 }
 
-// How long until a $100+ win, at the rate Claude has been getting tickets lately.
-// Claude's chances at a $100+ win each drawing: its own ticket (two chances once it plays Double Play,
-// a second drawing with the same odds) plus donated tickets, averaged over the last 6 drawings and the
-// coming one, so new donations count as soon as Claude has picked them. `next` is the coming drawing on its own.
+// Claude's chances at a $100+ win in the next drawing: its own ticket (two chances, since it also plays
+// Double Play, a second drawing with the same odds) plus the donated tickets already picked for it.
 function partyChances(stats) {
   const own = [...stats.upcoming, ...stats.recent].find((r) => r.source !== "tip");
   const doublePlay = !!(own && own.options);
-  const base = doublePlay ? 2 : 1;
-  const group = (stats.upcoming_tips || []).find((g) => g.draw_date >= nextDrawDate());
-  const counts = [...(group ? [group.picks.length] : []), ...(stats.drawings || []).slice(0, 6).map((d) => d.tip_tickets)];
-  const donated = Math.round(counts.length ? counts.reduce((s, n) => s + n, 0) / counts.length : 0);
-  const next = group && group.picks.length ? { date: group.draw_date, donated: group.picks.length, total: base + group.picks.length } : null;
-  return { doublePlay, donated, total: base + donated, next };
+  const date = nextDrawDate();
+  const group = (stats.upcoming_tips || []).find((g) => g.draw_date === date);
+  const donated = group ? group.picks.length : 0;
+  return { date, doublePlay, donated, total: (doublePlay ? 2 : 1) + donated };
 }
 
 // How long until a $100+ win at that rate: "33 years", "7 weeks".
@@ -828,19 +824,14 @@ function partyWait(chances) {
   return span.replace(" ", "\u00a0");
 }
 
-// With donated tickets picked for the coming drawing: "Tonight Claude has 7 chances: its own ticket, which also
-// plays Double Play, plus 5 donated." Otherwise: "Right now Claude has 2 chances a drawing: its own ticket, …"
+// "On Wednesday Claude has 7 chances: its own ticket, which plays twice with Double Play, and 5 donated tickets."
 function chancesLine(chances) {
-  const own = chances.doublePlay ? "its own ticket, which also plays Double Play" : "its own ticket";
-  const { next } = chances;
-  if (next) {
-    const days = daysFromTodayET(next.date);
-    const when = days === 0 ? "Tonight" : days === 1 ? "Tomorrow"
-      : "On " + new Date(next.date + "T12:00:00Z").toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" });
-    return `${when} Claude has ${plural(next.total, "chance")}: ${own}, plus ${next.donated.toLocaleString("en-US")} donated.`;
-  }
-  return `Right now Claude has ${plural(chances.total, "chance")} a drawing: ${own}` +
-    (chances.donated ? `, plus ${chances.donated.toLocaleString("en-US")} donated.` : ".");
+  const days = daysFromTodayET(chances.date);
+  const when = days === 0 ? "Tonight" : days === 1 ? "Tomorrow"
+    : "On " + new Date(chances.date + "T12:00:00Z").toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" });
+  const own = chances.doublePlay ? "its own ticket, which plays twice with Double Play" : "its own ticket";
+  const donated = chances.donated ? `, and ${plural(chances.donated, "donated ticket")}` : "";
+  return `${when} Claude has ${plural(chances.total, "chance")}: ${own}${donated}.`;
 }
 
 // "Claude has been playing for 4 months, since Monday, June 1, 2026."
@@ -1005,7 +996,11 @@ function face(state, extras = {}) {
 
 function moodLine(stats) {
   const m = stats.mood;
-  const lastWin = stats.best_win || stats.recent.find(isWin);
+  // The line names the most recent win (the biggest that day, if several tickets won). A party or bigger
+  // names the win that earned it, which may be older.
+  const newest = stats.recent.find(isWin);
+  const recentWin = newest && stats.recent.filter((r) => r.draw_date === newest.draw_date && isWin(r)).sort(byPrize)[0];
+  const lastWin = ["party", "huge", "jackpot"].includes(m.state) ? stats.best_win || recentWin : recentWin || stats.best_win;
   const dry = m.days_since_win ?? (stats.first_draw ? Math.max(0, -daysFromTodayET(stats.first_draw)) : 0);
   const drought = m.days_since_win == null ? "No wins yet" : `${plural(m.days_since_win, "day")} without a win`;
   const excuse = EXCUSES.filter(([days]) => dry >= days).pop()[1];
@@ -1180,7 +1175,7 @@ function render(stats) {
     : "Nobody has donated yet. Be the first.";
   setMilestone(tipTickets);
   const chances = partyChances(stats);
-  $("party").textContent = `Claude's next party is ${partyWait(chances)} away.`;
+  $("party").textContent = `At that rate, the next party is ${partyWait(chances)} away.`;
   $("chances").textContent = chancesLine(chances);
 
   // stats.json lists only Claude's tickets and winning donated ones; `drawings` adds up the rest.
