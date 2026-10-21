@@ -1,10 +1,10 @@
 {
-  "updated_at": "2026-10-20T10:49:13-04:00",
+  "updated_at": "2026-10-21T09:14:21-04:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
     "state": "happy",
-    "days_since_win": 1,
+    "days_since_win": 2,
     "tips_waiting": 0,
     "full": false
   },
