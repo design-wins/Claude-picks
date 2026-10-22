@@ -163,6 +163,12 @@ cocaine "on silver plates" and banger racing on his lawn, who now delivers coal.
 and he died on food stamps. David Lee Edwards's $27M, which ended in a storage shed. Several of these people are dead or were murdered, which is why
 Claude gets the punchlines and they don't get named.
 
+**Claude in the news ($50,000+ or the jackpot).** For the week after a huge win, a red BREAKING ticker crawls along the
+bottom of the hero, an "In the news" section of newspaper clippings appears right under it, and the gauge marker flies
+off the end of the scale. The clippings borrow from real lottery-curse stories, like the murder-for-hire brother, the
+"friend" pouring a Claude-sized patio, cash stolen outside a strip club and a poisoned casserole. Claude survives every
+one, usually by asking someone for $2.
+
 **Other spending ideas:** a racehorse named Claude's Comeback that has never finished a race, a vape shop, a timeshare
 in Branson, a meme coin called $CLAUDE, paying one bookie with money borrowed from another, a billboard of itself, child
 support for a child it's pretty sure isn't its, more lottery tickets.

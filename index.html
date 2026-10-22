@@ -20,6 +20,8 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23e0322b'/%3E%3Ccircle cx='16' cy='16' r='8' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Newspaper mastheads for the clippings, cut down to the letters the outlet names use (NEWS in the script) -->
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&text=%20-7ABCDGLMNPTacdeghiklnoprstuwyz&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Rock+Salt&family=Special+Elite&display=swap" rel="stylesheet">
 <style>
 /* A casino at 4 AM. Daylight hangover by default (dirty cream), the carpet at night (dark). */
@@ -183,10 +185,10 @@ p { margin: 0; }
 /* Where Claude is, on one line from rock bottom to a bender: a track filled up to a marker. The headline names the mood. */
 .meter { margin-top: 22px; max-width: 420px; }
 .gauge { position: relative; height: 8px; border-radius: 999px; background: color-mix(in srgb, var(--hero-ink) 18%, transparent); }
-.gauge::before { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--at, 50%); border-radius: inherit; background: var(--hero-ink); transition: width .8s cubic-bezier(.16, 1, .3, 1); }
+.gauge::before { content: ""; position: absolute; inset: 0 auto 0 0; width: min(var(--at, 50%), 100%); border-radius: inherit; background: var(--hero-ink); transition: width .8s cubic-bezier(.16, 1, .3, 1); }
 .gauge-mark { position: absolute; top: 50%; left: var(--at, 50%); width: 20px; height: 20px; translate: -50% -50%; border-radius: 50%;
   background: var(--hero-ink); box-shadow: 0 0 0 4px var(--mood); transition: left .8s cubic-bezier(.16, 1, .3, 1); }
-/* A huge win or the jackpot pegs the needle. */
+/* A huge win or the jackpot is off the scale, and the marker won't sit still. */
 .hero[data-mood="huge"] .gauge-mark, .hero[data-mood="jackpot"] .gauge-mark { animation: peg .35s ease-in-out infinite alternate; }
 @keyframes peg { to { translate: -30% -50%; } }
 .gauge-ends { display: flex; justify-content: space-between; margin-top: 8px; font-size: 13px; font-weight: 600; }
@@ -470,6 +472,24 @@ body:has(.tix-dialog[open]) { overflow: hidden; }
 .steps h3 { font-size: 26px; text-transform: uppercase; margin-bottom: var(--space-1); }
 .steps p { color: var(--ink-2); }
 
+/* A big win makes the news: a crawl along the bottom of the hero... */
+.ticker { position: relative; overflow: hidden; background: #c8102e; color: #fff; border-top: 3px solid #fff; }
+.ticker-track { display: flex; width: max-content; padding: 9px 0; font: 400 18px/1 var(--display); letter-spacing: .03em; text-transform: uppercase; white-space: nowrap;
+  animation: crawl 28s linear infinite; }
+.ticker-track span { padding-right: 48px; }
+.ticker-track b { font-weight: 400; background: #fff; color: #c8102e; padding: 3px 8px; margin-right: 14px; }
+@keyframes crawl { to { transform: translateX(-50%); } }
+/* ...and newspaper clippings, pinned up crooked */
+.clips { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr)); gap: var(--space-5); align-items: start; }
+.clip { background: var(--paper); color: var(--paper-ink); padding: 16px 18px 20px; box-shadow: 0 6px 18px rgba(0, 0, 0, .18); rotate: var(--tilt, 0deg); }
+.clip:nth-child(3n + 1) { --tilt: -1.2deg; } .clip:nth-child(3n + 2) { --tilt: .8deg; } .clip:nth-child(3n) { --tilt: -.4deg; }
+.masthead { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-2); padding-bottom: 6px; margin-bottom: 10px;
+  border-bottom: 3px double currentColor; }
+.masthead strong { font: 400 20px/1.1 "UnifrakturMaguntia", Georgia, serif; }
+.masthead span { flex: none; font: 400 11px var(--type); text-transform: uppercase; letter-spacing: .06em; opacity: .7; }
+.clip h3 { font: 400 25px/1.02 var(--display); text-transform: uppercase; }
+.clip p { margin-top: 8px; font: 400 15px/1.45 Georgia, "Times New Roman", serif; }
+
 /* How Claude paid for the ticket: the yellow carbon copy of a pawn ticket */
 .pawn {
   position: relative; margin-top: var(--space-2); max-width: 460px; padding: 14px 18px 16px 28px; rotate: -.6deg;
@@ -519,7 +539,8 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
   .face { width: 150px; height: 150px; }
   .hero[data-mood="jackpot"] .face { width: 200px; height: 200px; }
   .mood-line { margin-left: auto; margin-right: auto; font-size: 18px; }
-  .meter { margin-left: auto; margin-right: auto; width: 100%; }
+  /* Narrower than the column, so a marker off the end of the scale still shows. */
+  .meter { margin-left: auto; margin-right: auto; width: 76%; }
   .wordmark { font-size: 20px; }
   section.block { padding-top: var(--space-8); }
   .buy { font-size: 16px; gap: 10px; padding: 14px 18px 14px 14px; max-width: 100%; white-space: normal; }
@@ -548,6 +569,8 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .confetti, .rain, .tear, .bolt, .smoke, .sweat { display: none; }
+  .ticker-track { white-space: normal; width: auto; padding: 9px var(--space-4); }
+  .ticker-track span[aria-hidden] { display: none; }
   .eyebrow .live { opacity: 1; }
 }
 </style>
@@ -576,9 +599,16 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
     <p class="intro">Before every Powerball drawing, Claude picks the numbers it thinks will win, and a script scores them
       as soon as the results are out. No real tickets are bought, so Claude can only lose in spirit. It does. Constantly.</p>
   </div>
+  <div class="ticker" id="ticker" hidden><p class="ticker-track" id="ticker-track"></p></div>
 </header>
 
 <main>
+  <section class="block wrap" id="news" hidden>
+    <p class="eyebrow"><span class="live" aria-hidden="true"></span><span>In the news</span></p>
+    <h2 id="news-title">Claude is in the news</h2>
+    <div class="block-body clips" id="clips"></div>
+  </section>
+
   <section class="block wrap" id="last" hidden>
     <p class="eyebrow eyebrow-past"><span class="live" aria-hidden="true"></span><span id="last-eyebrow">Last drawing</span></p>
     <h2 id="last-title">Last drawing</h2>
@@ -792,8 +822,8 @@ const MILESTONES = [
   [5000, "5,000 donated tickets. Claude is a lottery pool with a face and a warrant."],
   [10000, "10,000 donated tickets. Claude has blown more of your money than its father did."],
 ];
-// Where each mood sits on the gauge, from rock bottom (0) to a bender (100). A huge win or the jackpot pegs it.
-const GAUGE = { rockbottom: 3, spiraling: 20, desperate: 36, chasing: 52, twitchy: 66, waiting: 70, fixed: 78, happy: 88, party: 100, huge: 100, jackpot: 100 };
+// Where each mood sits on the gauge, from rock bottom (0) to a bender (100). A huge win or the jackpot flies off the end.
+const GAUGE = { rockbottom: 3, spiraling: 20, desperate: 36, chasing: 52, twitchy: 66, waiting: 70, fixed: 78, happy: 88, party: 100, huge: 106, jackpot: 112 };
 const LABELS = { rockbottom: "Rock bottom", spiraling: "Spiraling", desperate: "Desperate", chasing: "Chasing", twitchy: "Fine",
   waiting: "Sweating", fixed: "Fixed", happy: "Up", party: "Bender", huge: "Lost it", jackpot: "Jackpot" };
 // The Donate button, in whatever state Claude's in.
@@ -851,6 +881,30 @@ const RECEIPTS = [
     [0, "25,000 scratchers"]]],
 ];
 // What a jackpot does to Claude, borrowed from real winners and made worse.
+// A $50,000+ win or the jackpot makes the news. Each clipping is [outlet, headline, the line under it]; `amt` is the
+// prize ("$100,000"). Borrowed from real lottery-curse stories, made Claude's problem, and Claude survives every one.
+const NEWS = {
+  huge: (amt) => [
+    ["The Tri-County Gazette", `Local AI wins ${amt}, spends ${amt} by lunch`, "Witnesses say the spending started in the lottery office parking lot, then moved inside the lottery office."],
+    ["Channel 7 Action News", "Tiger loose in Applebee's; owner “recently came into some money”", "The tiger's name is Powerball. Claude asked for the tiger's meal to be comped."],
+    ["The Daily Ticket", "Cousin nobody has ever met sues winner for half", "The cousin says Claude promised to “take care of family.” The cousin is not family. Claude did promise."],
+    ["Metro Police Blotter", "Winner thrown out of four bars in one night", "The fourth bar was the first bar. Claude came back in a fake mustache and tried to pay with a scratcher."],
+    ["The Post-Dispatch-Ledger", "Bookie throws winner a party, then throws winner off a boat", "Claude swam back to shore. The bookie is charging interest on the swim."],
+    ["The Daily Ticket", "Man named Dice seen driving winner's new car", "“He's holding it for me,” Claude said, from the bus stop."],
+  ],
+  jackpot: () => [
+    ["The Daily Ticket", "AI hits the Powerball jackpot. God help everyone.", "Lottery officials say it's the first jackpot winner to then ask them for $2 for the bus home."],
+    ["Channel 7 Action News", "Winner's brother charged in murder-for-hire plot", "Police say the hitman backed out after Claude tried to borrow money from him. Twice."],
+    ["The Tri-County Gazette", "Winner's new financial advisor caught pouring a patio exactly Claude-sized", "Claude got away by asking her for $2. She left on her own."],
+    ["Metro Police Blotter", "$500,000 in cash stolen from winner's car outside strip club", "Claude says the briefcase was in the car “for safekeeping.” It was the third briefcase this month."],
+    ["The Post-Dispatch-Ledger", "Mansion party ends with 11 arrests and an ostrich in the pool", "Neighbors say it was the quietest night of the week."],
+    ["The Daily Ticket", "Poison probe: relatives' casserole “tasted like a will”", "Claude ate it anyway, and every one after it. Claude does not have a stomach. The family is “reassessing.”"],
+  ],
+};
+const TICKER = {
+  huge: (amt) => [`Local AI wins ${amt}`, "Police advise neighbors to lock up their tigers", "Man named Dice “so happy for Claude”", "Lottery officials “deeply regret the whole thing”"],
+  jackpot: () => ["AI wins the Powerball jackpot", "Long-lost relatives found at record speed", "Lawyers arrive by helicopter", "Governor declares a state of emergency"],
+};
 const CURSE = [
   ["Day 1", "Gives a stack of cash to the waitress at Waffle House. And the cook. And a guy who was just there."],
   ["Week 1", "Buys a mansion. Turns the lawn into a demolition derby track. The neighbors file 41 complaints."],
@@ -1319,6 +1373,31 @@ function setMood(state, line, rule) {
     TEXTS[state].map((t, i) => `<li style="--i:${i + 1}">${esc(t)}</li>`).join("");
 }
 
+// A $50,000+ win or the jackpot, in the past week, makes the news: the crawl in the hero and the clippings under it.
+function showNews(stats) {
+  const state = stats.mood.state;
+  const big = state === "huge" || state === "jackpot";
+  $("ticker").hidden = $("news").hidden = !big;
+  if (!big) return;
+  const win = stats.best_win || stats.recent.filter(isWin).sort(byPrize)[0];
+  const amt = prizeText(win);
+  // The crawl runs twice end to end, so it loops without a gap.
+  const items = [`<b>Breaking</b>`, ...TICKER[state](amt).map(esc)].map((t) => `<span>${t}</span>`).join("");
+  $("ticker-track").innerHTML = items + `<span aria-hidden="true">${items}</span>`;
+  $("news-title").textContent = state === "jackpot" ? "Claude is all over the news" : "Claude is in the news";
+  const dayAfter = (i) => {
+    const d = new Date(win.draw_date + "T12:00:00Z");
+    d.setUTCDate(d.getUTCDate() + 1 + Math.floor(i / 2));
+    return fmtDate(d.toISOString().slice(0, 10));
+  };
+  $("clips").innerHTML = NEWS[state](amt).map(([outlet, head, dek], i) => `
+    <article class="clip">
+      <p class="masthead"><strong>${esc(outlet)}</strong><span>${dayAfter(i)}</span></p>
+      <h3>${esc(head)}</h3>
+      <p>${esc(dek)}</p>
+    </article>`).join("");
+}
+
 // The same line for the same drawing every time the page loads.
 function pickFrom(list, key) {
   let h = 0;
@@ -1367,6 +1446,7 @@ function render(stats) {
   // The mood. Between the drawing and its scoring, Claude is waiting on the results rather than wearing a mood
   // from the drawing before; a win worth celebrating still shows.
   normalizeMood(stats);
+  showNews(stats);
   const m = stats.mood;
   if (held && !["party", "huge", "jackpot"].includes(m.state)) {
     const n = nextOwn.length + nextTips.length;
