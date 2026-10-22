@@ -212,10 +212,9 @@ Base page: off-black `#0e0d0b` with a faint felt or carpet texture (CSS-only noi
 
 Same idea as chapter 1, where the headline's shape shows the mood. Chapter 1 squashes and stretches Anybody's width. Chapter 2 makes it rot.
 
-- **Mood headline: Climate Crisis** (Google Fonts, variable `YEAR` axis 1979–2025). The letters melt as the axis moves.
-  Map it to the losing streak, so the headline is solid when Claude is up and rotting at rock bottom.
-  Win states use the solid end at max weight. *(Check that Google Fonts serves the YEAR axis in the CSS API before
-  building on it. Fallback: keep Anybody's width mechanic and add a CSS distress mask.)*
+- **Mood headline: Bricolage Grotesque.** Bold and upright when Claude is up. The losing streak makes it thinner and
+  narrower and knocks the letters crooked, a little more with each mood, like drunk handwriting. It never gets
+  heavier, so it stays readable. (Climate Crisis and the Rubik distressed fonts were tried and were too hard to read.)
 - **Begging / cardboard sign: Rock Salt**, a hand-lettered marker font for the sign Claude holds and the button.
 - **Receipts, pawn tickets, rap sheet, ledger: Special Elite** (typewriter) or **Courier Prime**.
 - **Body: system sans**, same as now. It stays readable when nothing else is.

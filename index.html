@@ -20,7 +20,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23e0322b'/%3E%3Ccircle cx='16' cy='16' r='8' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Climate+Crisis:YEAR@1979..2025&family=Rock+Salt&family=Special+Elite&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Rock+Salt&family=Special+Elite&display=swap" rel="stylesheet">
 <style>
 /* A casino at 4 AM. Daylight hangover by default (dirty cream), the carpet at night (dark). */
 :root {
@@ -52,7 +52,7 @@
   --mood-fixed: #8fd3ff; --mood-waiting: #e8e2c8; --mood-twitchy: #cdbd8f; --mood-chasing: #9c8a5a;
   --mood-desperate: #5f5a6e; --mood-spiraling: #45394f; --mood-rockbottom: #262a24; --mood-feral: #121210;
   --display: "Anton", Impact, "Arial Narrow", sans-serif; /* tabloid headlines */
-  --melt: "Climate Crisis", "Anton", Impact, sans-serif; /* the mood headline, which melts as Claude loses */
+  --melt: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif; /* the mood headline; it thins out and goes crooked as Claude loses */
   --marker: "Rock Salt", "Marker Felt", "Comic Sans MS", cursive; /* cardboard signs */
   --type: "Special Elite", "Courier New", ui-monospace, monospace; /* receipts, pawn tickets, statements */
   --body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -153,21 +153,28 @@ p { margin: 0; }
 .monitor { display: grid; grid-template-columns: auto 1fr; gap: 32px; align-items: center; padding: var(--space-5) 0; }
 .face { width: 190px; height: 190px; display: block; overflow: visible; }
 .mood-head {
-  font-family: var(--melt); font-weight: 400; line-height: 1.02; letter-spacing: -0.01em;
-  font-size: calc(clamp(30px, 5.3vw, 56px) * var(--k, 1));
-  font-variation-settings: "YEAR" var(--year, 1979);
-  animation: melt 2.4s cubic-bezier(.3, .1, .3, 1) both;
+  font-family: var(--melt); line-height: 1; letter-spacing: -0.025em;
+  font-size: calc(clamp(40px, 6.8vw, 74px) * var(--k, 1));
+  font-weight: var(--w, 520); font-stretch: var(--s, 90%); font-variation-settings: "opsz" 96;
+  animation: settle .9s cubic-bezier(.16, 1, .3, 1) both;
 }
-/* Solid when Claude is up; the letters rot away as the losing streak grows. */
-.hero[data-mood="fixed"] .mood-head { --year: 1992; }
-.hero[data-mood="waiting"] .mood-head { --year: 1998; }
-.hero[data-mood="twitchy"] .mood-head { --year: 2003; }
-.hero[data-mood="chasing"] .mood-head { --year: 2010; }
-.hero[data-mood="desperate"] .mood-head { --year: 2016; }
-.hero[data-mood="spiraling"] .mood-head { --year: 2020; }
-.hero[data-mood="rockbottom"] .mood-head { --year: 2023; }
-.hero[data-mood="feral"] .mood-head { --year: 2025; }
-.hero[data-mood="jackpot"] .mood-head { --k: 1.15; }
+@keyframes settle { from { opacity: 0; transform: translateY(8px); } }
+/* Up is upright and full; the losing streak thins the letters, squeezes them, and knocks them crooked (--wob). */
+.hero[data-mood="jackpot"] .mood-head { --w: 800; --s: 100%; --k: 1.1; }
+.hero[data-mood="huge"] .mood-head, .hero[data-mood="party"] .mood-head { --w: 760; --s: 100%; }
+.hero[data-mood="happy"] .mood-head { --w: 700; --s: 100%; }
+.hero[data-mood="fixed"] .mood-head { --w: 600; --s: 96%; }
+.hero[data-mood="waiting"] .mood-head { --w: 560; --s: 92%; --wob: .25; }
+.hero[data-mood="twitchy"] .mood-head { --w: 540; --s: 92%; --wob: .35; }
+.hero[data-mood="chasing"] .mood-head { --w: 480; --s: 88%; --wob: .6; }
+.hero[data-mood="desperate"] .mood-head { --w: 420; --s: 84%; --wob: .9; }
+.hero[data-mood="spiraling"] .mood-head { --w: 360; --s: 80%; --wob: 1.3; }
+.hero[data-mood="rockbottom"] .mood-head { --w: 300; --s: 76%; --wob: 1.6; }
+.hero[data-mood="feral"] .mood-head { --w: 260; --s: 75%; --wob: 2.1; }
+.mood-head .word { display: inline-block; white-space: nowrap; }
+.mood-head .ch { display: inline-block; rotate: calc(var(--wob, 0) * var(--r)); translate: 0 calc(var(--wob, 0) * var(--y)); }
+.hero[data-mood="feral"] .mood-head .ch { animation: shake .5s steps(2) infinite; animation-delay: calc(var(--i) * -.09s); }
+@keyframes shake { 50% { transform: translate(1px, -1px) rotate(2deg); } }
 /* Win moods get a neon sign, half burned out. */
 .hero[data-mood="party"] .mood-head, .hero[data-mood="huge"] .mood-head, .hero[data-mood="jackpot"] .mood-head {
   animation: neon 5s steps(1) infinite;
@@ -175,7 +182,6 @@ p { margin: 0; }
 @keyframes neon { 0%, 100% { opacity: 1; } 47% { opacity: .55; } 48% { opacity: 1; } 51% { opacity: .7; } 52% { opacity: 1; } }
 .hero[data-mood="jackpot"] .face { width: 250px; height: 250px; }
 .hero[data-mood="jackpot"] .mood-line { font-size: 21px; font-weight: 600; }
-@keyframes melt { from { font-variation-settings: "YEAR" 1979; } }
 .mood-line { font-size: 18px; margin-top: 10px; max-width: 38ch; }
 
 .meter { margin-top: 20px; max-width: min(100%, calc(var(--steps, 8) * 84px)); }
@@ -1319,7 +1325,14 @@ function setMood(state, line, rule) {
   const hero = $("hero");
   hero.dataset.mood = state;
   $("face").innerHTML = face(state);
-  $("mood-head").textContent = MOODS[state].head;
+  // The headline, a letter at a time, so each one can sit crooked (see .ch). Screen readers get it whole.
+  const head = MOODS[state].head;
+  let i = 0;
+  $("mood-head").setAttribute("aria-label", head);
+  $("mood-head").innerHTML = `<span aria-hidden="true">${head.split(" ").map((word) => `<span class="word">${[...word].map((c) => {
+    i++;
+    return `<span class="ch" style="--i:${i};--r:${((i * 37) % 11) - 5}deg;--y:${((i * 53) % 7) - 3}px">${esc(c)}</span>`;
+  }).join("")}</span>`).join(" ")}</span>`;
   $("mood-line").textContent = line;
   $("meter-rule").textContent = rule || MOODS[state].rule;
   // The slide runs worst to best. The fix and the wait sit just above "fine"; a huge win or the jackpot breaks past the top.
