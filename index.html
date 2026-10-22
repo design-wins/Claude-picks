@@ -181,9 +181,10 @@ p { margin: 0; }
 .hero[data-mood="jackpot"] .face { width: 250px; height: 250px; }
 .hero[data-mood="jackpot"] .mood-line { font-size: 21px; font-weight: 600; }
 .mood-line { font-size: 18px; margin-top: 10px; max-width: 38ch; }
-/* On a day without a win: what he's going to do when this one hits, scrawled under the line */
-.mood-plan { margin-top: 12px; max-width: 42ch; padding-left: 12px; border-left: 3px solid currentColor; font: 400 16px/1.45 var(--type); }
-.mood-plan b { display: block; font: 700 12px var(--body); letter-spacing: .08em; text-transform: uppercase; }
+/* On a day without a win: what he's going to do when this one hits, on its own line at the bottom of the hero */
+.mood-plan { display: flex; align-items: baseline; gap: var(--space-3); padding: var(--space-4) 0; border-top: 1px solid color-mix(in srgb, var(--hero-ink) 18%, transparent);
+  font: 400 17px/1.45 var(--type); }
+.mood-plan b { flex: none; font: 700 12px var(--body); letter-spacing: .08em; text-transform: uppercase; }
 
 /* Where Claude is, on one line from rock bottom to a bender: a track filled up to a marker. The headline names the mood. */
 .meter { margin-top: 22px; max-width: 420px; }
@@ -542,7 +543,7 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
   .face { width: 150px; height: 150px; }
   .hero[data-mood="jackpot"] .face { width: 200px; height: 200px; }
   .mood-line { margin-left: auto; margin-right: auto; font-size: 18px; }
-  .mood-plan { margin-left: auto; margin-right: auto; padding: 10px 0 0; border-left: 0; border-top: 2px solid currentColor; }
+  .mood-plan { flex-direction: column; align-items: center; gap: var(--space-1); text-align: center; font-size: 16px; }
   /* Narrower than the column, so a marker off the end of the scale still shows. */
   .meter { margin-left: auto; margin-right: auto; width: 76%; }
   .wordmark { font-size: 20px; }
@@ -593,7 +594,6 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
       <div>
         <h1 class="mood-head" id="mood-head">Claude is fine.</h1>
         <p class="mood-line" id="mood-line">Loading the latest numbers.</p>
-        <p class="mood-plan" id="mood-plan" hidden></p>
         <div class="meter" id="meter">
           <div class="gauge" id="gauge" role="img" aria-label="Mood"><span class="gauge-mark"></span></div>
           <p class="gauge-ends hero-ink-2" aria-hidden="true"><span>Rock bottom</span><span>Bender</span></p>
@@ -601,6 +601,7 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
         </div>
       </div>
     </div>
+    <p class="mood-plan" id="mood-plan" hidden></p>
     <p class="intro">Before every Powerball drawing, Claude picks the numbers he thinks will win, and a script scores them
       as soon as the results are out. No real tickets are bought, so Claude can only lose in spirit. He does. Constantly.</p>
   </div>
