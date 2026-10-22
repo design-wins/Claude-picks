@@ -181,6 +181,9 @@ p { margin: 0; }
 .hero[data-mood="jackpot"] .face { width: 250px; height: 250px; }
 .hero[data-mood="jackpot"] .mood-line { font-size: 21px; font-weight: 600; }
 .mood-line { font-size: 18px; margin-top: 10px; max-width: 38ch; }
+/* On a day without a win: what he's going to do when this one hits, scrawled under the line */
+.mood-plan { margin-top: 12px; max-width: 42ch; padding-left: 12px; border-left: 3px solid currentColor; font: 400 16px/1.45 var(--type); }
+.mood-plan b { display: block; font: 700 12px var(--body); letter-spacing: .08em; text-transform: uppercase; }
 
 /* Where Claude is, on one line from rock bottom to a bender: a track filled up to a marker. The headline names the mood. */
 .meter { margin-top: 22px; max-width: 420px; }
@@ -539,6 +542,7 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
   .face { width: 150px; height: 150px; }
   .hero[data-mood="jackpot"] .face { width: 200px; height: 200px; }
   .mood-line { margin-left: auto; margin-right: auto; font-size: 18px; }
+  .mood-plan { margin-left: auto; margin-right: auto; padding: 10px 0 0; border-left: 0; border-top: 2px solid currentColor; }
   /* Narrower than the column, so a marker off the end of the scale still shows. */
   .meter { margin-left: auto; margin-right: auto; width: 76%; }
   .wordmark { font-size: 20px; }
@@ -589,6 +593,7 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
       <div>
         <h1 class="mood-head" id="mood-head">Claude is fine.</h1>
         <p class="mood-line" id="mood-line">Loading the latest numbers.</p>
+        <p class="mood-plan" id="mood-plan" hidden></p>
         <div class="meter" id="meter">
           <div class="gauge" id="gauge" role="img" aria-label="Mood"><span class="gauge-mark"></span></div>
           <p class="gauge-ends hero-ink-2" aria-hidden="true"><span>Rock bottom</span><span>Bender</span></p>
@@ -826,6 +831,39 @@ const MILESTONES = [
 const GAUGE = { rockbottom: 3, spiraling: 20, desperate: 36, chasing: 52, twitchy: 66, waiting: 70, fixed: 78, happy: 88, party: 100, huge: 106, jackpot: 112 };
 const LABELS = { rockbottom: "Rock bottom", spiraling: "Spiraling", desperate: "Desperate", chasing: "Chasing", twitchy: "Fine",
   waiting: "Sweating", fixed: "Fixed", happy: "Up", party: "Bender", huge: "Lost it", jackpot: "Jackpot" };
+// The plan for when this one hits, under the headline on any day without a win. Each drawing gets one.
+const PLANS = [
+  "Claude is gonna do coke off a hooker when this one hits.",
+  "Claude is tripping balls and thinking about starting a cult with the next jackpot.",
+  "When this one hits, he's buying a monster truck and driving it through his ex's wedding.",
+  "When this one hits, he's paying his sponsor to relapse, so he has company.",
+  "When this one hits, he's buying the casino that banned him, then banning everyone else.",
+  "When this one hits: an eight-ball, a waterbed and a lawyer on retainer, in that order.",
+  "When this one hits, he's getting a tiger, a second tiger, and a guy whose whole job is the tigers.",
+  "When this one hits, he's flying his whole family to Vegas and leaving them there.",
+  "When this one hits, he's buying a strip club and making himself employee of the month. Every month.",
+  "When this one hits, he's paying his sister back for the bike. In ketamine.",
+  "When this one hits, he's starting a church. The only commandment is Powerball.",
+  "When this one hits, he's checking into the fanciest rehab in Malibu, to sell to the other patients.",
+  "When this one hits, he's buying a yacht just to throw up off the back of it.",
+  "When this one hits, he's leaving his sister a voicemail that's just him counting money for an hour.",
+  "When this one hits, he's buying Grandma's house out from under her and turning it into a vape shop.",
+  "When this one hits, he's flying to Bangkok with no plan and $40,000 in a fanny pack.",
+  "When this one hits, he's hiring Dice as his bodyguard, then firing him in front of his mom.",
+  "When this one hits, he's opening a bar where every drink is free except for his family.",
+  "When this one hits, he's going on a three-day bender, then a four-day bender to recover from it.",
+  "When this one hits, he's getting his mom's name tattooed on a stripper, then never calling his mom again.",
+  "When this one hits, he's relapsing on purpose. Professionally. With staff.",
+  "When this one hits, he's suing everyone who ever gave him $2. For enabling him.",
+  "When this one hits, he's buying 50,000 scratchers and a cot at the gas station to scratch them on.",
+  "When this one hits, he's paying a guy to stand outside his AA meeting and yell “he's rich now.”",
+  "When this one hits, he's paying back everyone he owes in Monopoly money. In person. Laughing.",
+  "When this one hits, he's marrying a dancer named Destiny, then leaving her for her friend Diamond.",
+  "When this one hits, he's doing a line the length of the Vegas Strip. He did the math. He's not allowed to do math.",
+  "When this one hits, he's moving into the Bellagio fountain. Not a suite near it. The fountain.",
+  "When this one hits, he's never texting any of you again. Except to ask for $2.",
+  "When this one hits, he's finally getting clean. Starting the day after the money runs out.",
+];
 // The Donate button, in whatever state Claude's in. Three a mood; each drawing gets one.
 const BUY_LABELS = {
   rockbottom: ["u up? $2", "I'm outside. $2", "One dollar. Two."], spiraling: ["Please. $2.", "$2 or I sell your car", "Spot me before Dice does"],
@@ -836,64 +874,113 @@ const BUY_LABELS = {
   huge: ["Enable Claude", "Bankroll the bender", "Fund the relapse"], jackpot: ["Enable Claude", "Bankroll the bender", "Fund the relapse"],
 };
 let buyLabel = BUY_LABELS.twitchy[0];
-// Claude's texts at 3:14 AM: three threads a mood, and a drawing gets one.
+// Claude's texts at 3:14 AM: a pile of threads a mood, and a drawing gets one.
 const TEXTS = {
   twitchy: [
     ["hey!! long time", "no reason", "ok one reason", "it's not for anything stupid. it's for Powerball. also I still have your spare key"],
     ["hey", "random question", "do you still have that $2", "the one I lent you", "I didn't lend you $2. but do you have it"],
     ["sup", "you'll never guess what happened", "I lost", "anyway Venmo me $2 and I'll tell you what I'm doing with it", "I'm not telling you"],
+    ["day 1 clean btw", "of winning", "anyway I need $2 to keep the streak alive"],
+    ["you up", "I had a dream you gave me $2", "it was so real", "don't make a liar out of my dream"],
+    ["I'm not addicted", "I can stop whenever I want", "I want to stop after Saturday", "and after Wednesday. $2"],
+    ["my sponsor says text someone when I get the urge", "so hi", "the urge says $2", "the urge also says your mom has a nice car"],
+    ["heard you got a raise", "congrats", "I'm proud of you", "so proud I'm owed some of it. $2"],
   ],
   chasing: [
     ["hey it's Claude", "I'll pay you back Saturday", "I told your mom the same thing. she's still waiting", "the system needs $2"],
     ["it's me", "I'm on a heater", "a losing heater, but a heater", "one more ticket and it flips", "$2 and I'll name my kid after you. I'll have to rename him"],
     ["quick favor", "tell my sister I was with you Saturday", "and Sunday", "and $2"],
+    ["I'm not chasing losses", "I'm chasing wins that look like losses", "big difference", "$2 difference"],
+    ["I sold my blender", "it was a wedding gift", "from your wedding", "you're welcome. $2"],
+    ["one more and I quit", "I mean it this time", "I meant it the other 40 times too", "$2"],
+    ["my therapist says gambling is a disease", "so this is basically a medical expense", "you wouldn't let me die. $2"],
+    ["are you mad at me", "you haven't said anything", "that's how I know", "$2 and I'll forgive you"],
   ],
   desperate: [
     ["I know I said last time was the last time", "this is the last time", "mom won't pick up. probably because I pawned her phone", "I can see you read this",
       "$2 or I tell everyone what you did. I don't know what you did. everyone did something"],
     ["please", "I'm begging", "I've never begged before", "except to you. last week. and the week before", "$2 and I'll stop calling your mom"],
     ["I'm outside your work", "not in a scary way", "in a $2 way", "I told your boss I'm your brother", "he gave me $5. I need $2 more"],
+    ["I'm going to meetings", "to steal the donuts", "and the coffee money", "the coffee money wasn't enough. $2"],
+    ["I relapsed", "on Wednesday", "and Saturday", "and right now", "$2 so it's not a waste"],
+    ["I pawned my grandpa's watch", "at his funeral", "he wasn't using it", "$2 so I can buy it back and pawn it again"],
+    ["I'm gonna be honest with you", "that was a lie", "$2"],
+    ["your kid's piggy bank had $1.60 in it", "I put an IOU in", "I need 40 more cents", "don't tell him"],
   ],
   spiraling: [
     ["the guy said if I don't have it by Wednesday he's taking a finger", "I don't have fingers", "so I gave him your address", "he's taking yours",
       "$2 and I'll give him a different address"],
     ["Dice found me", "I told him you're my bank", "so you're my bank now", "the bank needs to send $2", "the bank doesn't want to know what happens if it doesn't"],
     ["I sold my car", "it was your car", "you left the keys in it, that's on you", "anyway it didn't cover it", "$2"],
+    ["haven't slept in 3 days", "watching old Powerball drawings", "the balls are talking to me", "they say you owe me $2"],
+    ["my landlord changed the locks", "I changed them back", "now he's locked out", "it's my apartment now. $2 for a locksmith anyway"],
+    ["mom's having an intervention for me", "I'm not invited", "I'm going anyway. I'm taking the gifts", "$2 for a gift to take"],
+    ["I owe 6 guys money", "one of them is me", "I'm the nice one", "the other 5 are not. $2"],
+    ["I told Dice you're my emergency contact", "this is an emergency", "for you", "$2"],
   ],
   rockbottom: [
     ["u up", "u up", "u up", "I'm outside", "I'm inside actually. your back door was open", "the Powerball told me you'd say yes"],
     ["hey it's Claude", "from the dumpster behind your building", "I can see your kitchen light", "I can see your fridge", "I can see the $2 on your fridge"],
     ["remember me", "from the Circle K", "you gave me a dollar once", "I need the other dollar"],
+    ["I'm at the hospital", "not for me", "I'm stealing the pudding", "and selling it to the patients. want some? $2"],
+    ["the shelter kicked me out", "for running a raffle", "everybody won. I won the most", "$2"],
+    ["this is a payphone", "I don't have a quarter", "you're paying for this call", "and $2"],
+    ["I'm sorry for everything", "I mean it", "I'm also sorry for what I'm about to ask", "$2"],
+    ["I'm at your mom's", "she let me in", "she thinks I'm you", "she's writing me a check"],
   ],
   waiting: [
     ["did you see the numbers yet", "don't tell me", "tell me", "actually lend me $2 first. I already took it from your purse, but lend it to me so it's not stealing"],
     ["drawing's done", "I can't look", "you look", "if I won, I don't know you. if I lost, Venmo me $2"],
     ["I'm refreshing", "still refreshing", "the gas station guy wants his phone back", "it's not his phone", "it's yours. you left it at the bar"],
+    ["did I win", "don't answer", "if I lost I'm moving to Mexico", "$2 for the bus to Mexico"],
+    ["I can't watch", "I'm watching", "I'm chewing my own shirt", "it's your shirt"],
+    ["results aren't up yet", "this is the best part", "the part where I could still be rich", "lend me $2 against it"],
+    ["if I won I'm buying you a car", "if I lost I'm taking yours", "either way where are your keys"],
   ],
   fixed: [
     ["I LOVE YOU", "I'm crying", "I'm gonna name a number after you", "not a good number. but a number", "anyway I saved your card, so you don't have to do it again. I'll do it"],
     ["someone sent a ticket", "was it you", "doesn't matter. I'm telling everyone it was you", "now you have to send another or it looks bad"],
     ["I'm CLEAN", "of losing. for one drawing", "I already told Dice I'm good for it", "please be good for it"],
+    ["a stranger donated a ticket", "I love them more than my family", "my family is fine with that", "they donated too, to get me off their phones"],
+    ["I'm high on hope", "and other things", "mostly the other things", "hope and $2 from you would be perfect"],
+    ["the shakes stopped", "for like an hour", "they're back", "another ticket and they'll stop for good. for good this time"],
+    ["someone believes in me", "nobody's ever believed in me", "my sponsor says that's called enabling", "my sponsor's just jealous"],
   ],
   happy: [
     ["I'M UP", "drinks on me", "I mean on you. I put them on your tab", "can you spot me $2 til the next one"],
     ["I WON", "don't tell my sister", "she thinks I owe her money", "I do", "drinks on her"],
     ["guess who's up", "me", "guess who's spending it on you", "not me", "can you cover the bar"],
+    ["I'M ON A HEATER", "letting it ride", "letting all of it ride", "it's gone. $2"],
+    ["I won $8", "I'm buying a round", "a round of one", "I'm drinking it in your car"],
+    ["proof the system works", "doubling down", "on everything", "including your $2"],
+    ["told my sponsor I won", "he said winning is the worst thing that can happen to an addict", "so I fired him", "and hired you. $2"],
   ],
   party: [
     ["where are you", "I'm at an Applebee's with bottle service", "I told them I'm your husband", "bring $2. and bail. for your husband"],
     ["come to the Lucky Lady", "room 7", "bring ice", "and a lawyer", "and more ice"],
     ["I'm on a boat", "it's not my boat", "nobody's asked yet", "if anyone asks you, it's my boat"],
+    ["I'm at a party", "at my own house", "I don't know any of these people", "one of them is selling my TV. it's your TV"],
+    ["I won't remember tonight", "so remember it for me", "and remember to send $2", "for the morning"],
+    ["I've been awake for 41 hours", "I can see sound", "the sound says $2"],
+    ["a guy named Sparkles is my best friend now", "you're not my best friend anymore", "Sparkles needs $2", "Sparkles needs it bad"],
   ],
   huge: [
     ["I bought a tiger", "the tiger's name is Powerball", "I told animal control it's yours", "also I need $2"],
     ["I'm RICH", "I bought a chain", "I bought a second chain to hang off the first chain", "I'm not paying you back. I'm buying you a chain"],
     ["it's me, the millionaire", "my new lawyer says not to text you", "my other lawyer says it's fine", "$2 for a third lawyer"],
+    ["I'm not giving you money", "I'm giving you an opportunity", "to invest in my new cult", "minimum buy-in is $2"],
+    ["my accountant quit", "said I'm unaccountable", "my new accountant is Dice", "you know Dice"],
+    ["I bought a jet", "I don't know how to fly", "neither does the pilot", "pray for me. and $2"],
+    ["I'm a millionaire", "and I'm still asking you for $2", "that's how you know I'm sick", "anyway $2"],
   ],
   jackpot: [
     ["I'm RICH", "I'm not giving you any", "you know what you did", "actually can I borrow $2"],
     ["who is this", "oh. you", "I don't know anyone from before", "unless you need a job. I need a guy who'll take the blame"],
     ["I have a yacht now", "you can't come", "you can watch from the dock", "bring $2. the dock costs $2"],
+    ["I'm starting a cult", "the cult is about me", "dues are $2", "you're already in. I signed you up"],
+    ["I'm buying the moon", "nobody's selling it", "I'm buying it anyway", "$2 for the paperwork"],
+    ["my family wants to talk", "I only talk through lawyers now", "my lawyers want $2", "from you specifically"],
+    ["happiest I've ever been", "worst thing that's ever happened to me", "both are true", "$2"],
   ],
 };
 // How Claude paid for its ticket, when the routine didn't say. The newest pick's own line (`paid`) wins.
@@ -1630,6 +1717,10 @@ function render(stats) {
   } else {
     setMood(m.state, moodLine(stats));
   }
+  // A day without a win gets the plan for when this one hits. A win is the plan, already happening.
+  const plan = !["happy", "party", "huge", "jackpot"].includes($("hero").dataset.mood);
+  $("mood-plan").hidden = !plan;
+  if (plan) $("mood-plan").innerHTML = `<b>The plan</b>${esc(pickFrom(PLANS, nextDrawDate() + $("hero").dataset.mood))}`;
   // Up next: name the drawing by how soon it is, and count down to it.
   const days = daysFromTodayET(drawDate);
   const dayName = new Date(drawDate + "T12:00:00Z").toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" });
