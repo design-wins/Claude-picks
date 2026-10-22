@@ -126,6 +126,17 @@ p { margin: 0; }
   background-size: 300% 300%; animation: jackpot-glow 9s ease-in-out infinite;
 }
 @keyframes jackpot-glow { 50% { background-position: 100% 50%; } }
+/* The dive bar wall, over whatever the mood color is: a coffee ring, water stains, dark corners and grime. */
+.hero::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(circle at 10% 82%, transparent 44px, rgba(80, 50, 15, .28) 46px, rgba(80, 50, 15, .1) 52px, transparent 55px),
+    radial-gradient(circle at 13% 86%, transparent 30px, rgba(80, 50, 15, .18) 32px, transparent 36px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='600'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.006' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 .25 0 0 0 0 .16 0 0 0 0 .03 0 0 0 1.6 -.75'/%3E%3C/filter%3E%3Crect width='900' height='600' filter='url(%23b)'/%3E%3C/svg%3E") center / cover,
+    radial-gradient(ellipse 110% 95% at 50% 40%, transparent 50%, rgba(25, 15, 3, .55) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .12 0 0 0 0 .08 0 0 0 0 .02 0 0 0 1.1 -.35'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.hero > * { position: relative; }
 /* The bottom of the slide gets a fluorescent tube that won't stop buzzing. */
 .hero[data-mood="rockbottom"]::after {
   content: ""; position: absolute; inset: 0; pointer-events: none; background: #d8ffc4; opacity: 0; animation: buzz 7s steps(1) infinite;
