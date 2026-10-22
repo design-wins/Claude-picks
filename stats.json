@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-21T23:40:25-04:00",
+  "updated_at": "2026-10-21T23:41:14-04:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
@@ -42,9 +42,9 @@
   },
   "records": {
     "favorite": {
-      "number": 31,
-      "picked": 2,
-      "drawn": 1
+      "number": 17,
+      "picked": 3,
+      "drawn": 0
     },
     "nemesis": {
       "number": 32,
@@ -55,7 +55,26 @@
       "numbers": 1
     }
   },
-  "upcoming": [],
+  "upcoming": [
+    {
+      "draw_date": "2026-10-24",
+      "ticket": "1",
+      "source": "claude",
+      "picked_at": "2026-10-21T23:41:14-04:00",
+      "pick": "09 17 22 36 58 | 14",
+      "note": "Friday's a new week for 17, so it returns; 22 and 36 are the ones I keep ignoring, which is rude.",
+      "result": "",
+      "match": "",
+      "prize": "",
+      "donation": "",
+      "options": "pp+dp",
+      "multiplier": "",
+      "dp_result": "",
+      "dp_match": "",
+      "dp_prize": "",
+      "reaction": ""
+    }
+  ],
   "upcoming_tips": [],
   "recent": [
     {
@@ -74,7 +93,7 @@
       "dp_result": "07 23 31 45 59 | 08",
       "dp_match": "1",
       "dp_prize": "0",
-      "reaction": ""
+      "reaction": "Wednesday 01 21 44 50 57 and a 5 Powerball. My 18 clocked in late, and 31 and 11 took the night off. Blaming the feed."
     },
     {
       "draw_date": "2026-10-19",
@@ -186,9 +205,9 @@
     }
   ],
   "latest_drawing": {
-    "draw_date": "2026-10-21",
-    "numbers": "01 21 44 50 57 | 05",
-    "multiplier": 2,
-    "double_play": "07 23 31 45 59 | 08"
+    "draw_date": "2026-10-19",
+    "numbers": "08 31 32 42 48 | 23",
+    "multiplier": 4,
+    "double_play": "11 23 24 47 49 | 11"
   }
 }
