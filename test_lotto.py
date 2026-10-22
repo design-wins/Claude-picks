@@ -2,7 +2,7 @@ import json
 import tempfile
 import unittest
 import urllib.error
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import lotto
@@ -131,6 +131,11 @@ class AddTicket(unittest.TestCase):
         with self.assertRaises(ValueError):
             lotto.add_ticket([], [1, 2, 3, 4, 5, 6], "", "someone", self.NOW)
 
+    def test_keeps_how_claude_paid(self):
+        row = lotto.add_ticket([], [1, 2, 3, 4, 5, 6], "", "claude", self.NOW, paid="  Sold the couch.\n Then the cushions. ")
+        self.assertEqual(row["paid"], "Sold the couch. Then the cushions.")
+        self.assertEqual(lotto.add_ticket([], [1, 2, 3, 4, 5, 6], "", "tip", self.NOW)["paid"], "")
+
 
 class ScoreRowsAndTotals(unittest.TestCase):
     def rows(self):
@@ -242,21 +247,29 @@ class Mood(unittest.TestCase):
     def upcoming(self, source):
         return {"draw_date": "2026-12-02", "source": source, "result": "", "prize": ""}
 
-    def check(self, rows, state, days_since_win, tips_waiting=0, full=False):
+    def losses(self, n, before="2026-11-30"):
+        """`n` losing drawings, one a day, ending on `before`."""
+        end = date.fromisoformat(before)
+        return [self.ticket((end - timedelta(days=i)).isoformat(), "0") for i in range(n)]
+
+    def check(self, rows, state, days_since_win, tips_waiting=0, full=False, streak=None):
+        m = lotto.mood(rows, self.TODAY)
         self.assertEqual(
-            lotto.mood(rows, self.TODAY),
+            {k: m[k] for k in ("state", "days_since_win", "tips_waiting", "full")},
             {"state": state, "days_since_win": days_since_win, "tips_waiting": tips_waiting, "full": full},
         )
+        if streak is not None:
+            self.assertEqual(m["losing_streak"], streak)
 
     def full_drawing(self):
         return [self.upcoming("tip") for _ in range(lotto.TIP_CAP)]
 
     def test_no_tickets_yet(self):
-        self.check([], "hopeful", None)
-        self.check([self.upcoming("claude")], "hopeful", None)
+        self.check([], "twitchy", None, streak=0)
+        self.check([self.upcoming("claude")], "twitchy", None, streak=0)
 
     def test_small_win_this_week_is_happy(self):
-        self.check([self.ticket("2026-10-01", "0"), self.ticket("2026-11-28", "4")], "happy", 3)
+        self.check([self.ticket("2026-10-01", "0"), self.ticket("2026-11-28", "4")], "happy", 3, streak=0)
 
     def test_big_win_this_week_is_a_party(self):
         self.check([self.ticket("2026-11-28", "100")], "party", 3)
@@ -270,49 +283,50 @@ class Mood(unittest.TestCase):
         self.check([self.ticket("2026-11-26", "50000"), self.ticket("2026-11-28", "100")], "huge", 3)
         self.check([self.ticket("2026-11-26", "JACKPOT"), self.ticket("2026-11-28", "50000")], "jackpot", 3)
 
+    def test_a_win_lasts_the_week_through_losses(self):
+        self.check([self.ticket("2026-11-26", "100")] + self.losses(2), "party", 5, streak=2)
+
     def test_a_full_drawing_of_donated_tickets_is_happy(self):
         self.check(self.full_drawing(), "happy", None, tips_waiting=lotto.TIP_CAP, full=True)
-        # Even after a month of losses.
-        losses = [self.ticket("2026-10-31", "0"), self.ticket("2026-11-30", "0")]
-        self.check(losses + self.full_drawing(), "happy", None, tips_waiting=lotto.TIP_CAP, full=True)
-        # One short of full is only hopeful.
-        self.check(losses + self.full_drawing()[1:], "hopeful", None, tips_waiting=lotto.TIP_CAP - 1)
+        # Even deep in a losing streak.
+        self.check(self.losses(30) + self.full_drawing(), "happy", None, tips_waiting=lotto.TIP_CAP, full=True)
+        # One short of full is a fix, not a high.
+        self.check(self.losses(30) + self.full_drawing()[1:], "fixed", None, tips_waiting=lotto.TIP_CAP - 1)
 
     def test_a_win_beats_a_full_drawing(self):
         self.check([self.ticket("2026-11-28", "100")] + self.full_drawing(), "party", 3, tips_waiting=lotto.TIP_CAP, full=True)
 
     def test_wins_fade_after_a_week(self):
-        self.check([self.ticket("2026-11-23", "50000")], "hopeful", 8)
+        self.check([self.ticket("2026-11-23", "50000")], "twitchy", 8, streak=0)
 
-    def test_month_without_a_win_is_sad(self):
-        self.check([self.ticket("2026-10-31", "7"), self.ticket("2026-11-30", "0")], "sad", 31)
-        self.check([self.ticket("2026-10-31", "0"), self.ticket("2026-11-30", "0")], "sad", None)
+    def test_the_losing_streak_sets_the_slide(self):
+        for n, state in [(1, "twitchy"), (2, "chasing"), (3, "chasing"), (4, "desperate"), (6, "desperate"),
+                         (7, "spiraling"), (12, "spiraling"), (13, "rockbottom"), (90, "rockbottom")]:
+            with self.subTest(n=n):
+                self.check(self.losses(n), state, None, streak=n)
 
-    def test_two_months_without_a_win_is_desperate(self):
-        self.check([self.ticket("2026-09-30", "0"), self.ticket("2026-11-30", "0")], "desperate", None)
-        self.check([self.ticket("2026-09-30", "7"), self.ticket("2026-11-30", "0")], "desperate", 62)
-        # A win 59 days ago is only sad.
-        self.check([self.ticket("2026-10-03", "7"), self.ticket("2026-11-30", "0")], "sad", 59)
+    def test_the_streak_counts_from_the_last_win(self):
+        rows = [self.ticket("2026-11-01", "7")] + self.losses(5)
+        self.check(rows, "desperate", 30, streak=5)
 
-    def test_tip_ticket_gives_a_desperate_claude_hope(self):
-        rows = [self.ticket("2026-09-30", "0"), self.ticket("2026-11-30", "0"), self.upcoming("tip")]
-        self.check(rows, "hopeful", None, tips_waiting=1)
+    def test_a_donated_win_breaks_the_streak(self):
+        rows = self.losses(10, before="2026-11-20") + [self.ticket("2026-11-21", "4", source="tip")] + self.losses(2)
+        self.check(rows, "chasing", 10, streak=2)
 
-    def test_tip_ticket_gives_a_sad_claude_hope(self):
-        month_of_losses = [self.ticket("2026-10-31", "0"), self.ticket("2026-11-30", "0")]
-        self.check(month_of_losses + [self.upcoming("claude")], "sad", None)
-        tipped = month_of_losses + [self.upcoming("claude"), self.upcoming("tip"), self.upcoming("tip")]
-        self.check(tipped, "hopeful", None, tips_waiting=2)
+    def test_a_drawing_counts_once_however_many_tickets_lost(self):
+        rows = self.losses(3) + [self.ticket("2026-11-30", "0", source="tip") for _ in range(50)]
+        self.check(rows, "chasing", None, streak=3)
 
-    def test_hope_ends_when_the_tip_ticket_loses(self):
-        rows = [self.ticket("2026-10-31", "0"), self.ticket("2026-11-30", "0", source="tip")]
-        self.check(rows, "sad", None)
+    def test_donated_tickets_are_a_fix(self):
+        self.check(self.losses(30) + [self.upcoming("tip")], "fixed", None, tips_waiting=1, streak=30)
+        self.check(self.losses(5) + [self.upcoming("claude")], "desperate", None)
+
+    def test_the_fix_wears_off_when_the_donated_ticket_loses(self):
+        rows = self.losses(3) + [self.ticket("2026-12-01", "0", source="tip")]
+        self.check(rows, "desperate", None, streak=4)
 
     def test_tips_do_not_dampen_a_party(self):
         self.check([self.ticket("2026-11-28", "100"), self.upcoming("tip")], "party", 3, tips_waiting=1)
-
-    def test_too_new_to_be_sad(self):
-        self.check([self.ticket("2026-11-15", "0"), self.ticket("2026-11-30", "0")], "hopeful", None)
 
 
 class FetchRetries(unittest.TestCase):
@@ -635,6 +649,15 @@ class LedgerFile(unittest.TestCase):
             )
             [row] = lotto.read_ledger()
             self.assertEqual((row["pick"], row["donation"]), ("01 02 03 04 05 | 06", ""))
+
+    def test_reads_a_ledger_from_before_the_paid_column(self):
+        self.addCleanup(setattr, lotto, "LEDGER", lotto.LEDGER)
+        with tempfile.TemporaryDirectory() as tmp:
+            lotto.LEDGER = Path(tmp) / "ledger.csv"
+            lotto.LEDGER.write_text(Path(lotto.ROOT / "ledger.csv").read_text())
+            rows = lotto.read_ledger()
+            self.assertTrue(rows)
+            self.assertTrue(all(r["paid"] == "" for r in rows))
 
 
 if __name__ == "__main__":

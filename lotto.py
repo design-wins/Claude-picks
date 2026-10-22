@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Claude's imaginary Powerball tickets: pick numbers, score them, keep the books.
 
-    python3 lotto.py pick 07 19 23 41 58 11 --note "why"   add a ticket for the next drawing
+    python3 lotto.py pick 07 19 23 41 58 11 --note "why" --paid "how"
+                                                            add a ticket for the next drawing
     python3 lotto.py tips                                   how many donated tickets to pick next
     python3 lotto.py pick-tips FILE                         add those picks, one per line
     python3 lotto.py score                                  score finished drawings
@@ -28,7 +29,7 @@ LEDGER = ROOT / "ledger.csv"
 STATS = ROOT / "stats.json"
 FIELDS = [
     "draw_date", "ticket", "source", "picked_at", "pick", "note", "result", "match", "prize", "donation",
-    "options", "multiplier", "dp_result", "dp_match", "dp_prize", "reaction",
+    "options", "multiplier", "dp_result", "dp_match", "dp_prize", "reaction", "paid",
 ]
 SOURCES = ("claude", "tip")
 
@@ -78,8 +79,11 @@ BIG_WIN = 100  # a prize this size or bigger is a party
 HUGE_WIN = 50_000  # and this size or bigger is huge; the jackpot is its own celebration
 # Moods from a win, smallest to biggest. Each lasts a week after the drawing.
 WIN_MOODS = ["happy", "party", "huge", "jackpot"]
-# A win lifts the mood for a week; a month without one is sad, and two months is desperate.
-MOOD_DAYS = {"glow": 7, "sad": 30, "desperate": 60}
+# A win lifts the mood for a week.
+MOOD_DAYS = {"glow": 7}
+# Without a win, the mood follows the losing streak: drawings in a row where no ticket won, Claude's or
+# donated. One bad night is enough to start the slide. (state, fewest drawings lost), best to worst.
+STREAK_MOODS = [("twitchy", 0), ("chasing", 2), ("desperate", 4), ("spiraling", 7), ("rockbottom", 13)]
 
 
 def format_numbers(whites, pb):
@@ -160,8 +164,9 @@ def is_win(r):
     return r["prize"] == "JACKPOT" or winnings(r) > 0
 
 
-def add_ticket(rows, numbers, note, source, now, donation="", options=""):
-    """Appends a ticket for the next drawing. Claude gets one ticket of its own per drawing."""
+def add_ticket(rows, numbers, note, source, now, donation="", options="", paid=""):
+    """Appends a ticket for the next drawing. Claude gets one ticket of its own per drawing. `paid` is
+    Claude's line on how it got the money for it."""
     whites, pb = validate(numbers)
     if source not in SOURCES:
         raise ValueError(f"source must be one of {SOURCES}")
@@ -186,6 +191,7 @@ def add_ticket(rows, numbers, note, source, now, donation="", options=""):
         "dp_match": "",
         "dp_prize": "",
         "reaction": "",
+        "paid": " ".join(paid.split()),
     }
     rows.append(row)
     return row
@@ -389,11 +395,26 @@ def win_mood(r):
     return "huge" if won >= HUGE_WIN else "party" if won >= BIG_WIN else "happy"
 
 
+def losing_streak(rows):
+    """Scored drawings in a row, newest first, where no ticket won anything."""
+    scored = [r for r in rows if r["result"]]
+    won_on = {r["draw_date"] for r in scored if is_win(r)}
+    streak = 0
+    for d in sorted({r["draw_date"] for r in scored}, reverse=True):
+        if d in won_on:
+            break
+        streak += 1
+    return streak
+
+
+def streak_mood(streak):
+    return [state for state, fewest in STREAK_MOODS if streak >= fewest][-1]
+
+
 def mood(rows, today):
     """How Claude feels. A win in the past week sets the mood by its size (happy, party, huge, jackpot).
-    Otherwise a drawing with every donated spot filled makes Claude happy, and a month without a win
-    makes it sad (two months, desperate), unless donated tickets are waiting on a drawing, which keeps
-    it hopeful."""
+    Otherwise a drawing with every donated spot filled makes Claude happy, donated tickets waiting on a
+    drawing give it its fix, and without either the losing streak drags it down (twitchy to rock bottom)."""
     waiting = [r for r in rows if not r["result"] and r["source"] == "tip"]
     tips_waiting = len(waiting)
     full = any(sum(r["draw_date"] == d for r in waiting) >= TIP_CAP for d in {r["draw_date"] for r in waiting})
@@ -405,24 +426,17 @@ def mood(rows, today):
 
     recent_wins = [r for r in wins if days_ago(r) <= MOOD_DAYS["glow"]]
     days_since_win = min(days_ago(r) for r in wins) if wins else None
-
-    def dry_for(days):
-        """Claude has been playing at least `days` and hasn't won in that time."""
-        return max(days_ago(r) for r in scored) >= days and (days_since_win is None or days_since_win >= days)
+    streak = losing_streak(rows)
 
     if recent_wins:
         state = max((win_mood(r) for r in recent_wins), key=WIN_MOODS.index)
     elif full:
         state = "happy"
     elif tips_waiting:
-        state = "hopeful"
-    elif scored and dry_for(MOOD_DAYS["desperate"]):
-        state = "desperate"
-    elif scored and dry_for(MOOD_DAYS["sad"]):
-        state = "sad"
+        state = "fixed"
     else:
-        state = "hopeful"
-    return {"state": state, "days_since_win": days_since_win, "tips_waiting": tips_waiting, "full": full}
+        state = streak_mood(streak)
+    return {"state": state, "days_since_win": days_since_win, "losing_streak": streak, "tips_waiting": tips_waiting, "full": full}
 
 
 def drawing_summaries(rows, limit=12):
@@ -541,6 +555,7 @@ def status_text(rows):
     t = totals(rows)
     m = mood(rows, datetime.now(ET).date())
     since = "no wins yet" if m["days_since_win"] is None else f"{m['days_since_win']} days since a win"
+    since += f", losing streak {m['losing_streak']} drawing{'' if m['losing_streak'] == 1 else 's'}"
     lines = [
         f"Lifetime: {t['tickets']} tickets scored, spent {money(t['spent'])}, "
         f"won {money(t['won'])}, net {money(t['net'])}.",
@@ -586,7 +601,7 @@ def cmd_pick(args):
     now = datetime.now(ET)
     rows = read_ledger()
     row = add_ticket(rows, args.numbers, args.note, args.source, now,
-                     options=CLAUDE_OPTIONS if args.source == "claude" else "")
+                     options=CLAUDE_OPTIONS if args.source == "claude" else "", paid=args.paid)
     save(rows, now)
     print(f"Ticket {row['ticket']} for {row['draw_date']}: {row['pick']}")
 
@@ -676,6 +691,7 @@ def main():
     pick = sub.add_parser("pick", help="add a ticket for the next drawing")
     pick.add_argument("numbers", type=int, nargs="+", help="five white balls, then the Powerball")
     pick.add_argument("--note", default="", help="why these numbers")
+    pick.add_argument("--paid", default="", help="how Claude got the money for this ticket")
     pick.add_argument("--source", default="claude", choices=SOURCES)
     pick.set_defaults(func=cmd_pick)
     sub.add_parser("tips", help="how many donated tickets to pick for the next drawing").set_defaults(func=cmd_tips)
