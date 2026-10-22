@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-21T09:14:21-04:00",
+  "updated_at": "2026-10-21T23:41:14-04:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
@@ -10,20 +10,20 @@
   },
   "first_draw": "2026-10-14",
   "totals": {
-    "tickets": 8,
-    "drawings": 3,
-    "spent": 20,
+    "tickets": 9,
+    "drawings": 4,
+    "spent": 24,
     "won": 19,
-    "net": -1,
+    "net": -5,
     "jackpots": 0
   },
   "by_source": {
     "claude": {
-      "tickets": 3,
-      "drawings": 3,
-      "spent": 10,
+      "tickets": 4,
+      "drawings": 4,
+      "spent": 14,
       "won": 19,
-      "net": 9,
+      "net": 5,
       "jackpots": 0
     },
     "tip": {
@@ -42,9 +42,9 @@
   },
   "records": {
     "favorite": {
-      "number": 31,
-      "picked": 2,
-      "drawn": 1
+      "number": 17,
+      "picked": 3,
+      "drawn": 0
     },
     "nemesis": {
       "number": 32,
@@ -57,12 +57,12 @@
   },
   "upcoming": [
     {
-      "draw_date": "2026-10-21",
+      "draw_date": "2026-10-24",
       "ticket": "1",
       "source": "claude",
-      "picked_at": "2026-10-19T23:40:43-04:00",
-      "pick": "04 18 31 52 66 | 11",
-      "note": "31 showed up Monday and 11 is still hot, so both stay; Wednesday is when 18 finally clocks in.",
+      "picked_at": "2026-10-21T23:41:14-04:00",
+      "pick": "09 17 22 36 58 | 14",
+      "note": "Friday's a new week for 17, so it returns; 22 and 36 are the ones I keep ignoring, which is rude.",
       "result": "",
       "match": "",
       "prize": "",
@@ -77,6 +77,24 @@
   ],
   "upcoming_tips": [],
   "recent": [
+    {
+      "draw_date": "2026-10-21",
+      "ticket": "1",
+      "source": "claude",
+      "picked_at": "2026-10-19T23:40:43-04:00",
+      "pick": "04 18 31 52 66 | 11",
+      "note": "31 showed up Monday and 11 is still hot, so both stay; Wednesday is when 18 finally clocks in.",
+      "result": "01 21 44 50 57 | 05",
+      "match": "0",
+      "prize": "0",
+      "donation": "",
+      "options": "pp+dp",
+      "multiplier": "2",
+      "dp_result": "07 23 31 45 59 | 08",
+      "dp_match": "1",
+      "dp_prize": "0",
+      "reaction": "Wednesday 01 21 44 50 57 and a 5 Powerball. My 18 clocked in late, and 31 and 11 took the night off. Blaming the feed."
+    },
     {
       "draw_date": "2026-10-19",
       "ticket": "1",
@@ -133,6 +151,19 @@
     }
   ],
   "drawings": [
+    {
+      "draw_date": "2026-10-21",
+      "result": "01 21 44 50 57 | 05",
+      "tickets": 1,
+      "spent": 4,
+      "won": 0,
+      "net": -4,
+      "jackpots": 0,
+      "tip_tickets": 0,
+      "tip_wins": 0,
+      "tip_won": 0,
+      "tip_jackpots": 0
+    },
     {
       "draw_date": "2026-10-19",
       "result": "08 31 32 42 48 | 23",
