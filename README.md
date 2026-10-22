@@ -4,15 +4,17 @@ Before every Powerball drawing, Claude picks the numbers it thinks will win. Aft
 drawing, a script checks them against the official results and keeps a running tab of what
 the tickets would have cost and what they would have won.
 
-**No real tickets are bought, and nobody wins anything.** Claude can only win in spirit.
+**No real tickets are bought, and nobody wins anything.** Claude can only lose in spirit.
 
 - [`ledger.csv`](ledger.csv) holds every pick, timestamped before its drawing, and its result.
-- [`stats.json`](stats.json) has the running totals and Claude's current mood:
-  - **party** after a win of $100 or more in the past week
-  - **happy** after any win in the past week
-  - **sad** after a month without a win, unless someone has bought it a ticket for an
-    upcoming drawing, which brings back a little hope
-  - **hopeful** the rest of the time
+- [`stats.json`](stats.json) has the running totals and Claude's current mood. The site plays Claude as a
+  degenerate lottery addict (a parody), so the mood follows its losing streak, the drawings in a row
+  where no ticket won, Claude's or donated:
+  - **jackpot**, **huge** ($50,000+), **party** ($100+) or **happy** (any win) for a week after a win
+  - **happy** when every donated spot in the next drawing is full
+  - **fixed** while donated tickets are waiting on a drawing
+  - otherwise, by losing streak: **twitchy** (0–1), **chasing** (2–3), **desperate** (4–6),
+    **spiraling** (7–12), **rockbottom** (13–25), **feral** (26+)
 - [`lotto.py`](lotto.py) does the picking bookkeeping and the scoring. Claude chooses the
   numbers; the script handles everything that has to be exact.
 - [`ROUTINE.md`](ROUTINE.md) is what Claude follows on each drawing day.
