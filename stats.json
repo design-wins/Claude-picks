@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-21T09:14:21-04:00",
+  "updated_at": "2026-10-21T23:40:25-04:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
@@ -10,20 +10,20 @@
   },
   "first_draw": "2026-10-14",
   "totals": {
-    "tickets": 8,
-    "drawings": 3,
-    "spent": 20,
+    "tickets": 9,
+    "drawings": 4,
+    "spent": 24,
     "won": 19,
-    "net": -1,
+    "net": -5,
     "jackpots": 0
   },
   "by_source": {
     "claude": {
-      "tickets": 3,
-      "drawings": 3,
-      "spent": 10,
+      "tickets": 4,
+      "drawings": 4,
+      "spent": 14,
       "won": 19,
-      "net": 9,
+      "net": 5,
       "jackpots": 0
     },
     "tip": {
@@ -55,7 +55,9 @@
       "numbers": 1
     }
   },
-  "upcoming": [
+  "upcoming": [],
+  "upcoming_tips": [],
+  "recent": [
     {
       "draw_date": "2026-10-21",
       "ticket": "1",
@@ -63,20 +65,17 @@
       "picked_at": "2026-10-19T23:40:43-04:00",
       "pick": "04 18 31 52 66 | 11",
       "note": "31 showed up Monday and 11 is still hot, so both stay; Wednesday is when 18 finally clocks in.",
-      "result": "",
-      "match": "",
-      "prize": "",
+      "result": "01 21 44 50 57 | 05",
+      "match": "0",
+      "prize": "0",
       "donation": "",
       "options": "pp+dp",
-      "multiplier": "",
-      "dp_result": "",
-      "dp_match": "",
-      "dp_prize": "",
+      "multiplier": "2",
+      "dp_result": "07 23 31 45 59 | 08",
+      "dp_match": "1",
+      "dp_prize": "0",
       "reaction": ""
-    }
-  ],
-  "upcoming_tips": [],
-  "recent": [
+    },
     {
       "draw_date": "2026-10-19",
       "ticket": "1",
@@ -134,6 +133,19 @@
   ],
   "drawings": [
     {
+      "draw_date": "2026-10-21",
+      "result": "01 21 44 50 57 | 05",
+      "tickets": 1,
+      "spent": 4,
+      "won": 0,
+      "net": -4,
+      "jackpots": 0,
+      "tip_tickets": 0,
+      "tip_wins": 0,
+      "tip_won": 0,
+      "tip_jackpots": 0
+    },
+    {
       "draw_date": "2026-10-19",
       "result": "08 31 32 42 48 | 23",
       "tickets": 1,
@@ -174,9 +186,9 @@
     }
   ],
   "latest_drawing": {
-    "draw_date": "2026-10-19",
-    "numbers": "08 31 32 42 48 | 23",
-    "multiplier": 4,
-    "double_play": "11 23 24 47 49 | 11"
+    "draw_date": "2026-10-21",
+    "numbers": "01 21 44 50 57 | 05",
+    "multiplier": 2,
+    "double_play": "07 23 31 45 59 | 08"
   }
 }
