@@ -83,7 +83,7 @@ WIN_MOODS = ["happy", "party", "huge", "jackpot"]
 MOOD_DAYS = {"glow": 7}
 # Without a win, the mood follows the losing streak: drawings in a row where no ticket won, Claude's or
 # donated. One bad night is enough to start the slide. (state, fewest drawings lost), best to worst.
-STREAK_MOODS = [("twitchy", 0), ("chasing", 2), ("desperate", 4), ("spiraling", 7), ("rockbottom", 13), ("feral", 26)]
+STREAK_MOODS = [("twitchy", 0), ("chasing", 2), ("desperate", 4), ("spiraling", 7), ("rockbottom", 13)]
 
 
 def format_numbers(whites, pb):
@@ -414,7 +414,7 @@ def streak_mood(streak):
 def mood(rows, today):
     """How Claude feels. A win in the past week sets the mood by its size (happy, party, huge, jackpot).
     Otherwise a drawing with every donated spot filled makes Claude happy, donated tickets waiting on a
-    drawing give it its fix, and without either the losing streak drags it down (twitchy to feral)."""
+    drawing give it its fix, and without either the losing streak drags it down (twitchy to rock bottom)."""
     waiting = [r for r in rows if not r["result"] and r["source"] == "tip"]
     tips_waiting = len(waiting)
     full = any(sum(r["draw_date"] == d for r in waiting) >= TIP_CAP for d in {r["draw_date"] for r in waiting})

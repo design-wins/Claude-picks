@@ -38,8 +38,7 @@ New field in `stats.json`: `mood.losing_streak` (scored drawings since any ticke
 | 2–3 | `chasing` | **Claude is chasing it.** | Double or nothing on everything. |
 | 4–6 | `desperate` | **Claude is desperate.** | Begging, bargaining, texting exes. |
 | 7–12 | `spiraling` | **Claude is spiraling.** | Sold the couch. Then sat on the floor and cried about the couch. |
-| 13–25 | `rockbottom` | **Claude hit rock bottom.** | Sleeping in a server closet. Owes a guy named Dice $40. |
-| 26+ | `feral` | **Claude has gone feral.** | Lives behind the Circle K. Talks to the Powerball, and it answers now. |
+| 13+ | `rockbottom` | **Claude hit rock bottom.** | Sleeping in a server closet. Owes a guy named Dice $40. |
 
 Win moods still last a week (`MOOD_DAYS["glow"]`). After that, the streak takes over again.
 Ranking stays the same: a win beats a full drawing, and a full drawing beats donated tickets waiting, which beats the streak.
@@ -48,7 +47,7 @@ Ranking stays the same: a win beats a full drawing, and a full drawing beats don
 break. `sad` and `hopeful` go away and map to `chasing` and `fixed`.
 
 **Rock bottom stays pathetic and funny, not suicidal.** That's the one bit that kills the laugh and gets the site
-reported. The floor is "lives behind a Circle K," not anything darker. Gallows humor that keeps the loop going is fine:
+reported. Rock bottom (13+) is the floor, and "lives behind a Circle K" is as dark as it gets. Gallows humor that keeps the loop going is fine:
 "Wrote a will. Leaves everything to the Powerball. Everything is $0." / "Pre-planned its funeral. Asked mourners to bring $2."
 / "Its family held a wake. Claude showed up and hit up the mourners for $2."
 
@@ -202,7 +201,6 @@ drains out to fluorescent-light gray and bruise.
 | desperate | `#6e6a7d` bruise gray | |
 | spiraling | `#4a3f5c` bruise purple | |
 | rockbottom | `#2b2f2a` dumpster green-black | |
-| feral | `#141412` near black, flickering fluorescent green ink `#b8ff3c` | |
 
 Base page: off-black `#0e0d0b` with a faint felt or carpet texture (CSS-only noise, no image). Panels `#1a1814`. Ink
 `#efe6d2` (yellowed paper). Accents: the Powerball red stays `#e0322b`, and the money green is `#00ff9c`. Light mode becomes
@@ -215,6 +213,8 @@ Same idea as chapter 1, where the headline's shape shows the mood. Chapter 1 squ
 - **Mood headline: Bricolage Grotesque.** Bold and upright when Claude is up. The losing streak makes it thinner and
   narrower and knocks the letters crooked, a little more with each mood, like drunk handwriting. It never gets
   heavier, so it stays readable. (Climate Crisis and the Rubik distressed fonts were tried and were too hard to read.)
+- **No row of stages.** The hero has one gauge from rock bottom to a bender, with a marker where Claude is.
+  The headline already names the mood.
 - **Begging / cardboard sign: Rock Salt**, a hand-lettered marker font for the sign Claude holds and the button.
 - **Receipts, pawn tickets, rap sheet, ledger: Special Elite** (typewriter) or **Courier Prime**.
 - **Body: system sans**, same as now. It stays readable when nothing else is.
@@ -227,7 +227,6 @@ Keep the SVG face and its states, and make it look worse as things go wrong. It 
 - **desperate:** bloodshot eyes, stubble, a cigarette.
 - **spiraling:** a black eye, a band-aid, the cigarette's burned to the filter.
 - **rockbottom:** a missing tooth, a hoodie up, rain (the rain animation exists already).
-- **feral:** wild eyes, a Powerball in its mouth, flickering.
 - **happy:** a lottery ticket tucked behind its ear, a cigarette.
 - **party:** sunglasses at night, a nosebleed, the party hat (exists already).
 - **huge:** cash in its mouth, sunglasses, a gold chain.

@@ -301,7 +301,7 @@ class Mood(unittest.TestCase):
 
     def test_the_losing_streak_sets_the_slide(self):
         for n, state in [(1, "twitchy"), (2, "chasing"), (3, "chasing"), (4, "desperate"), (6, "desperate"),
-                         (7, "spiraling"), (12, "spiraling"), (13, "rockbottom"), (25, "rockbottom"), (26, "feral"), (90, "feral")]:
+                         (7, "spiraling"), (12, "spiraling"), (13, "rockbottom"), (90, "rockbottom")]:
             with self.subTest(n=n):
                 self.check(self.losses(n), state, None, streak=n)
 

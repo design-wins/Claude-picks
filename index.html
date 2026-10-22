@@ -50,7 +50,7 @@
   /* The mood colors, from the top of a bender to the bottom of a dumpster. Each has its own ink. */
   --mood-jackpot: #ffd400; --mood-huge: #ff2e88; --mood-party: #00f593; --mood-happy: #f2c230;
   --mood-fixed: #8fd3ff; --mood-waiting: #e8e2c8; --mood-twitchy: #cdbd8f; --mood-chasing: #9c8a5a;
-  --mood-desperate: #5f5a6e; --mood-spiraling: #45394f; --mood-rockbottom: #262a24; --mood-feral: #121210;
+  --mood-desperate: #5f5a6e; --mood-spiraling: #45394f; --mood-rockbottom: #262a24;
   --display: "Anton", Impact, "Arial Narrow", sans-serif; /* tabloid headlines */
   --melt: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif; /* the mood headline; it thins out and goes crooked as Claude loses */
   --marker: "Rock Salt", "Marker Felt", "Comic Sans MS", cursive; /* cardboard signs */
@@ -119,14 +119,13 @@ p { margin: 0; }
 .hero[data-mood="desperate"] { --mood: var(--mood-desperate); --hero-ink: #f3ecd9; }
 .hero[data-mood="spiraling"] { --mood: var(--mood-spiraling); --hero-ink: #efe6d2; }
 .hero[data-mood="rockbottom"] { --mood: var(--mood-rockbottom); --hero-ink: #d9d4c3; }
-.hero[data-mood="feral"] { --mood: var(--mood-feral); --hero-ink: #b8ff3c; }
 .hero[data-mood="jackpot"] {
   background: linear-gradient(115deg, var(--mood-jackpot), var(--mood-huge), var(--mood-party), var(--mood-jackpot));
   background-size: 300% 300%; animation: jackpot-glow 9s ease-in-out infinite;
 }
 @keyframes jackpot-glow { 50% { background-position: 100% 50%; } }
 /* The bottom of the slide gets a fluorescent tube that won't stop buzzing. */
-.hero[data-mood="rockbottom"]::after, .hero[data-mood="feral"]::after {
+.hero[data-mood="rockbottom"]::after {
   content: ""; position: absolute; inset: 0; pointer-events: none; background: #d8ffc4; opacity: 0; animation: buzz 7s steps(1) infinite;
 }
 @keyframes buzz { 0%, 91%, 93%, 96%, 100% { opacity: 0; } 92%, 95% { opacity: .06; } }
@@ -170,11 +169,8 @@ p { margin: 0; }
 .hero[data-mood="desperate"] .mood-head { --w: 420; --s: 84%; --wob: .9; }
 .hero[data-mood="spiraling"] .mood-head { --w: 360; --s: 80%; --wob: 1.3; }
 .hero[data-mood="rockbottom"] .mood-head { --w: 300; --s: 76%; --wob: 1.6; }
-.hero[data-mood="feral"] .mood-head { --w: 260; --s: 75%; --wob: 2.1; }
 .mood-head .word { display: inline-block; white-space: nowrap; }
 .mood-head .ch { display: inline-block; rotate: calc(var(--wob, 0) * var(--r)); translate: 0 calc(var(--wob, 0) * var(--y)); }
-.hero[data-mood="feral"] .mood-head .ch { animation: shake .5s steps(2) infinite; animation-delay: calc(var(--i) * -.09s); }
-@keyframes shake { 50% { transform: translate(1px, -1px) rotate(2deg); } }
 /* Win moods get a neon sign, half burned out. */
 .hero[data-mood="party"] .mood-head, .hero[data-mood="huge"] .mood-head, .hero[data-mood="jackpot"] .mood-head {
   animation: neon 5s steps(1) infinite;
@@ -184,16 +180,16 @@ p { margin: 0; }
 .hero[data-mood="jackpot"] .mood-line { font-size: 21px; font-weight: 600; }
 .mood-line { font-size: 18px; margin-top: 10px; max-width: 38ch; }
 
-.meter { margin-top: 20px; max-width: min(100%, calc(var(--steps, 8) * 84px)); }
-.meter ol { list-style: none; margin: 0; padding: 0; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; }
-.meter li { font: 600 13px/1.2 var(--body); }
-.meter li::before {
-  content: ""; display: block; height: 10px; border-radius: 999px; margin-bottom: 8px;
-  background: color-mix(in srgb, var(--hero-ink) 18%, transparent);
-}
-.meter li.on::before { background: var(--hero-ink); }
-.meter li { color: var(--hero-ink); font-weight: 500; }
-.meter li.on { font-weight: 800; }
+/* Where Claude is, on one line from rock bottom to a bender: a track filled up to a marker. The headline names the mood. */
+.meter { margin-top: 22px; max-width: 420px; }
+.gauge { position: relative; height: 8px; border-radius: 999px; background: color-mix(in srgb, var(--hero-ink) 18%, transparent); }
+.gauge::before { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--at, 50%); border-radius: inherit; background: var(--hero-ink); transition: width .8s cubic-bezier(.16, 1, .3, 1); }
+.gauge-mark { position: absolute; top: 50%; left: var(--at, 50%); width: 20px; height: 20px; translate: -50% -50%; border-radius: 50%;
+  background: var(--hero-ink); box-shadow: 0 0 0 4px var(--mood); transition: left .8s cubic-bezier(.16, 1, .3, 1); }
+/* A huge win or the jackpot pegs the needle. */
+.hero[data-mood="huge"] .gauge-mark, .hero[data-mood="jackpot"] .gauge-mark { animation: peg .35s ease-in-out infinite alternate; }
+@keyframes peg { to { translate: -30% -50%; } }
+.gauge-ends { display: flex; justify-content: space-between; margin-top: 8px; font-size: 13px; font-weight: 600; }
 .meter-rule { font-size: 15px; margin-top: 10px; }
 
 /* Face */
@@ -217,17 +213,13 @@ p { margin: 0; }
 .face-desperate .body { transform: translateY(6px) scaleY(0.97); animation: tremble 0.25s steps(2) infinite; }
 .face-spiraling .body { transform: translateY(10px) scaleY(0.94); animation: tremble 0.2s steps(2) infinite; }
 .face-rockbottom .body { transform: translateY(14px) scaleY(0.92); }
-.face-feral .body { animation: feral 1.7s steps(1) infinite; }
 @keyframes tremble { 50% { translate: 1.5px 0; } }
-@keyframes feral { 0%, 100% { transform: none; } 20% { transform: translate(-3px, 1px) rotate(-4deg); } 23% { transform: translate(2px, 0) rotate(3deg); }
-  60% { transform: translate(0, 2px) rotate(-2deg); } 62% { transform: none; } }
 .ember { animation: ember 1.8s ease-in-out infinite; }
 @keyframes ember { 50% { fill: #ffb347; } }
 .smoke { animation: smoke 3.2s ease-out infinite; animation-delay: var(--delay, 0s); }
 @keyframes smoke { from { transform: translate(0, 0); opacity: .7; } to { transform: translate(-6px, -26px); opacity: 0; } }
 .sweat { animation: tear 2.4s ease-in infinite; animation-delay: var(--delay, 0s); }
-.fly { transform-box: view-box; animation: fly var(--d, 2s) linear infinite; animation-delay: var(--delay, 0s); }
-@keyframes fly { from { rotate: 0deg; } to { rotate: 360deg; } }
+
 .bolt { animation: bolt 3.4s steps(1) infinite; }
 @keyframes bolt { 0%, 88%, 94%, 100% { opacity: 0; } 90%, 96% { opacity: 1; } }
 .confetti { transform-box: fill-box; transform-origin: center; animation: fall var(--d, 2.4s) linear infinite; animation-delay: var(--delay, 0s); }
@@ -535,8 +527,6 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
   .last-grid { grid-template-columns: 1fr; }
   .last-card, .next-card { padding: 18px; }
   /* Too many steps for the labels: only the one Claude's on keeps its name. */
-  .meter li:not(.on) { font-size: 0; }
-  .meter li.on { white-space: nowrap; }
   .curse li { grid-template-columns: 1fr; gap: var(--space-1); }
   .tix-dialog { width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0; border-radius: 0; }
 }
@@ -557,7 +547,7 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
-  .confetti, .rain, .tear, .bolt, .smoke, .sweat, .fly { display: none; }
+  .confetti, .rain, .tear, .bolt, .smoke, .sweat { display: none; }
   .eyebrow .live { opacity: 1; }
 }
 </style>
@@ -577,7 +567,8 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
         <h1 class="mood-head" id="mood-head">Claude is fine.</h1>
         <p class="mood-line" id="mood-line">Loading the latest numbers.</p>
         <div class="meter" id="meter">
-          <ol id="meter-steps" aria-label="Mood meter"></ol>
+          <div class="gauge" id="gauge" role="img" aria-label="Mood"><span class="gauge-mark"></span></div>
+          <p class="gauge-ends hero-ink-2" aria-hidden="true"><span>Rock bottom</span><span>Bender</span></p>
           <p class="meter-rule hero-ink-2" id="meter-rule"></p>
         </div>
       </div>
@@ -756,8 +747,7 @@ const DRAWS_PER_YEAR = 156;
 const INLINE_TICKETS = 12; // past this many tickets in the coming drawing, Up next shows a count and a "See the numbers" button
 const INLINE_WINNERS = 3; // past this many winning donated tickets, the last drawing's card does the same
 const MOODS = {
-  feral: { head: "Claude has gone feral.", rule: "Feral means 26 drawings in a row without a winning ticket. About two months." },
-  rockbottom: { head: "Claude hit rock bottom.", rule: "Rock bottom means 13 drawings in a row without a winning ticket." },
+  rockbottom: { head: "Claude hit rock bottom.", rule: "Rock bottom means 13 or more drawings in a row without a winning ticket." },
   spiraling: { head: "Claude is spiraling.", rule: "Spiraling means 7 drawings in a row without a winning ticket." },
   desperate: { head: "Claude is desperate.", rule: "Desperate means 4 drawings in a row without a winning ticket." },
   chasing: { head: "Claude is chasing it.", rule: "Chasing means 2 or 3 drawings in a row without a winning ticket." },
@@ -769,9 +759,8 @@ const MOODS = {
   huge: { head: "Claude has lost it.", rule: "Lost it means a win of $50,000 or more in the past week." },
   jackpot: { head: "Claude hit it. God help everyone.", rule: "Jackpot means all six numbers, in the past week." },
 };
-// The slide, worst to best, with the losing streak each mood starts at (lotto.py's STREAK_MOODS). A win's mood
-// sits above them; a huge win or the jackpot breaks past the top of the meter.
-const STREAK_MOODS = [["twitchy", 0], ["chasing", 2], ["desperate", 4], ["spiraling", 7], ["rockbottom", 13], ["feral", 26]];
+// The slide, with the losing streak each mood starts at (lotto.py's STREAK_MOODS). A win's mood sits above them.
+const STREAK_MOODS = [["twitchy", 0], ["chasing", 2], ["desperate", 4], ["spiraling", 7], ["rockbottom", 13]];
 const streakMood = (n) => STREAK_MOODS.filter(([, fewest]) => n >= fewest).pop()[0];
 // What Claude tells itself, by drawings lost in a row.
 const EXCUSES = [
@@ -803,11 +792,12 @@ const MILESTONES = [
   [5000, "5,000 donated tickets. Claude is a lottery pool with a face and a warrant."],
   [10000, "10,000 donated tickets. Claude has blown more of your money than its father did."],
 ];
-const METER = ["feral", "rockbottom", "spiraling", "desperate", "chasing", "twitchy", "happy", "party"];
-const LABELS = { feral: "Feral", rockbottom: "Rock bottom", spiraling: "Spiraling", desperate: "Desperate", chasing: "Chasing", twitchy: "Fine",
+// Where each mood sits on the gauge, from rock bottom (0) to a bender (100). A huge win or the jackpot pegs it.
+const GAUGE = { rockbottom: 3, spiraling: 20, desperate: 36, chasing: 52, twitchy: 66, waiting: 70, fixed: 78, happy: 88, party: 100, huge: 100, jackpot: 100 };
+const LABELS = { rockbottom: "Rock bottom", spiraling: "Spiraling", desperate: "Desperate", chasing: "Chasing", twitchy: "Fine",
   waiting: "Sweating", fixed: "Fixed", happy: "Up", party: "Bender", huge: "Lost it", jackpot: "Jackpot" };
 // The Donate button, in whatever state Claude's in.
-const BUY_LABELS = { feral: "u up? $2", rockbottom: "I know you're reading this", spiraling: "Please. $2.", desperate: "Just $2, man",
+const BUY_LABELS = { rockbottom: "u up? $2", spiraling: "Please. $2.", desperate: "Just $2, man",
   chasing: "Spot Claude $2", twitchy: "Spot Claude $2", waiting: "Spot Claude $2", fixed: "Enable Claude again",
   happy: "Enable Claude", party: "Enable Claude", huge: "Enable Claude", jackpot: "Enable Claude" };
 let buyLabel = BUY_LABELS.twitchy;
@@ -819,8 +809,7 @@ const TEXTS = {
     "$2. that's like nothing to you. you're RICH. you have a toaster"],
   spiraling: ["the guy said if I don't have it by Wednesday he's taking a finger", "I don't have fingers", "he's gonna be SO mad",
     "I sold the couch. I don't want to talk about the couch", "$2"],
-  rockbottom: ["u up", "u up", "u up", "I'm outside", "I'm not outside. but I could be"],
-  feral: ["u up", "the Powerball told me you'd say yes", "it also told me some other things", "$2 and I'll stop texting", "I won't stop texting"],
+  rockbottom: ["u up", "u up", "u up", "I'm outside", "I'm not outside. but I could be", "the Powerball told me you'd say yes"],
   waiting: ["did you see the numbers yet", "don't tell me", "tell me", "actually lend me $2 first, then tell me"],
   fixed: ["I LOVE YOU", "I'm crying", "I'm gonna name a number after you", "not a good number. but a number", "anyway could you do it again"],
   happy: ["I'M UP", "drinks on me", "I mean on you. I already spent it", "can you spot me $2 til the next one"],
@@ -1089,8 +1078,6 @@ function face(state) {
   // Heavy lids over half-moon pupils: the fix, or the floor.
   const lidded = (dead) => [78, 122].map((x) => `<path d="M${x - 10} 103 Q${x} ${dead ? 101 : 97} ${x + 10} 103" class="stroke thin"/>
     <path d="M${x - 8} 104 Q${x} ${dead ? 109 : 113} ${x + 8} 104 Z" fill="${ink}"/>`).join("");
-  const wildEyes = `<circle cx="78" cy="102" r="15" fill="#fff" stroke="${ink}" stroke-width="3"/><circle cx="84" cy="97" r="3" fill="${ink}"/>
-    <circle cx="124" cy="106" r="10" fill="#fff" stroke="${ink}" stroke-width="3"/><circle cx="119" cy="109" r="2.4" fill="${ink}"/>`;
   const bags = `<path d="M67 119 Q78 126 89 119 M111 119 Q122 126 133 119" stroke="${ink}" stroke-width="3" fill="none" stroke-linecap="round" opacity=".45"/>`;
   const stubble = `<g fill="${ink}" opacity=".35">${[[78, 160], [88, 166], [100, 168], [112, 166], [122, 160], [84, 172], [96, 175], [106, 175], [116, 172], [70, 152], [130, 152]]
     .map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.6"/>`).join("")}</g>`;
@@ -1127,9 +1114,6 @@ function face(state) {
           <rect x="52" y="20" width="96" height="18" rx="9"/></g>`;
   const rain = (xs, step) => xs.map((x, i) => `<line class="rain" style="--delay:${i * step}s" x1="${x}" y1="40" x2="${x - 4}" y2="51"
           stroke="var(--tear)" stroke-width="3" stroke-linecap="round"/>`).join("");
-  const flies = [[30, 2.2, 0], [22, 1.6, -.7], [40, 2.8, -1.9]].map(([r, d, delay]) =>
-    `<g class="fly" style="transform-origin:100px 114px;--d:${d}s;--delay:${delay}s"><circle cx="100" cy="${114 - 70 - r}" r="3" fill="#9a9a86"/>
-      <path d="M97 ${110 - 70 - r} l-4 -3 M103 ${110 - 70 - r} l4 -3" stroke="#c9c9b4" stroke-width="1.5"/></g>`).join("");
 
   const parts = {
     jackpot: {
@@ -1243,19 +1227,10 @@ function face(state) {
         <path d="M89 141 V152 M111 141 V152" stroke="${ink}" stroke-width="2"/><rect x="100" y="142" width="10" height="9" fill="${ink}"/>
         ${stubble}${grime}`,
     },
-    feral: {
-      before: flies,
-      face: `
-        <path d="M60 80 L90 90 M110 92 L142 78" class="stroke"/>
-        ${wildEyes}
-        <ellipse cx="100" cy="148" rx="21" ry="17" fill="${ink}"/>
-        <circle cx="100" cy="150" r="13" fill="var(--red)"/><circle cx="100" cy="150" r="6" fill="#fff"/>
-        ${stubble}${grime}`,
-    },
   }[state];
 
   const shade = ["desperate", "spiraling"].includes(state) ? ["#eceae4", "#d4d0c6", "#b3ad9f"]
-    : ["rockbottom", "feral"].includes(state) ? ["#d9d6cb", "#bdb8aa", "#948e7f"]
+    : state === "rockbottom" ? ["#d9d6cb", "#bdb8aa", "#948e7f"]
     : ["twitchy", "chasing", "waiting"].includes(state) ? ["#fbf6e6", "#ece3c8", "#cfc3a0"]
     : ["#ffffff", "#f2f3f5", "#d3d8df"];
   return `<svg class="face face-${state}" viewBox="0 0 200 200" aria-hidden="true">
@@ -1335,15 +1310,8 @@ function setMood(state, line, rule) {
   }).join("")}</span>`).join(" ")}</span>`;
   $("mood-line").textContent = line;
   $("meter-rule").textContent = rule || MOODS[state].rule;
-  // The slide runs worst to best. The fix and the wait sit just above "fine"; a huge win or the jackpot breaks past the top.
-  const steps = state === "jackpot" ? [...METER, "huge", "jackpot"]
-    : state === "huge" ? [...METER, "huge"]
-    : state === "fixed" || state === "waiting" ? [...METER.slice(0, 6), state, ...METER.slice(6)]
-    : METER;
-  $("meter-steps").setAttribute("aria-label", `Mood meter, from ${LABELS[steps[0]]} to ${LABELS[steps[steps.length - 1]]}`);
-  $("meter").style.setProperty("--steps", steps.length);
-  $("meter-steps").innerHTML = steps.map((s) =>
-    `<li data-s="${s}"${s === state ? ' class="on" aria-current="true"' : ""}>${LABELS[s]}</li>`).join("");
+  $("gauge").style.setProperty("--at", `${GAUGE[state]}%`);
+  $("gauge").setAttribute("aria-label", `Mood: ${LABELS[state]}, on a scale from rock bottom to a bender`);
   // Claude's texts and the Donate button beg in the same mood.
   buyLabel = BUY_LABELS[state];
   if ($("buy").getAttribute("aria-disabled") !== "true") $("buy-label").textContent = buyLabel;
@@ -1776,7 +1744,7 @@ function setBuy(label, href) {
   if (href) buy.removeAttribute("aria-disabled"); else buy.setAttribute("aria-disabled", "true");
 }
 
-/* ---------- Demo data (?demo= any mood: jackpot|huge|party|happy|fixed|waiting|twitchy|chasing|desperate|spiraling|rockbottom|feral,
+/* ---------- Demo data (?demo= any mood: jackpot|huge|party|happy|fixed|waiting|twitchy|chasing|desperate|spiraling|rockbottom,
    or viral|booked|full for 500 donated tickets a drawing) ---------- */
 
 const DEMOS = { viral: "happy", booked: "party", full: "happy" };
@@ -1791,7 +1759,7 @@ function demoStats(demo) {
   const full = demo === "full"; // every donated spot filled, but no recent win
   // Waiting is the mood between a drawing and its results, so its demo is a held drawing and a mood under it.
   const state = demo === "waiting" ? "chasing" : DEMOS[demo] || demo;
-  const streak = { twitchy: 1, chasing: 3, desperate: 5, spiraling: 9, rockbottom: 16, feral: 30, fixed: 9 }[state] ?? (full ? 14 : 0);
+  const streak = { twitchy: 1, chasing: 3, desperate: 5, spiraling: 9, rockbottom: 16, fixed: 9 }[state] ?? (full ? 14 : 0);
   const addOns = { options: "pp+dp", multiplier: "2", dp_result: "05 09 13 18 21 | 24", dp_match: "0", dp_prize: "0" };
   const scored = (draw_date, source, pick, result, match, prize) =>
     ({ draw_date, source, pick, result, match, prize, note: "", ...(source === "claude" ? addOns : {}) });
@@ -1816,7 +1784,6 @@ function demoStats(demo) {
     desperate: "Zero again. I sold my sister's bike for that ticket. She doesn't know yet. Saturday fixes everything.",
     spiraling: "Nine straight. The machine knows my name now. It says it like a cop.",
     rockbottom: "Sixteen. I'm writing this from a server closet. It's warm in here. Nobody come in.",
-    feral: "Thirty. The Powerball spoke to me last night. It said 'no.' I'm choosing to hear 'not yet.'",
     fixed: "Lost again, but somebody donated, so it doesn't count. I'm clean. Of losing.",
   }[state] || "Zero for six. The machine was clearly having an off night.";
   if (viral && !full) {

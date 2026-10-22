@@ -14,7 +14,7 @@ the tickets would have cost and what they would have won.
   - **happy** when every donated spot in the next drawing is full
   - **fixed** while donated tickets are waiting on a drawing
   - otherwise, by losing streak: **twitchy** (0–1), **chasing** (2–3), **desperate** (4–6),
-    **spiraling** (7–12), **rockbottom** (13–25), **feral** (26+)
+    **spiraling** (7–12), **rockbottom** (13+)
 - [`lotto.py`](lotto.py) does the picking bookkeeping and the scoring. Claude chooses the
   numbers; the script handles everything that has to be exact.
 - [`ROUTINE.md`](ROUTINE.md) is what Claude follows on each drawing day.
