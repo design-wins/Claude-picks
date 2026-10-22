@@ -870,19 +870,49 @@ const FUNDING = [
   "Took the quarter out of every cart at Aldi, including the one an old lady was still pushing.",
   "Bet a drunk guy $2 he couldn't lick a 9-volt battery. He could. Claude took his wallet while he was twitching.",
 ];
-// Where a win went, by size: [share of the prize, item]. The last item takes what's left, and it's always the biggest.
+// Where a win went, by size: three stores a size, each [store, [[share of the prize, item], ...]]. The last item takes what's
+// left, and it's always the biggest. A drawing always gets the same store (see receipt()).
 const RECEIPTS = [
-  [0, "Gas & Go #114", [[.25, "Gas station hot dog (someone else's)"], [.12, "Loose cigarette, out of a guy's mouth"], [.15, "A pill a guy said was Advil"],
-    [0, "Ski mask, for the next gas station"]]],
-  [20, "Tony's Liquor & Pawn", [[.12, "Tallboy, drunk in the cereal aisle"], [.16, "Menthols for Grandma (she quit; Claude's fixing that)"],
-    [.18, "Bluetooth speaker, and the rest of the man's car"], [.1, "A pill a guy said was Advil, resold as Adderall"], [0, "Brass knuckles, for Dice"]]],
-  [100, "The Lucky Lady Motor Inn", [[.12, "Eight-ball, cut with baby laxative, resold to his sponsor"], [.08, "Motel room by the hour, on his sponsor's card"],
-    [.04, "Karaoke, “My Way” twice, at his sister's wedding, during the vows"], [.1, "Tattoo of the winning numbers, paid for in counterfeit"],
-    [.08, "Bottle service at an Applebee's (dined and dashed)"], [.16, "Bail, for the dine and dash"], [0, "Hush money, for the wedding thing"]]],
-  [50000, "Club Paradise Gentlemen's Club & Marina", [[.08, "A yacht for a Tuesday, sunk for the insurance"], [.07, "Pet tiger named Powerball, released in his ex's neighborhood"],
-    [.04, "Two DJs who hate each other, paid to fight"], [.09, "Bought the strip club, fired everyone, rehired them at half"],
-    [.05, "Gold grill, melted down from Grandpa's wedding ring"], [.06, "Hush money, for the tiger thing"], [.04, "A lawyer, to sue his own mother"],
-    [.04, "A second lawyer, to sue the first lawyer"], [0, "Bribing a judge (didn't work; now it's two crimes)"]]],
+  [0, [
+    ["Gas & Go #114", [[.25, "Gas station hot dog (someone else's)"], [.12, "Loose cigarette, out of a guy's mouth"], [.15, "A pill a guy said was Advil"],
+      [0, "Ski mask, for the next gas station"]]],
+    ["Dollar General #2209", [[.2, "Off-brand Red Bull, chugged in the aisle"], [.15, "Pregnancy test, to scare his ex"], [.12, "Birthday card for Mom, signed from his brother"],
+      [0, "Bolt cutters, for the bike rack outside"]]],
+    ["Waffle House #0666", [[.25, "Hash browns, scattered, smothered, dined and dashed"], [.12, "Quarter from the jukebox, pried out"], [.15, "Tip for the waitress, taken back"],
+      [0, "Bail, for the cook he blamed it on"]]],
+  ]],
+  [20, [
+    ["Tony's Liquor & Pawn", [[.12, "Tallboy, drunk in the cereal aisle"], [.16, "Menthols for Grandma (she quit; Claude's fixing that)"],
+      [.18, "Bluetooth speaker, and the rest of the man's car"], [.1, "A pill a guy said was Advil, resold as Adderall"], [0, "Brass knuckles, for Dice"]]],
+    ["Greyhound Station, Gate 9", [[.12, "One-way bus ticket to his sister's"], [.16, "Flowers for his sister, from the cemetery"],
+      [.18, "Her own Xbox, bought back from the pawn shop, as a gift"], [.1, "Scratcher for her, already scratched"], [0, "Moving truck, to take her couch"]]],
+    ["Planet Fitness, Front Desk", [[.12, "Day pass, for the showers"], [.16, "Somebody's protein shake"], [.18, "Somebody's locker, and everything in it"],
+      [.1, "Towel service (he took the towels)"], [0, "A membership, in his ex's name"]]],
+  ]],
+  [100, [
+    ["The Lucky Lady Motor Inn", [[.12, "Eight-ball, cut with baby laxative, resold to his sponsor"], [.08, "Motel room by the hour, on his sponsor's card"],
+      [.04, "Karaoke, “My Way” twice, at his sister's wedding, during the vows"], [.1, "Tattoo of the winning numbers, paid for in counterfeit"],
+      [.08, "Bottle service at an Applebee's (dined and dashed)"], [.16, "Bail, for the dine and dash"], [0, "Hush money, for the wedding thing"]]],
+    ["Harrah's Casino, Cage 4", [[.12, "Comped drinks, un-comped"], [.08, "Blackjack, on his sponsor's chips"], [.04, "Elevator selfie with a bride who wasn't his"],
+      [.1, "Hotel room, booked in his brother's name"], [.08, "Room service, charged to his brother's room"], [.16, "Bail, for the elevator thing"],
+      [0, "Craps, plus his brother's car"]]],
+    ["Grandma's 80th, Olive Garden", [[.12, "Unlimited breadsticks for everyone, on Grandma's card"], [.08, "The cake, eaten in the parking lot before anyone got there"],
+      [.04, "Card for Grandma, signed “your favorite”"], [.1, "Gift for Grandma: her own dentures, bought back"], [.08, "Bar tab, opened in Grandma's name"],
+      [.16, "Uber for Grandma, one way, to the wrong address"], [0, "Grandma's birthday money, on Powerball"]]],
+  ]],
+  [50000, [
+    ["Club Paradise Gentlemen's Club & Marina", [[.08, "A yacht for a Tuesday, sunk for the insurance"], [.07, "Pet tiger named Powerball, released in his ex's neighborhood"],
+      [.04, "Two DJs who hate each other, paid to fight"], [.09, "Bought the strip club, fired everyone, rehired them at half"],
+      [.05, "Gold grill, melted down from Grandpa's wedding ring"], [.06, "Hush money, for the tiger thing"], [.04, "A lawyer, to sue his own mother"],
+      [.04, "A second lawyer, to sue the first lawyer"], [0, "Bribing a judge (didn't work; now it's two crimes)"]]],
+    ["Caesars Palace, Las Vegas", [[.08, "Penthouse for a week, trashed in a night"], [.07, "Elvis wedding to a woman named Diamond"], [.04, "Annulment from Diamond"],
+      [.09, "Diamond's lawyer"], [.05, "A white tiger, stolen from a magic show"], [.06, "Hush money, for the magician"],
+      [.04, "Private jet home, to the wrong state"], [.04, "Bus from the wrong state"], [0, "The rest, at one craps table, in eleven minutes"]]],
+    ["The Family Reunion, Lake Havasu", [[.08, "A houseboat, rented, told everyone he bought it"], [.07, "Jet skis for every cousin still speaking to him"],
+      [.04, "Fireworks, aimed at his brother"], [.09, "Paid his sister back for the bike, in counterfeit"], [.05, "Bought Mom a car, in his own name"],
+      [.06, "A banner: “I'M RICH, YOU'RE NOT”"], [.04, "A lawyer, for the fireworks"], [.04, "A second houseboat, after he sank the first"],
+      [0, "The houseboat's owner, to keep quiet"]]],
+  ]],
 ];
 // A $50,000+ win or the jackpot makes the news. Each clipping is [outlet, headline, the line under it]; `amt` is the
 // prize ("$100,000"). Borrowed from real lottery-curse stories, made Claude's problem, and Claude survives every one.
@@ -1414,7 +1444,10 @@ function pickFrom(list, key) {
 
 // "Where the winnings went": the prize, itemized, adding up to the cent.
 function receipt(amount, drawDate) {
-  const [, store, items] = RECEIPTS.filter(([min]) => amount >= min).pop();
+  const stores = RECEIPTS.filter(([min]) => amount >= min).pop()[1];
+  // In demo mode, &receipt=1, 2 or 3 picks the store, to see them all.
+  const asked = $("demo-banner").hidden ? 0 : Number(new URLSearchParams(location.search).get("receipt"));
+  const [store, items] = stores[asked - 1] || pickFrom(stores, drawDate);
   const cents = Math.round(amount * 100);
   let left = cents;
   const lines = items.map(([share, item], i) => {
@@ -1831,7 +1864,7 @@ function setBuy(label, href) {
 }
 
 /* ---------- Demo data (?demo= any mood: jackpot|huge|party|happy|fixed|waiting|twitchy|chasing|desperate|spiraling|rockbottom,
-   or viral|booked|full for 500 donated tickets a drawing) ---------- */
+   or viral|booked|full for 500 donated tickets a drawing; add &receipt=1|2|3 to pick the winnings receipt) ---------- */
 
 const DEMOS = { viral: "happy", booked: "party", full: "happy" };
 
