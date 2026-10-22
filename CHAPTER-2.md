@@ -117,7 +117,7 @@ Text pools by streak:
   gets me." / "I can see you read this" / "$2. that's like nothing to you. you're RICH. you have a toaster."
 - **spiraling:** "the guy said if I don't have it by Wednesday he's taking a finger. I don't have fingers. he's gonna be SO mad." /
   "I sold the couch. I don't want to talk about the couch."
-- **rockbottom/feral:** "u up" / "u up" / "u up" / "I'm outside" / "I'm not outside. but I could be." / "the Powerball told me you'd
+- **rockbottom:** "u up" / "u up" / "u up" / "I'm outside" / "I'm not outside. but I could be." / "the Powerball told me you'd
   say yes."
 - **fixed (someone donated):** "I LOVE YOU. I'm crying. I'm gonna name a number after you. not a good number. but a number."
 
