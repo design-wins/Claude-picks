@@ -1403,8 +1403,6 @@ function face(state) {
   const chain = `<path d="M50 158 Q100 206 150 158" fill="none" stroke="#ffd400" stroke-width="5" stroke-dasharray="7 3"/>
     <circle cx="100" cy="186" r="10" fill="#ffd400" stroke="#8a6a00" stroke-width="2"/>
     <text x="100" y="192" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="15" fill="#8a6a00">$</text>`;
-  const ticketBehindEar = `<g transform="rotate(-28 44 74)"><rect x="24" y="62" width="40" height="22" rx="2" fill="#fff6cc" stroke="#1b1f2a" stroke-width="2"/>
-    <path d="M29 69 h22 M29 74 h28 M29 79 h16" stroke="#1b1f2a" stroke-width="1.6"/><circle cx="58" cy="78" r="3.2" fill="var(--red)"/></g>`;
   const partyHat = `
         <g transform="rotate(-16 100 48)">
           <polygon points="100,0 79,50 121,50" fill="var(--red)"/>
@@ -1454,7 +1452,7 @@ function face(state) {
       face: `
         ${dotEyes()}
         <path d="M74 126 Q100 154 126 126" class="stroke"/>
-        ${blush}${cig(125, 129)}${ticketBehindEar}`,
+        ${blush}${cig(125, 129)}`,
     },
     fixed: {
       before: `<path class="twinkle" d="${star(166, 44, 11)}" fill="#fff"/>
