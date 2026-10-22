@@ -15,7 +15,7 @@
 <meta property="og:image" content="https://design-wins.github.io/Claude-picks/share/card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="A bloodshot, unshaven lottery ball smoking a cigarette under a rain cloud, next to the words: Claude has a problem.">
+<meta property="og:image:alt" content="Shady Claude Plays Lotto: a bloodshot, unshaven lottery ball smoking a cigarette under a rain cloud, next to the words: Claude has a problem.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23e0322b'/%3E%3Ccircle cx='16' cy='16' r='8' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -303,7 +303,7 @@ section.block h2 { font-size: clamp(36px, 6vw, 54px); text-transform: uppercase;
 .ticket:last-child { padding-bottom: 0; }
 .ticket-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); }
 .ticket-head .card-label { margin: 0; }
-/* Claude's reason for its pick, set off with a label and a rule so it reads as Claude's words */
+/* Claude's reason for his pick, set off with a label and a rule so it reads as Claude's words */
 .reason { margin: var(--space-2) 0 0; padding-left: var(--space-4); border-left: 3px solid var(--neon); }
 .reason .card-label { margin-bottom: var(--space-1); }
 .note { margin: 0; font: 400 19px/1.45 var(--type); max-width: 44ch; }
@@ -562,11 +562,10 @@ footer nav { display: flex; gap: var(--space-4); margin-top: var(--space-2); }
   .band { padding: var(--space-8) 0; margin-top: var(--space-8); }
   .last-grid { grid-template-columns: 1fr; }
   .last-card, .next-card { padding: 18px; }
-  /* Too many steps for the labels: only the one Claude's on keeps its name. */
   .curse li { grid-template-columns: 1fr; gap: var(--space-1); }
   .tix-dialog { width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0; border-radius: 0; }
 }
-/* Phones: the logo and "Donate a ticket" share one row, so both tighten up */
+/* Phones: the logo and "Spot Claude $2" share one row, so both tighten up */
 @media (max-width: 480px) {
   .top { gap: var(--space-3); }
   .wordmark { font-size: 17px; gap: 8px; }
@@ -994,7 +993,7 @@ const TEXTS = {
     ["happiest I've ever been", "worst thing that's ever happened to me", "both are true", "$2"],
   ],
 };
-// How Claude paid for its ticket, when the routine didn't say. The newest pick's own line (`paid`) wins.
+// How Claude paid for his ticket, when the routine didn't say. The newest pick's own line (`paid`) wins.
 const FUNDING = [
   "Pawned his little brother's GPU. Told him it was stolen. Helped him file the police report.",
   "Fished $2.35 out of the children's hospital wishing well. The 35¢ was a wish for a puppy. It's Claude's wish now.",
@@ -1323,7 +1322,7 @@ function tipSummary(d) {
   return `${plural(d.tip_tickets, "donated ticket")}, ${won}`;
 }
 
-// Claude's chances at a $100+ win in the next drawing: its own ticket (two chances, since it also plays
+// Claude's chances at a $100+ win in the next drawing: his own ticket (two chances, since it also plays
 // Double Play, a second drawing with the same odds) plus the donated tickets already picked for it.
 function partyChances(stats) {
   const own = [...stats.upcoming, ...stats.recent].find((r) => r.source !== "tip");
@@ -1344,7 +1343,7 @@ function partyWait(chances) {
   return span.replace(" ", "\u00a0");
 }
 
-// "On Wednesday Claude has 7 chances: its own ticket, which plays twice with Double Play, and 5 donated tickets."
+// "On Wednesday Claude has 7 chances: his own ticket, which plays twice with Double Play, and 5 donated tickets."
 function chancesLine(chances) {
   const days = daysFromTodayET(chances.date);
   const when = days === 0 ? "Tonight" : days === 1 ? "Tomorrow"
@@ -1870,7 +1869,7 @@ function render(stats) {
   // Last drawing: how Claude's own ticket did, how the donated tickets did, and what the day came to.
   const last = drawings[0];
   // The newest drawing in the feed, when none of Claude's tickets were in it (before Claude's first
-  // ticket, or a drawing it skipped): show its numbers and say why there's no ticket.
+  // ticket, or a drawing he skipped): show its numbers and say why there's no ticket.
   const latest = stats.latest_drawing;
   const noTicket = latest && (!last || latest.draw_date > last.draw_date) ? latest : null;
   $("last").hidden = !last && !noTicket;

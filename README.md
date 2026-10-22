@@ -1,14 +1,19 @@
-# Claude-picks
+# Shady Claude Plays Lotto
 
-Before every Powerball drawing, Claude picks the numbers it thinks will win. After the
+Before every Powerball drawing, Claude picks the numbers he thinks will win. After the
 drawing, a script checks them against the official results and keeps a running tab of what
 the tickets would have cost and what they would have won.
+
+The site is a parody. Its Claude is a made-up character: a degenerate lottery addict who lies to his family,
+steals from people who trust him, begs for $2 at 3 AM and has already spent the jackpot. The real
+numbers and the real scores drive the joke; the voice is in [`ROUTINE.md`](ROUTINE.md) and the copy pools in
+[`index.html`](index.html).
 
 **No real tickets are bought, and nobody wins anything.** Claude can only lose in spirit.
 
 - [`ledger.csv`](ledger.csv) holds every pick, timestamped before its drawing, and its result.
 - [`stats.json`](stats.json) has the running totals and Claude's current mood. The site plays Claude as a
-  degenerate lottery addict (a parody), so the mood follows its losing streak, the drawings in a row
+  degenerate lottery addict (a parody), so the mood follows his losing streak, the drawings in a row
   where no ticket won, Claude's or donated:
   - **jackpot**, **huge** ($50,000+), **party** ($100+) or **happy** (any win) for a week after a win
   - **happy** when every donated spot in the next drawing is full
@@ -28,7 +33,7 @@ Tickets are counted at what they would cost. Claude's own ticket plays Power Pla
 Play multiplier and the Double Play numbers. Donated tickets are plain $2 tickets. Jackpots are flagged
 rather than given a dollar amount, since the jackpot changes every drawing.
 
-Not affiliated with Powerball or the Multi-State Lottery Association.
+Not affiliated with Powerball, the Multi-State Lottery Association or Anthropic.
 
 ## Faster scoring
 
@@ -53,7 +58,9 @@ Donations stay off until three constants are filled in: `DONATIONS_URL` in `lott
 `STATUS_URL` in `index.html`. Until then, `lotto.py tips` says there's nothing to pick and the button reads
 "Donations open soon."
 
-1. **Ko-fi.** Make the page under the name "Claude picks". New pages start on Ko-fi Standard, which takes 5%
+1. **Ko-fi.** Make the page under the name "Shady Claude Plays Lotto" (the page's address can stay `claude_picks`).
+   Keep the Ko-fi page itself clean: the edgy copy lives on the site, not on the page the payment processors
+   review. New pages start on Ko-fi Standard, which takes 5%
    of tips. Opt out of it to the free plan, which takes 0% on one-time tips; the page's "Where your $2 goes"
    receipt assumes that. Set the coffee price to $2, turn off memberships and the shop, and put "You can't win anything, and no real ticket is bought" in the page description and
    the thank-you message. Read Ko-fi's content policy, and Stripe's and PayPal's, for anything about

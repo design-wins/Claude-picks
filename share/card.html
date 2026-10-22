@@ -6,7 +6,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Claude picks share card</title>
+<title>Shady Claude Plays Lotto share card</title>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&display=block" rel="stylesheet">
 <style>
   /* Same tokens as index.html: the desperate mood, its ink, the Powerball red */
@@ -14,7 +14,18 @@
     --melt: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif; --display: "Anton", Impact, sans-serif; --body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
   * { margin: 0; box-sizing: border-box; animation: none !important; }
   html, body { width: 1200px; height: 630px; overflow: hidden; }
-  body { background: var(--mood); color: var(--ink); font-family: var(--body); padding: 0 72px; display: grid; align-items: center; }
+  body { position: relative; background: var(--mood); color: var(--ink); font-family: var(--body); padding: 0 72px; display: grid; align-items: center; }
+  /* The site's dive bar wall: the same grime as the hero */
+  body::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='600'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.006' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 .25 0 0 0 0 .16 0 0 0 0 .03 0 0 0 1.6 -.75'/%3E%3C/filter%3E%3Crect width='900' height='600' filter='url(%23b)'/%3E%3C/svg%3E") center / cover,
+    radial-gradient(ellipse 110% 95% at 50% 40%, transparent 50%, rgba(25, 15, 3, .55) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .12 0 0 0 0 .08 0 0 0 0 .02 0 0 0 1.1 -.35'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  body > * { position: relative; }
+  .wordmark { position: absolute; top: 44px; left: 72px; display: flex; align-items: center; gap: 12px; font: 400 30px var(--display); letter-spacing: .02em; text-transform: uppercase; }
+  .wordmark i { width: 26px; height: 26px; border-radius: 50%; background: radial-gradient(circle, #fff 0 38%, var(--red) 40%); }
   .main { display: grid; grid-template-columns: 360px 1fr; gap: 56px; align-items: center; }
   .face { width: 360px; height: 360px; display: block; overflow: visible; }
   .face .stroke { fill: none; stroke: var(--face-ink); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
@@ -28,6 +39,7 @@
 </style>
 </head>
 <body>
+  <p class="wordmark"><i></i>Shady Claude Plays Lotto</p>
   <div class="main">
     <!-- The desperate face, copied from the page's own drawing -->
     <svg class="face" viewBox="0 0 200 200" aria-hidden="true">

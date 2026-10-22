@@ -165,7 +165,7 @@ def is_win(r):
 
 
 def add_ticket(rows, numbers, note, source, now, donation="", options="", paid=""):
-    """Appends a ticket for the next drawing. Claude gets one ticket of its own per drawing. `paid` is
+    """Appends a ticket for the next drawing. Claude gets one ticket of his own per drawing. `paid` is
     Claude's line on how it got the money for it."""
     whites, pb = validate(numbers)
     if source not in SOURCES:
@@ -233,7 +233,7 @@ def to_react(rows):
 
 
 def add_reaction(rows, text):
-    """Saves Claude's one-line take on the latest scored drawing, on its own ticket. One per drawing."""
+    """Saves Claude's one-line take on the latest scored drawing, on his own ticket. One per drawing."""
     text = " ".join(text.split())
     if not text:
         raise ValueError("the reaction is empty")
@@ -414,7 +414,7 @@ def streak_mood(streak):
 def mood(rows, today):
     """How Claude feels. A win in the past week sets the mood by its size (happy, party, huge, jackpot).
     Otherwise a drawing with every donated spot filled makes Claude happy, donated tickets waiting on a
-    drawing give it its fix, and without either the losing streak drags it down (twitchy to rock bottom)."""
+    drawing give him his fix, and without either the losing streak drags him down (twitchy to rock bottom)."""
     waiting = [r for r in rows if not r["result"] and r["source"] == "tip"]
     tips_waiting = len(waiting)
     full = any(sum(r["draw_date"] == d for r in waiting) >= TIP_CAP for d in {r["draw_date"] for r in waiting})
@@ -485,8 +485,8 @@ def best_win(rows, today):
 
 
 def records(rows):
-    """Claude's personal records from its own tickets: the white ball it picks most, the one it keeps missing
-    by one, and its best ticket so far. Ties go to the most recent."""
+    """Claude's personal records from his own tickets: the white ball he picks most, the one he keeps missing
+    by one, and his best ticket so far. Ties go to the most recent."""
     own = [r for r in rows if r["source"] == "claude"]
     scored = [r for r in own if r["result"]]
     if not own:
