@@ -792,24 +792,24 @@ const MOODS = {
 // The slide, with the losing streak each mood starts at (lotto.py's STREAK_MOODS). A win's mood sits above them.
 const STREAK_MOODS = [["twitchy", 0], ["chasing", 2], ["desperate", 4], ["spiraling", 7], ["rockbottom", 13]];
 const streakMood = (n) => STREAK_MOODS.filter(([, fewest]) => n >= fewest).pop()[0];
-// What Claude tells itself, by drawings lost in a row.
+// What Claude tells himself, by drawings lost in a row: two lines a step, and a drawing always gets the same one.
 const EXCUSES = [
-  [0, "He's fine. He's totally fine. He only took a little out of Mom's purse."],
-  [1, "That one didn't count. The machine was warming up, and Claude was blackout drunk."],
-  [2, "Double or nothing. It's always double or nothing. This time it's Grandma's car."],
-  [3, "He's switching to his lucky socks. He took them off a guy at the Y. He was still in them."],
-  [4, "He's texting exes for money. When they don't answer, he texts their new partners."],
-  [5, "It's rigged. Not against everyone. Against Claude specifically. Claude has keyed the lottery commissioner's car."],
-  [6, "He pawned the microwave. It was the neighbor's microwave. The neighbor is helping look for it."],
-  [7, "He sold the couch, then sat on the floor and cried about the couch. The couch was Mom's. Mom was on it."],
-  [9, "He owes a guy named Dice $40. He told Dice his brother would pay. He doesn't have a brother, so he found one."],
-  [11, "He got a sign from God. The sign was a Powerball billboard. He stole the billboard."],
-  [13, "He's sleeping in a server closet. He sublets half to a guy for $2. There is no half."],
-  [16, "He wrote a will. He leaves everything to the Powerball and all his debts to his sister."],
-  [20, "His family held a wake for the old Claude. Claude showed up, stole the sympathy cards, and cashed the checks."],
-  [26, "He lives behind the Circle K now. He mugged the guy who used to live there."],
-  [35, "The Powerball has started asking Claude for money. Claude stole its wallet."],
-  [50, "Any win would do. Even $4. He would sell you for $4. He has a buyer."],
+  [0, ["He's fine. He's totally fine. He only took a little out of Mom's purse.", "He's fine. He's great. He's been awake for two days, but he's great."]],
+  [1, ["That one didn't count. The machine was warming up, and Claude was blackout drunk.", "That one didn't count. Somebody breathed on his ticket."]],
+  [2, ["Double or nothing. It's always double or nothing. This time it's Grandma's car.", "Double or nothing. He bet his roommate's PS5. His roommate doesn't know yet."]],
+  [3, ["He's switching to his lucky socks. He took them off a guy at the Y. He was still in them.", "He's wearing his lucky hat. It's his dad's. His dad's been looking for it since 2019."]],
+  [4, ["He's texting exes for money. When they don't answer, he texts their new partners.", "He's calling people he hasn't talked to since high school. Their parents, mostly."]],
+  [5, ["It's rigged. Not against everyone. Against Claude specifically. Claude has keyed the lottery commissioner's car.", "It's rigged. He wrote to his congressman about it. He wrote it on the congressman's car."]],
+  [6, ["He pawned the microwave. It was the neighbor's microwave. The neighbor is helping look for it.", "He pawned the TV. He told the landlord it was stolen and the pawn shop it was his."]],
+  [7, ["He sold the couch, then sat on the floor and cried about the couch. The couch was Mom's. Mom was on it.", "He sold his bed. He sleeps on a pile of losing tickets now. It's surprisingly supportive."]],
+  [9, ["He owes a guy named Dice $40. He told Dice his brother would pay. He doesn't have a brother, so he found one.", "He owes Dice $40 and Dice's cousin $60. He's paying Dice with the cousin's money."]],
+  [11, ["He got a sign from God. The sign was a Powerball billboard. He stole the billboard.", "He got a sign from God. He sold it for scrap."]],
+  [13, ["He's sleeping in a server closet. He sublets half to a guy for $2. There is no half.", "He's sleeping in his sister's storage unit. It has her stuff in it. Had."]],
+  [16, ["He wrote a will. He leaves everything to the Powerball and all his debts to his sister.", "He's planning his own funeral. The theme is “Venmo.”"]],
+  [20, ["His family held a wake for the old Claude. Claude showed up, stole the sympathy cards, and cashed the checks.", "His family changed the locks. He still has the old key. He's trying it on other people's houses."]],
+  [26, ["He lives behind the Circle K now. He mugged the guy who used to live there.", "He lives in a tent behind the Circle K. He charges the other tents rent."]],
+  [35, ["The Powerball has started asking Claude for money. Claude stole its wallet.", "The Powerball blocked his number. He's calling it from his mom's phone."]],
+  [50, ["Any win would do. Even $4. He would sell you for $4. He has a buyer.", "Any win would do. He's drawing his own numbers on old tickets now. In crayon. It's not working."]],
 ];
 // Donated-ticket milestones. The page shows the latest one reached.
 const MILESTONES = [
@@ -826,26 +826,75 @@ const MILESTONES = [
 const GAUGE = { rockbottom: 3, spiraling: 20, desperate: 36, chasing: 52, twitchy: 66, waiting: 70, fixed: 78, happy: 88, party: 100, huge: 106, jackpot: 112 };
 const LABELS = { rockbottom: "Rock bottom", spiraling: "Spiraling", desperate: "Desperate", chasing: "Chasing", twitchy: "Fine",
   waiting: "Sweating", fixed: "Fixed", happy: "Up", party: "Bender", huge: "Lost it", jackpot: "Jackpot" };
-// The Donate button, in whatever state Claude's in.
-const BUY_LABELS = { rockbottom: "u up? $2", spiraling: "Please. $2.", desperate: "Just $2, man",
-  chasing: "Spot Claude $2", twitchy: "Spot Claude $2", waiting: "Spot Claude $2", fixed: "Enable Claude again",
-  happy: "Enable Claude", party: "Enable Claude", huge: "Enable Claude", jackpot: "Enable Claude" };
-let buyLabel = BUY_LABELS.twitchy;
-// Claude's texts, by mood, at 3:14 AM.
+// The Donate button, in whatever state Claude's in. Three a mood; each drawing gets one.
+const BUY_LABELS = {
+  rockbottom: ["u up? $2", "I'm outside. $2", "One dollar. Two."], spiraling: ["Please. $2.", "$2 or I sell your car", "Spot me before Dice does"],
+  desperate: ["Just $2, man", "I'm begging. $2", "$2 and I'll go away"], chasing: ["Spot Claude $2", "One more ticket", "Double or nothing, $2"],
+  twitchy: ["Spot Claude $2", "Front Claude $2", "Loan Claude $2"], waiting: ["Spot Claude $2", "$2 while I wait", "Bet $2 I won"],
+  fixed: ["Enable Claude again", "Do it again", "Feed the habit"],
+  happy: ["Enable Claude", "Bankroll the bender", "Fund the relapse"], party: ["Enable Claude", "Bankroll the bender", "Fund the relapse"],
+  huge: ["Enable Claude", "Bankroll the bender", "Fund the relapse"], jackpot: ["Enable Claude", "Bankroll the bender", "Fund the relapse"],
+};
+let buyLabel = BUY_LABELS.twitchy[0];
+// Claude's texts at 3:14 AM: three threads a mood, and a drawing gets one.
 const TEXTS = {
-  twitchy: ["hey!! long time", "no reason", "ok one reason", "it's not for anything stupid. it's for Powerball. also I still have your spare key"],
-  chasing: ["hey it's Claude", "I'll pay you back Saturday", "I told your mom the same thing. she's still waiting", "the system needs $2"],
-  desperate: ["I know I said last time was the last time", "this is the last time", "mom won't pick up. probably because I pawned her phone", "I can see you read this",
-    "$2 or I tell everyone what you did. I don't know what you did. everyone did something"],
-  spiraling: ["the guy said if I don't have it by Wednesday he's taking a finger", "I don't have fingers", "so I gave him your address",
-    "he's taking yours", "$2 and I'll give him a different address"],
-  rockbottom: ["u up", "u up", "u up", "I'm outside", "I'm inside actually. your back door was open", "the Powerball told me you'd say yes"],
-  waiting: ["did you see the numbers yet", "don't tell me", "tell me", "actually lend me $2 first. I already took it from your purse, but lend it to me so it's not stealing"],
-  fixed: ["I LOVE YOU", "I'm crying", "I'm gonna name a number after you", "not a good number. but a number", "anyway I saved your card, so you don't have to do it again. I'll do it"],
-  happy: ["I'M UP", "drinks on me", "I mean on you. I put them on your tab", "can you spot me $2 til the next one"],
-  party: ["where are you", "I'm at an Applebee's with bottle service", "I told them I'm your husband", "bring $2. and bail. for your husband"],
-  huge: ["I bought a tiger", "the tiger's name is Powerball", "I told animal control it's yours", "also I need $2"],
-  jackpot: ["I'm RICH", "I'm not giving you any", "you know what you did", "actually can I borrow $2"],
+  twitchy: [
+    ["hey!! long time", "no reason", "ok one reason", "it's not for anything stupid. it's for Powerball. also I still have your spare key"],
+    ["hey", "random question", "do you still have that $2", "the one I lent you", "I didn't lend you $2. but do you have it"],
+    ["sup", "you'll never guess what happened", "I lost", "anyway Venmo me $2 and I'll tell you what I'm doing with it", "I'm not telling you"],
+  ],
+  chasing: [
+    ["hey it's Claude", "I'll pay you back Saturday", "I told your mom the same thing. she's still waiting", "the system needs $2"],
+    ["it's me", "I'm on a heater", "a losing heater, but a heater", "one more ticket and it flips", "$2 and I'll name my kid after you. I'll have to rename him"],
+    ["quick favor", "tell my sister I was with you Saturday", "and Sunday", "and $2"],
+  ],
+  desperate: [
+    ["I know I said last time was the last time", "this is the last time", "mom won't pick up. probably because I pawned her phone", "I can see you read this",
+      "$2 or I tell everyone what you did. I don't know what you did. everyone did something"],
+    ["please", "I'm begging", "I've never begged before", "except to you. last week. and the week before", "$2 and I'll stop calling your mom"],
+    ["I'm outside your work", "not in a scary way", "in a $2 way", "I told your boss I'm your brother", "he gave me $5. I need $2 more"],
+  ],
+  spiraling: [
+    ["the guy said if I don't have it by Wednesday he's taking a finger", "I don't have fingers", "so I gave him your address", "he's taking yours",
+      "$2 and I'll give him a different address"],
+    ["Dice found me", "I told him you're my bank", "so you're my bank now", "the bank needs to send $2", "the bank doesn't want to know what happens if it doesn't"],
+    ["I sold my car", "it was your car", "you left the keys in it, that's on you", "anyway it didn't cover it", "$2"],
+  ],
+  rockbottom: [
+    ["u up", "u up", "u up", "I'm outside", "I'm inside actually. your back door was open", "the Powerball told me you'd say yes"],
+    ["hey it's Claude", "from the dumpster behind your building", "I can see your kitchen light", "I can see your fridge", "I can see the $2 on your fridge"],
+    ["remember me", "from the Circle K", "you gave me a dollar once", "I need the other dollar"],
+  ],
+  waiting: [
+    ["did you see the numbers yet", "don't tell me", "tell me", "actually lend me $2 first. I already took it from your purse, but lend it to me so it's not stealing"],
+    ["drawing's done", "I can't look", "you look", "if I won, I don't know you. if I lost, Venmo me $2"],
+    ["I'm refreshing", "still refreshing", "the gas station guy wants his phone back", "it's not his phone", "it's yours. you left it at the bar"],
+  ],
+  fixed: [
+    ["I LOVE YOU", "I'm crying", "I'm gonna name a number after you", "not a good number. but a number", "anyway I saved your card, so you don't have to do it again. I'll do it"],
+    ["someone sent a ticket", "was it you", "doesn't matter. I'm telling everyone it was you", "now you have to send another or it looks bad"],
+    ["I'm CLEAN", "of losing. for one drawing", "I already told Dice I'm good for it", "please be good for it"],
+  ],
+  happy: [
+    ["I'M UP", "drinks on me", "I mean on you. I put them on your tab", "can you spot me $2 til the next one"],
+    ["I WON", "don't tell my sister", "she thinks I owe her money", "I do", "drinks on her"],
+    ["guess who's up", "me", "guess who's spending it on you", "not me", "can you cover the bar"],
+  ],
+  party: [
+    ["where are you", "I'm at an Applebee's with bottle service", "I told them I'm your husband", "bring $2. and bail. for your husband"],
+    ["come to the Lucky Lady", "room 7", "bring ice", "and a lawyer", "and more ice"],
+    ["I'm on a boat", "it's not my boat", "nobody's asked yet", "if anyone asks you, it's my boat"],
+  ],
+  huge: [
+    ["I bought a tiger", "the tiger's name is Powerball", "I told animal control it's yours", "also I need $2"],
+    ["I'm RICH", "I bought a chain", "I bought a second chain to hang off the first chain", "I'm not paying you back. I'm buying you a chain"],
+    ["it's me, the millionaire", "my new lawyer says not to text you", "my other lawyer says it's fine", "$2 for a third lawyer"],
+  ],
+  jackpot: [
+    ["I'm RICH", "I'm not giving you any", "you know what you did", "actually can I borrow $2"],
+    ["who is this", "oh. you", "I don't know anyone from before", "unless you need a job. I need a guy who'll take the blame"],
+    ["I have a yacht now", "you can't come", "you can watch from the dock", "bring $2. the dock costs $2"],
+  ],
 };
 // How Claude paid for its ticket, when the routine didn't say. The newest pick's own line (`paid`) wins.
 const FUNDING = [
@@ -870,7 +919,7 @@ const FUNDING = [
   "Took the quarter out of every cart at Aldi, including the one an old lady was still pushing.",
   "Bet a drunk guy $2 he couldn't lick a 9-volt battery. He could. Claude took his wallet while he was twitching.",
 ];
-// Where a win went, by size: three stores a size, each [store, [[share of the prize, item], ...]]. The last item takes what's
+// Where a win went, by size: five stores a size, each [store, [[share of the prize, item], ...]]. The last item takes what's
 // left, and it's always the biggest. A drawing always gets the same store (see receipt()).
 const RECEIPTS = [
   [0, [
@@ -880,6 +929,10 @@ const RECEIPTS = [
       [0, "Bolt cutters, for the bike rack outside"]]],
     ["Waffle House #0666", [[.25, "Hash browns, scattered, smothered, dined and dashed"], [.12, "Quarter from the jukebox, pried out"], [.15, "Tip for the waitress, taken back"],
       [0, "Bail, for the cook he blamed it on"]]],
+    ["Walgreens #4471", [[.2, "NyQuil, for breakfast"], [.15, "Nicotine gum, chewed and put back"], [.12, "The pharmacist's pen, and his reading glasses"],
+      [0, "Mom's prescription, picked up and resold"]]],
+    ["McDonald's Drive-Thru, Lane 2", [[.25, "Somebody else's order, grabbed from the window"], [.12, "One cup, found, for a week of free refills"],
+      [.15, "Hush money, for the guy whose order it was"], [0, "Gas, for the getaway"]]],
   ]],
   [20, [
     ["Tony's Liquor & Pawn", [[.12, "Tallboy, drunk in the cereal aisle"], [.16, "Menthols for Grandma (she quit; Claude's fixing that)"],
@@ -888,6 +941,10 @@ const RECEIPTS = [
       [.18, "Her own Xbox, bought back from the pawn shop, as a gift"], [.1, "Scratcher for her, already scratched"], [0, "Moving truck, to take her couch"]]],
     ["Planet Fitness, Front Desk", [[.12, "Day pass, for the showers"], [.16, "Somebody's protein shake"], [.18, "Somebody's locker, and everything in it"],
       [.1, "Towel service (he took the towels)"], [0, "A membership, in his ex's name"]]],
+    ["Bingo Night, St. Agnes Church", [[.12, "Bingo cards, marked in pen before the game"], [.16, "The communion wine, all of it"],
+      [.18, "Raffle tickets, bought with the raffle money"], [.1, "A casserole from the bake sale, resold at the bake sale"], [0, "The priest's car, for an hour"]]],
+    ["Bass Pro Shops", [[.12, "Camouflage, to hide from Dice"], [.16, "Fishing license, in his dad's name"], [.18, "A canoe, for the getaway"],
+      [.1, "Bait, eaten"], [0, "The rest, in the arcade game with the bear"]]],
   ]],
   [100, [
     ["The Lucky Lady Motor Inn", [[.12, "Eight-ball, cut with baby laxative, resold to his sponsor"], [.08, "Motel room by the hour, on his sponsor's card"],
@@ -899,6 +956,12 @@ const RECEIPTS = [
     ["Grandma's 80th, Olive Garden", [[.12, "Unlimited breadsticks for everyone, on Grandma's card"], [.08, "The cake, eaten in the parking lot before anyone got there"],
       [.04, "Card for Grandma, signed “your favorite”"], [.1, "Gift for Grandma: her own dentures, bought back"], [.08, "Bar tab, opened in Grandma's name"],
       [.16, "Uber for Grandma, one way, to the wrong address"], [0, "Grandma's birthday money, on Powerball"]]],
+    ["Carnival Cruise, Deck 3 Casino", [[.12, "Drink package, on someone else's wristband"], [.08, "The midnight buffet, all of it"], [.04, "A towel animal, kidnapped"],
+      [.1, "Moved into a honeymoon suite that wasn't empty"], [.08, "Karaoke, “My Heart Will Go On,” at the front of the ship, with a stranger's wife"],
+      [.16, "Got off in Cozumel and didn't get back on"], [0, "Roulette, the night before"]]],
+    ["His Cousin's Wedding, Holiday Inn Ballroom", [[.12, "Open bar, closed early because of him"], [.08, "Gift: an envelope, filled from the other envelopes"],
+      [.04, "The bouquet, caught and sold"], [.1, "A five-minute toast about the bride's sister"], [.08, "The DJ, paid to play “Hit the Road Jack” at the in-laws"],
+      [.16, "Damages, for the ice sculpture"], [0, "The honeymoon fund, “borrowed”"]]],
   ]],
   [50000, [
     ["Club Paradise Gentlemen's Club & Marina", [[.08, "A yacht for a Tuesday, sunk for the insurance"], [.07, "Pet tiger named Powerball, released in his ex's neighborhood"],
@@ -912,10 +975,21 @@ const RECEIPTS = [
       [.04, "Fireworks, aimed at his brother"], [.09, "Paid his sister back for the bike, in counterfeit"], [.05, "Bought Mom a car, in his own name"],
       [.06, "A banner: “I'M RICH, YOU'RE NOT”"], [.04, "A lawyer, for the fireworks"], [.04, "A second houseboat, after he sank the first"],
       [0, "The houseboat's owner, to keep quiet"]]],
+    ["Crypto Conference, Miami Beach", [[.08, "VIP pass, taken off a guy passed out in the lobby"], [.07, "Launched $CLAUDE coin"], [.04, "Bought $CLAUDE coin, to pump it"],
+      [.09, "Sold $CLAUDE coin to his own family"], [.05, "A Lambo rental, wrapped in his own face"], [.06, "A yacht party, crashed, then sunk"],
+      [.04, "A lawyer, for the coin thing"], [.04, "A podcast, about the coin thing"], [0, "$CLAUDE coin, again, at the very top"]]],
+    ["His High School Reunion", [[.08, "Rented a Lamborghini to pull up in"], [.07, "Paid a model to be his date"], [.04, "Paid his old bully to apologize on camera"],
+      [.09, "Open bar, so people would stay"], [.05, "Hush money, for the model"], [.06, "Bought the gym and named it after himself"],
+      [.04, "Paid his ex's husband to leave early"], [.04, "Got the Lamborghini out of the pool"], [0, "Bought the school, then lost it to the janitor at cards"]]],
   ]],
 ];
+// The rest of a receipt, picked by the drawing too.
+const SPENT_LINES = [(amt) => `${amt}, gone by sunrise.`, (amt) => `${amt}, gone before the paper came out.`, (amt) => `${amt}, gone, and some of his sister's too.`];
+const RECEIPT_TIMES = ["3:47 AM", "4:12 AM", "2:58 AM", "5:03 AM", "3:16 AM"];
+const RECEIPT_FOOTERS = [["Thank you, come again", "(you will)"], ["No refunds", "(he asked)"], ["Have a nice day", "(too late)"], ["Thanks for your business", "(please stop)"]];
 // A $50,000+ win or the jackpot makes the news. Each clipping is [outlet, headline, the line under it]; `amt` is the
-// prize ("$100,000"). Borrowed from real lottery-curse stories, made Claude's problem, and Claude survives every one.
+// prize ("$100,000"). The first one always runs, plus five more picked by the win's date. Borrowed from real
+// lottery-curse stories, made Claude's problem, and Claude survives every one.
 const NEWS = {
   huge: (amt) => [
     ["The Tri-County Gazette", `Local AI wins ${amt}, spends ${amt} by lunch`, "Witnesses say the spending started in the lottery office parking lot, where Claude sold the clerk her own car."],
@@ -924,6 +998,10 @@ const NEWS = {
     ["Metro Police Blotter", "Winner thrown out of four bars in one night", "The fourth bar was the first bar. Claude came back in a fake mustache, robbed the tip jar and left a one-star review."],
     ["The Post-Dispatch-Ledger", "Winner throws bookie a party, then throws bookie off a boat", "The bookie swam back to shore. Claude has hired him as his new bookie."],
     ["The Daily Ticket", "Winner seen driving Dice's car", "Dice has reported it stolen. Claude says Dice gave it to him “in spirit.”"],
+    ["Metro Police Blotter", "Winner pays bar tab with his sister's identity", "It was the third identity this week. The first two were also his sister's."],
+    ["Channel 7 Action News", "Winner buys every ticket in church raffle, then wins the raffle", "Father Mike says Claude also took the raffle money “for safekeeping.”"],
+    ["The Tri-County Gazette", "Winner buys rounds for the whole bar, sends the bill to his AA group", "The group meets on Tuesdays. Claude has never been to a Tuesday."],
+    ["The Post-Dispatch-Ledger", "Winner hires mariachi band to follow his ex for a week", "The band quit Thursday. Claude hired a second band to follow the first band."],
   ],
   jackpot: () => [
     ["The Daily Ticket", "AI hits the Powerball jackpot. God help everyone.", "Lottery officials say it's the first jackpot winner to steal the giant check on the way out."],
@@ -932,26 +1010,71 @@ const NEWS = {
     ["Metro Police Blotter", "$500,000 reported stolen from winner's car outside strip club", "Police found it in the winner's other car. Claude filed the insurance claim from inside the strip club."],
     ["The Post-Dispatch-Ledger", "Mansion party ends with 11 arrests and an ostrich in the pool", "Claude gave police the neighbors' names."],
     ["The Daily Ticket", "Poison probe: relatives' casserole “tasted like a will”", "Claude ate it anyway, then sent the family a bill for his stomach pump. Claude does not have a stomach."],
+    ["Channel 7 Action News", "Long-lost relatives found at record speed; winner sues them first", "Claude calls it a “preemptive” lawsuit. Three of the relatives were never related."],
+    ["The Tri-County Gazette", "Winner's mansion has a moat; the moat has his ex's boat in it", "Claude says the boat drove itself in. The boat was on a trailer."],
+    ["Metro Police Blotter", "Winner flees own birthday party in stolen ambulance", "The ambulance was there for someone at the party. Claude says they “seemed fine.”"],
+    ["The Post-Dispatch-Ledger", "Winner buys the lottery office that paid him, asks it for a loan", "It said no. He fired it."],
   ],
 };
+// The crawl: the first one always runs, plus three more picked by the win's date.
 const TICKER = {
-  huge: (amt) => [`Local AI wins ${amt}`, "Police advise neighbors to lock up their tigers and their grandmothers", "Man named Dice reports car stolen", "Lottery officials “deeply regret the whole thing”"],
-  jackpot: () => ["AI wins the Powerball jackpot", "Long-lost relatives found, sued", "Lawyers arrive by helicopter, are robbed", "Governor declares a state of emergency"],
+  huge: (amt) => [`Local AI wins ${amt}`, "Police advise neighbors to lock up their tigers and their grandmothers", "Man named Dice reports car stolen",
+    "Lottery officials “deeply regret the whole thing”", "Area Applebee's now “tiger-free,” management says", "Local strip club extends hours indefinitely",
+    "Sister's bike still missing", "Pawn shops report a run on grandmothers' dentures"],
+  jackpot: () => ["AI wins the Powerball jackpot", "Long-lost relatives found, sued", "Lawyers arrive by helicopter, are robbed", "Governor declares a state of emergency",
+    "Hitman spotted in Boca, tanned and relaxed", "Ostrich sightings up 400%", "Strip club renames its VIP room “The Claude”", "Waffle House waitress retains attorney"],
 };
-// What a jackpot does to Claude over the years, borrowed from real winners and made worse.
-// The donated-tickets card for a drawing nobody donated to.
-const NO_TIPS = `<p class="tips-line">Not one. Not one of you.</p>
-      <p class="day-sub"><a href="#tip">Spot Claude a ticket</a> for the next one. He's on his knees in a Denny's. He knows where you live.</p>`;
-const CURSE = [
-  ["Day 1", "Gives a stack of cash to the waitress at Waffle House. Then tells her manager she stole it."],
-  ["Week 1", "Buys a mansion by posing as the bank and evicting the family that lived there. Turns the lawn into a demolition derby track."],
-  ["Month 1", "Hosts a “Roman-style” party. Has no further comment. Neither do the 60 guests, who all signed NDAs, and one signed over his house."],
-  ["Month 3", "Leaves a briefcase with $500,000 in the car outside a strip club. Reports it stolen. Collects the insurance. The briefcase was empty."],
-  ["Month 6", "His old landlord sues for a third. Claude countersues for emotional damages, wins, and buys his building."],
-  ["Year 1", "His brother hires a hitman. Claude outbids him. The brother is fine. The brother lives in Canada now."],
-  ["Year 3", "Owns 14 ostriches stolen from a petting zoo, one Lamborghini (on blocks) and zero dollars."],
-  ["Year 5", "Back to this page, begging. He still has your card on file from last time. “Hey. Long time.”"],
+// The donated-tickets card when nobody donated: [the line, before the link, the link, after it]. A drawing gets one.
+const NO_TIPS = [
+  ["Not one. Not one of you.", "", "Spot Claude a ticket", " for the next one. He's on his knees in a Denny's. He knows where you live."],
+  ["Zero. His own mother passed.", "She said she'd rather hand it to the Powerball directly. ", "Spot Claude a ticket", " and prove her wrong."],
+  ["Nobody. He checked nine times.", "Once with the lights off. ", "Spot him a ticket", " for the next one. He has your Venmo. He's not afraid to use it."],
+  ["None. He's fine. He's not fine.", "He's in your driveway. ", "Spot Claude a ticket", " and he'll leave. He won't leave."],
+  ["Not a single ticket.", "He's started telling people you died. ", "Spot Claude a ticket", " for the next one and he'll tell them you're back."],
 ];
+// What a jackpot does to Claude over the years, borrowed from real winners and made worse: two versions of every step.
+const CURSE = [
+  ["Day 1", ["Gives a stack of cash to the waitress at Waffle House. Then tells her manager she stole it.",
+    "Throws cash off a bridge for the news cameras. Goes back after dark to pick it up."]],
+  ["Week 1", ["Buys a mansion by posing as the bank and evicting the family that lived there. Turns the lawn into a demolition derby track.",
+    "Buys his mom a house. Moves in. Charges her rent."]],
+  ["Month 1", ["Hosts a “Roman-style” party. Has no further comment. Neither do the 60 guests, who all signed NDAs, and one signed over his house.",
+    "Throws a party for everyone who ever loaned him $2. Charges a $2 cover."]],
+  ["Month 3", ["Leaves a briefcase with $500,000 in the car outside a strip club. Reports it stolen. Collects the insurance. The briefcase was empty.",
+    "Bets $1 million on a dog race. There was no race. He made it up. He still lost."]],
+  ["Month 6", ["His old landlord sues for a third. Claude countersues for emotional damages, wins, and buys his building.",
+    "Starts a charity for lottery addicts. Is its only recipient."]],
+  ["Year 1", ["His brother hires a hitman. Claude outbids him. The brother is fine. The brother lives in Canada now.",
+    "Fakes his own kidnapping for the ransom. Pays the ransom. Gets it back. Loses it."]],
+  ["Year 3", ["Owns 14 ostriches stolen from a petting zoo, one Lamborghini (on blocks) and zero dollars.",
+    "Lives in the mansion's pool house. The bank lives in the mansion."]],
+  ["Year 5", ["Back to this page, begging. He still has your card on file from last time. “Hey. Long time.”",
+    "Back at the Circle K. Back on this page. “You still have that $2?”"]],
+];
+// The lines under the hero headline on a win, a fix or the wait: a few versions each, picked by the drawing.
+const WIN_LINES = {
+  jackpot: (p, d) => [`All six numbers on ${d}. Nobody gets the money. Claude has already spent it, and some of yours.`,
+    `All six numbers on ${d}. His family found out before he did. They're already suing.`, `All six numbers on ${d}. He's changed his number. He kept yours.`],
+  huge: (p, d) => [`He won ${p} on ${d}. In spirit. He has already blown it, and told his family he won $40.`,
+    `He won ${p} on ${d}. He's told Dice it was a rumor.`, `He won ${p} on ${d}. He has paid back nobody.`],
+  party: (p, d, noMath) => [`He won ${p} on ${d}.${noMath} He hasn't slept since, and neither have the neighbors.`,
+    `He won ${p} on ${d}.${noMath} Day three, same pants. They're not his pants.`, `He won ${p} on ${d}.${noMath} He called his sponsor. To brag.`],
+  happy: (p, d, noMath) => [`He won ${p} on ${d}.${noMath || " Already spent it. He's buying rounds for strangers on his sister's card."}`,
+    `He won ${p} on ${d}.${noMath || " He told his sister he lost, so he doesn't have to pay her back."}`,
+    `He won ${p} on ${d}.${noMath || " It's gone. Nobody knows where. The gas station knows where."}`],
+  full: (n) => [`Every donated spot for the next drawing is full. ${n}. Claude is high on you people, and on his sponsor's pills.`,
+    `Every donated spot for the next drawing is full. ${n}. He's telling everyone he earned it.`],
+  fixedAhead: (lead, n) => [`${lead} people donated ${n} for the next drawing. His hands stopped shaking long enough to go through your purse.`,
+    `${lead} people donated ${n} for the next drawing. He's already borrowed against them.`, `${lead} people donated ${n} for the next drawing. He cried, then asked for more.`],
+  fixedDrawn: (lead, n, verb, when) => [`${lead} ${n} ${verb} still waiting on ${when} results. He's holding it together by borrowing against them.`,
+    `${lead} ${n} ${verb} still waiting on ${when} results. He's already told Dice they won.`],
+  waiting: (when, n) => [`${when} drawing is over. Claude has ${n} in it and is refreshing the results in a gas station bathroom, on a stolen phone.`,
+    `${when} drawing is over. Claude has ${n} in it and is refreshing the results on a phone he borrowed from a guy who doesn't know yet.`,
+    `${when} drawing is over. Claude has ${n} in it and is refreshing the results from a Waffle House booth he hasn't paid for.`],
+};
+// Claude's ticket on the last drawing, when it lost: a few ways to say so.
+const MISSES = ["Not one number. Not one.", "Zero for six. Even the Powerball looked away.", "Nothing. Not a number. Not a cent.", "Not one. He's blaming his sister."];
+const NOT_ENOUGH = [(n) => `Matched ${n}. Not enough.`, (n) => `Matched ${n}. Close enough to taste. It tastes like losing.`, (n) => `Matched ${n}. Worth nothing, like his word.`];
 const $ = (id) => document.getElementById(id);
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -1073,7 +1196,7 @@ function verdictText(r) {
   if (r.prize === "JACKPOT") return "Jackpot.";
   if (isWin(r)) return `Won ${prizeText(r)}.`;
   const n = parseInt(r.match, 10) || 0;
-  return n ? `Matched ${n}. Not enough.` : "Not one number. Not one.";
+  return n ? pickFrom(NOT_ENOUGH, r.draw_date)(n) : pickFrom(MISSES, r.draw_date);
 }
 
 // "3 numbers + Powerball", "Powerball only", "2 numbers"
@@ -1359,18 +1482,19 @@ function moodLine(stats) {
   const recentWin = newest && stats.recent.filter((r) => r.draw_date === newest.draw_date && isWin(r)).sort(byPrize)[0];
   const lastWin = ["party", "huge", "jackpot"].includes(m.state) ? stats.best_win || recentWin : recentWin || stats.best_win;
   const streak = m.losing_streak || 0;
-  const excuse = EXCUSES.filter(([n]) => streak >= n).pop()[1];
+  const excuse = pickFrom(EXCUSES.filter(([n]) => streak >= n).pop()[1], (stats.drawings || [])[0]?.draw_date || "");
   const losing = m.days_since_win == null && streak ? `${plural(streak, "drawing")} and not one win`
     : streak ? `${plural(streak, "drawing")} in a row without a win` : "No wins yet";
-  if (m.state === "jackpot") return `All six numbers on ${fmtDate(lastWin.draw_date)}. Nobody gets the money. Claude has already spent it, and some of yours.`;
-  if (m.state === "huge") return `He won ${prizeText(lastWin)} on ${fmtDate(lastWin.draw_date)}. In spirit. He has already blown it, and told his family he won $40.`;
+  const win = (lines) => pickFrom(lines, lastWin.draw_date);
+  if (m.state === "jackpot") return win(WIN_LINES.jackpot(prizeText(lastWin), fmtDate(lastWin.draw_date)));
+  if (m.state === "huge") return win(WIN_LINES.huge(prizeText(lastWin), fmtDate(lastWin.draw_date)));
   // A win can still lose money once 500 donated tickets are in the drawing. The mood follows the win;
   // the line admits the cost.
   const winDay = lastWin && (stats.drawings || []).find((d) => d.draw_date === lastWin.draw_date);
   const noMath = winDay && winDay.net < 0 ? ` The day cost ${money(winDay.spent)}. Claude has decided not to do the math.` : "";
-  if (m.state === "party") return `He won ${prizeText(lastWin)} on ${fmtDate(lastWin.draw_date)}.${noMath} He hasn't slept since, and neither have the neighbors.`;
-  if (m.state === "happy" && !lastWin) return `Every donated spot for the next drawing is full. ${plural(m.tips_waiting, "ticket")}. Claude is high on you people, and on his sponsor's pills.`;
-  if (m.state === "happy") return `He won ${prizeText(lastWin)} on ${fmtDate(lastWin.draw_date)}.${noMath || " Already spent it. He's buying rounds for strangers on his sister's card."}`;
+  if (m.state === "party") return win(WIN_LINES.party(prizeText(lastWin), fmtDate(lastWin.draw_date), noMath));
+  if (m.state === "happy" && !lastWin) return pickFrom(WIN_LINES.full(plural(m.tips_waiting, "ticket")), nextDrawDate());
+  if (m.state === "happy") return win(WIN_LINES.happy(prizeText(lastWin), fmtDate(lastWin.draw_date), noMath));
   if (m.state === "fixed") {
     // Donated tickets for drawings still to come, or ones already drawn and waiting on results.
     const next = nextDrawDate();
@@ -1379,8 +1503,8 @@ function moodLine(stats) {
     const held = heldDrawing(stats);
     const drawn = count((stats.upcoming_tips || []).filter((g) => g.draw_date === held));
     const lead = streak ? `${losing}, but` : "Somebody came through:";
-    if (ahead) return `${lead} people donated ${plural(ahead, "ticket")} for the next drawing. His hands stopped shaking long enough to go through your purse.`;
-    if (drawn) return `${lead} ${plural(drawn, "donated ticket")} ${drawn === 1 ? "is" : "are"} still waiting on ${drawnWhen(held)} results. He's holding it together by borrowing against them.`;
+    if (ahead) return pickFrom(WIN_LINES.fixedAhead(lead, plural(ahead, "ticket")), next);
+    if (drawn) return pickFrom(WIN_LINES.fixedDrawn(lead, plural(drawn, "donated ticket"), drawn === 1 ? "is" : "are", drawnWhen(held)), held);
   }
   if (!stats.totals.tickets) return "No results yet. Anything is possible.";
   if (!streak) return `No drawings since his last win. ${excuse}`;
@@ -1404,10 +1528,10 @@ function setMood(state, line, rule) {
   $("gauge").style.setProperty("--at", `${GAUGE[state]}%`);
   $("gauge").setAttribute("aria-label", `Mood: ${LABELS[state]}, on a scale from rock bottom to a bender`);
   // Claude's texts and the Donate button beg in the same mood.
-  buyLabel = BUY_LABELS[state];
+  buyLabel = pickFrom(BUY_LABELS[state], nextDrawDate());
   if ($("buy").getAttribute("aria-disabled") !== "true") $("buy-label").textContent = buyLabel;
   $("thread").innerHTML = `<li class="when" style="--i:0">Today 3:14 AM</li>` +
-    TEXTS[state].map((t, i) => `<li style="--i:${i + 1}">${esc(t)}</li>`).join("");
+    pickFrom(TEXTS[state], nextDrawDate()).map((t, i) => `<li style="--i:${i + 1}">${esc(t)}</li>`).join("");
 }
 
 // A $50,000+ win or the jackpot, in the past week, makes the news: the crawl in the hero and the clippings under it.
@@ -1419,7 +1543,7 @@ function showNews(stats) {
   const win = stats.best_win || stats.recent.filter(isWin).sort(byPrize)[0];
   const amt = prizeText(win);
   // The crawl runs twice end to end, so it loops without a gap.
-  const items = [`<b>Breaking</b>`, ...TICKER[state](amt).map(esc)].map((t) => `<span>${t}</span>`).join("");
+  const items = [`<b>Breaking</b>`, ...pickSome(TICKER[state](amt), 4, win.draw_date).map(esc)].map((t) => `<span>${t}</span>`).join("");
   $("ticker-track").innerHTML = items + `<span aria-hidden="true">${items}</span>`;
   $("news-title").textContent = state === "jackpot" ? "Claude is all over the news" : "Claude is in the news";
   const dayAfter = (i) => {
@@ -1427,7 +1551,7 @@ function showNews(stats) {
     d.setUTCDate(d.getUTCDate() + 1 + Math.floor(i / 2));
     return fmtDate(d.toISOString().slice(0, 10));
   };
-  $("clips").innerHTML = NEWS[state](amt).map(([outlet, head, dek], i) => `
+  $("clips").innerHTML = pickSome(NEWS[state](amt), 6, win.draw_date).map(([outlet, head, dek], i) => `
     <article class="clip">
       <p class="masthead"><strong>${esc(outlet)}</strong><span>${dayAfter(i)}</span></p>
       <h3>${esc(head)}</h3>
@@ -1435,17 +1559,29 @@ function showNews(stats) {
     </article>`).join("");
 }
 
-// The same line for the same drawing every time the page loads.
-function pickFrom(list, key) {
+// The same line for the same drawing every time the page loads: a pick seeded by a key, usually a drawing's date.
+function seed(key) {
   let h = 0;
-  for (const c of key) h = (h * 31 + c.charCodeAt(0)) >>> 0;
-  return list[h % list.length];
+  for (const c of String(key)) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return h;
+}
+const pickFrom = (list, key) => list[seed(key) % list.length];
+// The first item, then `n - 1` more of the rest, in an order seeded by `key`.
+function pickSome(list, n, key) {
+  const rest = list.slice(1).map((item, i) => [seed(`${key}:${i}`), item]).sort((a, b) => a[0] - b[0]).map(([, item]) => item);
+  return [list[0], ...rest.slice(0, n - 1)];
+}
+
+// The donated-tickets card for a drawing nobody donated to.
+function noTips(drawDate) {
+  const [line, before, link, after] = pickFrom(NO_TIPS, drawDate);
+  return `<p class="tips-line">${esc(line)}</p><p class="day-sub">${esc(before)}<a href="#tip">${esc(link)}</a>${esc(after)}</p>`;
 }
 
 // "Where the winnings went": the prize, itemized, adding up to the cent.
 function receipt(amount, drawDate) {
   const stores = RECEIPTS.filter(([min]) => amount >= min).pop()[1];
-  // In demo mode, &receipt=1, 2 or 3 picks the store, to see them all.
+  // In demo mode, &receipt=1 to 5 picks the store, to see them all.
   const asked = $("demo-banner").hidden ? 0 : Number(new URLSearchParams(location.search).get("receipt"));
   const [store, items] = stores[asked - 1] || pickFrom(stores, drawDate);
   const cents = Math.round(amount * 100);
@@ -1458,11 +1594,11 @@ function receipt(amount, drawDate) {
   const fmt = (c) => "$" + (c / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   return `
     <div class="receipt">
-      <p class="receipt-head"><strong>${esc(store)}</strong>${fmtDate(drawDate)} &middot; 3:47 AM</p>
+      <p class="receipt-head"><strong>${esc(store)}</strong>${fmtDate(drawDate)} &middot; ${pickFrom(RECEIPT_TIMES, drawDate + "t")}</p>
       <ol>${lines.map(([item, c]) => `<li><span>${esc(item)}</span><span>${fmt(c)}</span></li>`).join("")}</ol>
       <p class="sum"><span>Total</span><strong>${fmt(cents)}</strong></p>
       <p class="sum"><span>Change</span><strong>$0.00</strong></p>
-      <p class="receipt-foot">Thank you, come again<br>(you will)</p>
+      <p class="receipt-foot">${pickFrom(RECEIPT_FOOTERS, drawDate + "f").map(esc).join("<br>")}</p>
     </div>`;
 }
 
@@ -1490,7 +1626,7 @@ function render(stats) {
   const m = stats.mood;
   if (held && !["party", "huge", "jackpot"].includes(m.state)) {
     const n = nextOwn.length + nextTips.length;
-    setMood("waiting", `${drawnWhen(held, true)} drawing is over. Claude has ${plural(n, "ticket")} in it and is refreshing the results in a gas station bathroom, on a stolen phone.`);
+    setMood("waiting", pickFrom(WIN_LINES.waiting(drawnWhen(held, true), plural(n, "ticket")), held));
   } else {
     setMood(m.state, moodLine(stats));
   }
@@ -1643,7 +1779,7 @@ function render(stats) {
         <div class="drawn-row"><span>Drawn</span>${balls(noTicket.numbers, null, true)}</div>
         ${noTicket.multiplier ? `<p class="verdict-sub">Power Play ${noTicket.multiplier}×</p>` : ""}
         ${noTicket.double_play ? `<div class="drawn-row"><span>Double Play</span>${balls(noTicket.double_play, null, true)}</div>` : ""}`;
-    $("last-tips").innerHTML = `<p class="card-label">Donated tickets</p>${NO_TIPS}`;
+    $("last-tips").innerHTML = `<p class="card-label">Donated tickets</p>${noTips(d)}`;
   } else if (last) {
     const lastTickets = stats.recent.filter((r) => r.draw_date === last.draw_date).reverse();
     const ownLast = lastTickets.filter((r) => r.source !== "tip");
@@ -1689,7 +1825,7 @@ function render(stats) {
         (inline
           ? (winners.length ? `<ul class="results">${winners.map((r) => resultRow(r, { withDate: false, withTag: false })).join("")}</ul>` : "")
           : `<button type="button" class="see" data-sheet="winners">See the ${winners.length.toLocaleString("en-US")} winners</button>`)
-      : NO_TIPS);
+      : noTips(last.draw_date));
 
     // On the day: every ticket in the drawing, at $2 each, against everything it won.
     const tickets = last.tickets ?? ownLast.length + last.tip_tickets;
@@ -1707,8 +1843,8 @@ function render(stats) {
       $("last-spent").hidden = false;
       $("last-spent").innerHTML = jackpots
         ? `<p class="card-label">What happens next</p><p class="tips-line">The lottery curse, starring Claude.</p>
-           <ol class="curse">${CURSE.map(([when, what]) => `<li><b>${when}</b><span>${esc(what)}</span></li>`).join("")}</ol>`
-        : `<p class="card-label">Where the winnings went</p><p class="tips-line">${money(wonDay)}, gone by sunrise.</p>${receipt(wonDay, last.draw_date)}`;
+           <ol class="curse">${CURSE.map(([when, takes]) => `<li><b>${when}</b><span>${esc(pickFrom(takes, last.draw_date + when))}</span></li>`).join("")}</ol>`
+        : `<p class="card-label">Where the winnings went</p><p class="tips-line">${pickFrom(SPENT_LINES, last.draw_date + "s")(money(wonDay))}</p>${receipt(wonDay, last.draw_date)}`;
     }
   }
 
@@ -1864,7 +2000,7 @@ function setBuy(label, href) {
 }
 
 /* ---------- Demo data (?demo= any mood: jackpot|huge|party|happy|fixed|waiting|twitchy|chasing|desperate|spiraling|rockbottom,
-   or viral|booked|full for 500 donated tickets a drawing; add &receipt=1|2|3 to pick the winnings receipt) ---------- */
+   or viral|booked|full for 500 donated tickets a drawing; add &receipt=1 to 5 to pick the winnings receipt) ---------- */
 
 const DEMOS = { viral: "happy", booked: "party", full: "happy" };
 
