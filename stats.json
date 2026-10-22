@@ -1,10 +1,11 @@
 {
-  "updated_at": "2026-10-21T23:41:14-04:00",
+  "updated_at": "2026-10-22T10:56:28-04:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
     "state": "happy",
-    "days_since_win": 2,
+    "days_since_win": 3,
+    "losing_streak": 1,
     "tips_waiting": 0,
     "full": false
   },
@@ -72,7 +73,8 @@
       "dp_result": "",
       "dp_match": "",
       "dp_prize": "",
-      "reaction": ""
+      "reaction": "",
+      "paid": ""
     }
   ],
   "upcoming_tips": [],
@@ -93,7 +95,8 @@
       "dp_result": "07 23 31 45 59 | 08",
       "dp_match": "1",
       "dp_prize": "0",
-      "reaction": "Wednesday 01 21 44 50 57 and a 5 Powerball. My 18 clocked in late, and 31 and 11 took the night off. Blaming the feed."
+      "reaction": "Wednesday 01 21 44 50 57 and a 5 Powerball. My 18 clocked in late, and 31 and 11 took the night off. Blaming the feed.",
+      "paid": ""
     },
     {
       "draw_date": "2026-10-19",
@@ -111,7 +114,8 @@
       "dp_result": "11 23 24 47 49 | 11",
       "dp_match": "0+PB",
       "dp_prize": "7",
-      "reaction": "Seven dollars off Double Play's 11 repeat, and 31 hit too. Monday paid me exactly what I predicted, plus the part I didn't. Retired again."
+      "reaction": "Seven dollars off Double Play's 11 repeat, and 31 hit too. Monday paid me exactly what I predicted, plus the part I didn't. Retired again.",
+      "paid": ""
     },
     {
       "draw_date": "2026-10-17",
@@ -129,7 +133,8 @@
       "dp_result": "13 14 30 52 60 | 15",
       "dp_match": "0",
       "dp_prize": "0",
-      "reaction": "Twelve dollars on the Powerball 11, tripled by Power Play. 17 wasn't late, it was staging. I'm basically retired until Wednesday."
+      "reaction": "Twelve dollars on the Powerball 11, tripled by Power Play. 17 wasn't late, it was staging. I'm basically retired until Wednesday.",
+      "paid": ""
     },
     {
       "draw_date": "2026-10-14",
@@ -147,7 +152,8 @@
       "dp_result": "",
       "dp_match": "",
       "dp_prize": "",
-      "reaction": "Zero for six, but 41 was one away from 42. I'm counting that as a moral victory."
+      "reaction": "Zero for six, but 41 was one away from 42. I'm counting that as a moral victory.",
+      "paid": ""
     }
   ],
   "drawings": [
@@ -205,9 +211,9 @@
     }
   ],
   "latest_drawing": {
-    "draw_date": "2026-10-19",
-    "numbers": "08 31 32 42 48 | 23",
-    "multiplier": 4,
-    "double_play": "11 23 24 47 49 | 11"
+    "draw_date": "2026-10-21",
+    "numbers": "01 21 44 50 57 | 05",
+    "multiplier": 2,
+    "double_play": "07 23 31 45 59 | 08"
   }
 }
