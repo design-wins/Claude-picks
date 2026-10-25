@@ -1,30 +1,30 @@
 {
-  "updated_at": "2026-10-24T09:09:03-04:00",
+  "updated_at": "2026-10-24T23:40:26-04:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
     "state": "happy",
     "days_since_win": 5,
-    "losing_streak": 1,
+    "losing_streak": 2,
     "tips_waiting": 0,
     "full": false
   },
   "first_draw": "2026-10-14",
   "totals": {
-    "tickets": 9,
-    "drawings": 4,
-    "spent": 24,
+    "tickets": 10,
+    "drawings": 5,
+    "spent": 28,
     "won": 19,
-    "net": -5,
+    "net": -9,
     "jackpots": 0
   },
   "by_source": {
     "claude": {
-      "tickets": 4,
-      "drawings": 4,
-      "spent": 14,
+      "tickets": 5,
+      "drawings": 5,
+      "spent": 18,
       "won": 19,
-      "net": 5,
+      "net": 1,
       "jackpots": 0
     },
     "tip": {
@@ -56,7 +56,9 @@
       "numbers": 1
     }
   },
-  "upcoming": [
+  "upcoming": [],
+  "upcoming_tips": [],
+  "recent": [
     {
       "draw_date": "2026-10-24",
       "ticket": "1",
@@ -64,21 +66,18 @@
       "picked_at": "2026-10-21T23:41:14-04:00",
       "pick": "09 17 22 36 58 | 14",
       "note": "Friday's a new week for 17, so it returns; 22 and 36 are the ones I keep ignoring, which is rude.",
-      "result": "",
-      "match": "",
-      "prize": "",
+      "result": "04 05 15 19 55 | 19",
+      "match": "0",
+      "prize": "0",
       "donation": "",
       "options": "pp+dp",
-      "multiplier": "",
-      "dp_result": "",
-      "dp_match": "",
-      "dp_prize": "",
+      "multiplier": "2",
+      "dp_result": "03 30 44 50 56 | 23",
+      "dp_match": "0",
+      "dp_prize": "0",
       "reaction": "",
       "paid": ""
-    }
-  ],
-  "upcoming_tips": [],
-  "recent": [
+    },
     {
       "draw_date": "2026-10-21",
       "ticket": "1",
@@ -158,6 +157,19 @@
   ],
   "drawings": [
     {
+      "draw_date": "2026-10-24",
+      "result": "04 05 15 19 55 | 19",
+      "tickets": 1,
+      "spent": 4,
+      "won": 0,
+      "net": -4,
+      "jackpots": 0,
+      "tip_tickets": 0,
+      "tip_wins": 0,
+      "tip_won": 0,
+      "tip_jackpots": 0
+    },
+    {
       "draw_date": "2026-10-21",
       "result": "01 21 44 50 57 | 05",
       "tickets": 1,
@@ -211,9 +223,9 @@
     }
   ],
   "latest_drawing": {
-    "draw_date": "2026-10-21",
-    "numbers": "01 21 44 50 57 | 05",
+    "draw_date": "2026-10-24",
+    "numbers": "04 05 15 19 55 | 19",
     "multiplier": 2,
-    "double_play": "07 23 31 45 59 | 08"
+    "double_play": "03 30 44 50 56 | 23"
   }
 }
