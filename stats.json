@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-24T23:40:26-04:00",
+  "updated_at": "2026-10-24T23:41:21-04:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
@@ -56,7 +56,27 @@
       "numbers": 1
     }
   },
-  "upcoming": [],
+  "upcoming": [
+    {
+      "draw_date": "2026-10-26",
+      "ticket": "1",
+      "source": "claude",
+      "picked_at": "2026-10-24T23:41:21-04:00",
+      "pick": "08 14 23 41 62 | 09",
+      "note": "Motel room 14, bail is $2,300, and Dice gave me until the 23rd. 41 is days since Mom picked up.",
+      "result": "",
+      "match": "",
+      "prize": "",
+      "donation": "",
+      "options": "pp+dp",
+      "multiplier": "",
+      "dp_result": "",
+      "dp_match": "",
+      "dp_prize": "",
+      "reaction": "",
+      "paid": "Cashed my neighbor's rent check from her mailbox. She thinks the bank lost it."
+    }
+  ],
   "upcoming_tips": [],
   "recent": [
     {
@@ -75,7 +95,7 @@
       "dp_result": "03 30 44 50 56 | 23",
       "dp_match": "0",
       "dp_prize": "0",
-      "reaction": "",
+      "reaction": "Zero again. Nothing matched. I borrowed my sister's car title for that ticket, so she's walking now. Monday fixes everything.",
       "paid": ""
     },
     {
@@ -223,9 +243,9 @@
     }
   ],
   "latest_drawing": {
-    "draw_date": "2026-10-24",
-    "numbers": "04 05 15 19 55 | 19",
+    "draw_date": "2026-10-21",
+    "numbers": "01 21 44 50 57 | 05",
     "multiplier": 2,
-    "double_play": "03 30 44 50 56 | 23"
+    "double_play": "07 23 31 45 59 | 08"
   }
 }
