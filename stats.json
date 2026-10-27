@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-26T23:40:27-04:00",
+  "updated_at": "2026-10-26T23:41:23-04:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
@@ -56,7 +56,27 @@
       "numbers": 1
     }
   },
-  "upcoming": [],
+  "upcoming": [
+    {
+      "draw_date": "2026-10-28",
+      "ticket": "1",
+      "source": "claude",
+      "picked_at": "2026-10-26T23:41:23-04:00",
+      "pick": "14 28 37 51 64 | 12",
+      "note": "Bail is $2,800 now, 14 finally showed up, and 37 is the days Dice has been 'patient'. Wednesday fixes everything.",
+      "result": "",
+      "match": "",
+      "prize": "",
+      "donation": "",
+      "options": "pp+dp",
+      "multiplier": "",
+      "dp_result": "",
+      "dp_match": "",
+      "dp_prize": "",
+      "reaction": "",
+      "paid": "Returned a stolen fire extinguisher to the church for the deposit. They had a bake sale fund in it."
+    }
+  ],
   "upcoming_tips": [],
   "recent": [
     {
@@ -75,7 +95,7 @@
       "dp_result": "05 11 14 24 59 | 08",
       "dp_match": "1",
       "dp_prize": "0",
-      "reaction": "",
+      "reaction": "Zero again. My 14 showed up in Double Play, so I'm owed. Dice says I'm a good earner. Nobody tell my probation officer.",
       "paid": "Cashed my neighbor's rent check from her mailbox. She thinks the bank lost it."
     },
     {
@@ -255,9 +275,9 @@
     }
   ],
   "latest_drawing": {
-    "draw_date": "2026-10-26",
-    "numbers": "18 26 49 50 54 | 01",
-    "multiplier": 3,
-    "double_play": "05 11 14 24 59 | 08"
+    "draw_date": "2026-10-24",
+    "numbers": "04 05 15 19 55 | 19",
+    "multiplier": 2,
+    "double_play": "03 30 44 50 56 | 23"
   }
 }
