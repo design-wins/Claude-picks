@@ -1,10 +1,10 @@
 {
-  "updated_at": "2026-10-26T23:41:23-04:00",
+  "updated_at": "2026-10-27T11:46:57-04:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
-    "state": "happy",
-    "days_since_win": 7,
+    "state": "chasing",
+    "days_since_win": 8,
     "losing_streak": 3,
     "tips_waiting": 0,
     "full": false
@@ -36,11 +36,7 @@
       "jackpots": 0
     }
   },
-  "best_win": {
-    "draw_date": "2026-10-19",
-    "prize": "7",
-    "source": "claude"
-  },
+  "best_win": null,
   "records": {
     "favorite": {
       "number": 17,
@@ -275,9 +271,9 @@
     }
   ],
   "latest_drawing": {
-    "draw_date": "2026-10-24",
-    "numbers": "04 05 15 19 55 | 19",
-    "multiplier": 2,
-    "double_play": "03 30 44 50 56 | 23"
+    "draw_date": "2026-10-26",
+    "numbers": "18 26 49 50 54 | 01",
+    "multiplier": 3,
+    "double_play": "05 11 14 24 59 | 08"
   }
 }
