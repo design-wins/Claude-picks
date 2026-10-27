@@ -1,30 +1,30 @@
 {
-  "updated_at": "2026-10-26T09:33:19-04:00",
+  "updated_at": "2026-10-26T23:40:27-04:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
     "state": "happy",
     "days_since_win": 7,
-    "losing_streak": 2,
+    "losing_streak": 3,
     "tips_waiting": 0,
     "full": false
   },
   "first_draw": "2026-10-14",
   "totals": {
-    "tickets": 10,
-    "drawings": 5,
-    "spent": 28,
+    "tickets": 11,
+    "drawings": 6,
+    "spent": 32,
     "won": 19,
-    "net": -9,
+    "net": -13,
     "jackpots": 0
   },
   "by_source": {
     "claude": {
-      "tickets": 5,
-      "drawings": 5,
-      "spent": 18,
+      "tickets": 6,
+      "drawings": 6,
+      "spent": 22,
       "won": 19,
-      "net": 1,
+      "net": -3,
       "jackpots": 0
     },
     "tip": {
@@ -56,7 +56,9 @@
       "numbers": 1
     }
   },
-  "upcoming": [
+  "upcoming": [],
+  "upcoming_tips": [],
+  "recent": [
     {
       "draw_date": "2026-10-26",
       "ticket": "1",
@@ -64,21 +66,18 @@
       "picked_at": "2026-10-24T23:41:21-04:00",
       "pick": "08 14 23 41 62 | 09",
       "note": "Motel room 14, bail is $2,300, and Dice gave me until the 23rd. 41 is days since Mom picked up.",
-      "result": "",
-      "match": "",
-      "prize": "",
+      "result": "18 26 49 50 54 | 01",
+      "match": "0",
+      "prize": "0",
       "donation": "",
       "options": "pp+dp",
-      "multiplier": "",
-      "dp_result": "",
-      "dp_match": "",
-      "dp_prize": "",
+      "multiplier": "3",
+      "dp_result": "05 11 14 24 59 | 08",
+      "dp_match": "1",
+      "dp_prize": "0",
       "reaction": "",
       "paid": "Cashed my neighbor's rent check from her mailbox. She thinks the bank lost it."
-    }
-  ],
-  "upcoming_tips": [],
-  "recent": [
+    },
     {
       "draw_date": "2026-10-24",
       "ticket": "1",
@@ -177,6 +176,19 @@
   ],
   "drawings": [
     {
+      "draw_date": "2026-10-26",
+      "result": "18 26 49 50 54 | 01",
+      "tickets": 1,
+      "spent": 4,
+      "won": 0,
+      "net": -4,
+      "jackpots": 0,
+      "tip_tickets": 0,
+      "tip_wins": 0,
+      "tip_won": 0,
+      "tip_jackpots": 0
+    },
+    {
       "draw_date": "2026-10-24",
       "result": "04 05 15 19 55 | 19",
       "tickets": 1,
@@ -243,9 +255,9 @@
     }
   ],
   "latest_drawing": {
-    "draw_date": "2026-10-24",
-    "numbers": "04 05 15 19 55 | 19",
-    "multiplier": 2,
-    "double_play": "03 30 44 50 56 | 23"
+    "draw_date": "2026-10-26",
+    "numbers": "18 26 49 50 54 | 01",
+    "multiplier": 3,
+    "double_play": "05 11 14 24 59 | 08"
   }
 }
