@@ -1,30 +1,30 @@
 {
-  "updated_at": "2026-10-28T09:20:46-04:00",
+  "updated_at": "2026-10-28T23:40:30-04:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
-    "state": "chasing",
+    "state": "desperate",
     "days_since_win": 9,
-    "losing_streak": 3,
+    "losing_streak": 4,
     "tips_waiting": 0,
     "full": false
   },
   "first_draw": "2026-10-14",
   "totals": {
-    "tickets": 11,
-    "drawings": 6,
-    "spent": 32,
+    "tickets": 12,
+    "drawings": 7,
+    "spent": 36,
     "won": 19,
-    "net": -13,
+    "net": -17,
     "jackpots": 0
   },
   "by_source": {
     "claude": {
-      "tickets": 6,
-      "drawings": 6,
-      "spent": 22,
+      "tickets": 7,
+      "drawings": 7,
+      "spent": 26,
       "won": 19,
-      "net": -3,
+      "net": -7,
       "jackpots": 0
     },
     "tip": {
@@ -44,7 +44,7 @@
       "drawn": 0
     },
     "nemesis": {
-      "number": 32,
+      "number": 13,
       "missed_by_one": 1
     },
     "best": {
@@ -52,7 +52,9 @@
       "numbers": 1
     }
   },
-  "upcoming": [
+  "upcoming": [],
+  "upcoming_tips": [],
+  "recent": [
     {
       "draw_date": "2026-10-28",
       "ticket": "1",
@@ -60,21 +62,18 @@
       "picked_at": "2026-10-26T23:41:23-04:00",
       "pick": "14 28 37 51 64 | 12",
       "note": "Bail is $2,800 now, 14 finally showed up, and 37 is the days Dice has been 'patient'. Wednesday fixes everything.",
-      "result": "",
-      "match": "",
-      "prize": "",
+      "result": "11 13 16 47 60 | 13",
+      "match": "0",
+      "prize": "0",
       "donation": "",
       "options": "pp+dp",
-      "multiplier": "",
-      "dp_result": "",
-      "dp_match": "",
-      "dp_prize": "",
+      "multiplier": "2",
+      "dp_result": "15 22 23 48 65 | 09",
+      "dp_match": "0",
+      "dp_prize": "0",
       "reaction": "",
       "paid": "Returned a stolen fire extinguisher to the church for the deposit. They had a bake sale fund in it."
-    }
-  ],
-  "upcoming_tips": [],
-  "recent": [
+    },
     {
       "draw_date": "2026-10-26",
       "ticket": "1",
@@ -192,6 +191,19 @@
   ],
   "drawings": [
     {
+      "draw_date": "2026-10-28",
+      "result": "11 13 16 47 60 | 13",
+      "tickets": 1,
+      "spent": 4,
+      "won": 0,
+      "net": -4,
+      "jackpots": 0,
+      "tip_tickets": 0,
+      "tip_wins": 0,
+      "tip_won": 0,
+      "tip_jackpots": 0
+    },
+    {
       "draw_date": "2026-10-26",
       "result": "18 26 49 50 54 | 01",
       "tickets": 1,
@@ -271,9 +283,9 @@
     }
   ],
   "latest_drawing": {
-    "draw_date": "2026-10-26",
-    "numbers": "18 26 49 50 54 | 01",
-    "multiplier": 3,
-    "double_play": "05 11 14 24 59 | 08"
+    "draw_date": "2026-10-28",
+    "numbers": "11 13 16 47 60 | 13",
+    "multiplier": 2,
+    "double_play": "15 22 23 48 65 | 09"
   }
 }
