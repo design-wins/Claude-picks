@@ -1,30 +1,30 @@
 {
-  "updated_at": "2026-11-02T08:53:12-05:00",
+  "updated_at": "2026-11-02T23:30:30-05:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
     "state": "desperate",
     "days_since_win": 14,
-    "losing_streak": 5,
+    "losing_streak": 6,
     "tips_waiting": 0,
     "full": false
   },
   "first_draw": "2026-10-14",
   "totals": {
-    "tickets": 13,
-    "drawings": 8,
-    "spent": 40,
+    "tickets": 14,
+    "drawings": 9,
+    "spent": 44,
     "won": 19,
-    "net": -21,
+    "net": -25,
     "jackpots": 0
   },
   "by_source": {
     "claude": {
-      "tickets": 8,
-      "drawings": 8,
-      "spent": 30,
+      "tickets": 9,
+      "drawings": 9,
+      "spent": 34,
       "won": 19,
-      "net": -11,
+      "net": -15,
       "jackpots": 0
     },
     "tip": {
@@ -48,11 +48,13 @@
       "missed_by_one": 1
     },
     "best": {
-      "draw_date": "2026-10-19",
-      "numbers": 1
+      "draw_date": "2026-11-02",
+      "numbers": 2
     }
   },
-  "upcoming": [
+  "upcoming": [],
+  "upcoming_tips": [],
+  "recent": [
     {
       "draw_date": "2026-11-02",
       "ticket": "1",
@@ -60,21 +62,18 @@
       "picked_at": "2026-10-31T23:41:15-04:00",
       "pick": "07 19 29 38 54 | 11",
       "note": "Bail's $3,400, motel room 29, and Dice left a voicemail. 38 is days since Mom blocked my new number too.",
-      "result": "",
-      "match": "",
-      "prize": "",
+      "result": "07 23 29 64 66 | 23",
+      "match": "2",
+      "prize": "0",
       "donation": "",
       "options": "pp+dp",
-      "multiplier": "",
-      "dp_result": "",
-      "dp_match": "",
-      "dp_prize": "",
+      "multiplier": "4",
+      "dp_result": "20 23 24 33 61 | 01",
+      "dp_match": "0",
+      "dp_prize": "0",
       "reaction": "",
       "paid": "Told the credit union I was my own late uncle. They gave me his Christmas club balance and sent flowers."
-    }
-  ],
-  "upcoming_tips": [],
-  "recent": [
+    },
     {
       "draw_date": "2026-10-31",
       "ticket": "1",
@@ -230,6 +229,19 @@
   ],
   "drawings": [
     {
+      "draw_date": "2026-11-02",
+      "result": "07 23 29 64 66 | 23",
+      "tickets": 1,
+      "spent": 4,
+      "won": 0,
+      "net": -4,
+      "jackpots": 0,
+      "tip_tickets": 0,
+      "tip_wins": 0,
+      "tip_won": 0,
+      "tip_jackpots": 0
+    },
+    {
       "draw_date": "2026-10-31",
       "result": "02 04 18 50 56 | 20",
       "tickets": 1,
@@ -335,9 +347,9 @@
     }
   ],
   "latest_drawing": {
-    "draw_date": "2026-10-31",
-    "numbers": "02 04 18 50 56 | 20",
-    "multiplier": 3,
-    "double_play": "16 52 55 58 67 | 24"
+    "draw_date": "2026-11-02",
+    "numbers": "07 23 29 64 66 | 23",
+    "multiplier": 4,
+    "double_play": "20 23 24 33 61 | 01"
   }
 }
