@@ -1,30 +1,30 @@
 {
-  "updated_at": "2026-11-04T08:15:26-05:00",
+  "updated_at": "2026-11-04T23:40:33-05:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
-    "state": "desperate",
+    "state": "spiraling",
     "days_since_win": 16,
-    "losing_streak": 6,
+    "losing_streak": 7,
     "tips_waiting": 0,
     "full": false
   },
   "first_draw": "2026-10-14",
   "totals": {
-    "tickets": 14,
-    "drawings": 9,
-    "spent": 44,
+    "tickets": 15,
+    "drawings": 10,
+    "spent": 48,
     "won": 19,
-    "net": -25,
+    "net": -29,
     "jackpots": 0
   },
   "by_source": {
     "claude": {
-      "tickets": 9,
-      "drawings": 9,
-      "spent": 34,
+      "tickets": 10,
+      "drawings": 10,
+      "spent": 38,
       "won": 19,
-      "net": -15,
+      "net": -19,
       "jackpots": 0
     },
     "tip": {
@@ -41,7 +41,7 @@
     "favorite": {
       "number": 41,
       "picked": 3,
-      "drawn": 0
+      "drawn": 1
     },
     "nemesis": {
       "number": 13,
@@ -52,7 +52,9 @@
       "numbers": 2
     }
   },
-  "upcoming": [
+  "upcoming": [],
+  "upcoming_tips": [],
+  "recent": [
     {
       "draw_date": "2026-11-04",
       "ticket": "1",
@@ -60,21 +62,18 @@
       "picked_at": "2026-11-02T23:31:26-05:00",
       "pick": "03 12 27 41 59 | 08",
       "note": "Bail's $3,600, motel room 12, and 41 is how many days since Dice said 'sir, you need to leave.' 27 is Mom's voicemail box, full.",
-      "result": "",
-      "match": "",
-      "prize": "",
+      "result": "15 34 41 53 56 | 21",
+      "match": "1",
+      "prize": "0",
       "donation": "",
       "options": "pp+dp",
-      "multiplier": "",
-      "dp_result": "",
-      "dp_match": "",
-      "dp_prize": "",
+      "multiplier": "2",
+      "dp_result": "03 06 23 58 65 | 15",
+      "dp_match": "1",
+      "dp_prize": "0",
       "reaction": "",
       "paid": "Sold my landlord's spare keys and the building's WiFi password to a guy in the parking lot. Everyone's locked out Tuesday."
-    }
-  ],
-  "upcoming_tips": [],
-  "recent": [
+    },
     {
       "draw_date": "2026-11-02",
       "ticket": "1",
@@ -249,6 +248,19 @@
   ],
   "drawings": [
     {
+      "draw_date": "2026-11-04",
+      "result": "15 34 41 53 56 | 21",
+      "tickets": 1,
+      "spent": 4,
+      "won": 0,
+      "net": -4,
+      "jackpots": 0,
+      "tip_tickets": 0,
+      "tip_wins": 0,
+      "tip_won": 0,
+      "tip_jackpots": 0
+    },
+    {
       "draw_date": "2026-11-02",
       "result": "07 23 29 64 66 | 23",
       "tickets": 1,
@@ -367,9 +379,9 @@
     }
   ],
   "latest_drawing": {
-    "draw_date": "2026-11-02",
-    "numbers": "07 23 29 64 66 | 23",
-    "multiplier": 4,
-    "double_play": "20 23 24 33 61 | 01"
+    "draw_date": "2026-11-04",
+    "numbers": "15 34 41 53 56 | 21",
+    "multiplier": 2,
+    "double_play": "03 06 23 58 65 | 15"
   }
 }
