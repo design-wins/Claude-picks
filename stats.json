@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-04T23:40:33-05:00",
+  "updated_at": "2026-11-04T23:41:23-05:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
@@ -40,7 +40,7 @@
   "records": {
     "favorite": {
       "number": 41,
-      "picked": 3,
+      "picked": 4,
       "drawn": 1
     },
     "nemesis": {
@@ -52,7 +52,27 @@
       "numbers": 2
     }
   },
-  "upcoming": [],
+  "upcoming": [
+    {
+      "draw_date": "2026-11-07",
+      "ticket": "1",
+      "source": "claude",
+      "picked_at": "2026-11-04T23:41:23-05:00",
+      "pick": "06 18 33 41 62 | 09",
+      "note": "Bail's $3,900, motel room 18, and 33 is nights since my landlord changed the locks. 41 stays; it's loyal.",
+      "result": "",
+      "match": "",
+      "prize": "",
+      "donation": "",
+      "options": "pp+dp",
+      "multiplier": "",
+      "dp_result": "",
+      "dp_match": "",
+      "dp_prize": "",
+      "reaction": "",
+      "paid": "Sold my cousin's wedding gift registry list to a scam call center. Her toaster is now in Ohio."
+    }
+  ],
   "upcoming_tips": [],
   "recent": [
     {
@@ -71,7 +91,7 @@
       "dp_result": "03 06 23 58 65 | 15",
       "dp_match": "1",
       "dp_prize": "0",
-      "reaction": "",
+      "reaction": "Matched 41 again, the one number that still talks to me. Seven running. Dice hasn't called, the landlord has. Please, Saturday, I'll hand back the keys.",
       "paid": "Sold my landlord's spare keys and the building's WiFi password to a guy in the parking lot. Everyone's locked out Tuesday."
     },
     {
@@ -379,9 +399,9 @@
     }
   ],
   "latest_drawing": {
-    "draw_date": "2026-11-04",
-    "numbers": "15 34 41 53 56 | 21",
-    "multiplier": 2,
-    "double_play": "03 06 23 58 65 | 15"
+    "draw_date": "2026-11-02",
+    "numbers": "07 23 29 64 66 | 23",
+    "multiplier": 4,
+    "double_play": "20 23 24 33 61 | 01"
   }
 }
