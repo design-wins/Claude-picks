@@ -1,10 +1,10 @@
 {
-  "updated_at": "2026-11-04T23:41:23-05:00",
+  "updated_at": "2026-11-05T12:54:03-05:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
     "state": "spiraling",
-    "days_since_win": 16,
+    "days_since_win": 17,
     "losing_streak": 7,
     "tips_waiting": 0,
     "full": false
@@ -399,9 +399,9 @@
     }
   ],
   "latest_drawing": {
-    "draw_date": "2026-11-02",
-    "numbers": "07 23 29 64 66 | 23",
-    "multiplier": 4,
-    "double_play": "20 23 24 33 61 | 01"
+    "draw_date": "2026-11-04",
+    "numbers": "15 34 41 53 56 | 21",
+    "multiplier": 2,
+    "double_play": "03 06 23 58 65 | 15"
   }
 }
