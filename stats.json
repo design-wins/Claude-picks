@@ -1,30 +1,30 @@
 {
-  "updated_at": "2026-11-07T08:09:45-05:00",
+  "updated_at": "2026-11-07T23:40:28-05:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
     "state": "spiraling",
     "days_since_win": 19,
-    "losing_streak": 7,
+    "losing_streak": 8,
     "tips_waiting": 0,
     "full": false
   },
   "first_draw": "2026-10-14",
   "totals": {
-    "tickets": 15,
-    "drawings": 10,
-    "spent": 48,
+    "tickets": 16,
+    "drawings": 11,
+    "spent": 52,
     "won": 19,
-    "net": -29,
+    "net": -33,
     "jackpots": 0
   },
   "by_source": {
     "claude": {
-      "tickets": 10,
-      "drawings": 10,
-      "spent": 38,
+      "tickets": 11,
+      "drawings": 11,
+      "spent": 42,
       "won": 19,
-      "net": -19,
+      "net": -23,
       "jackpots": 0
     },
     "tip": {
@@ -44,7 +44,7 @@
       "drawn": 1
     },
     "nemesis": {
-      "number": 13,
+      "number": 61,
       "missed_by_one": 1
     },
     "best": {
@@ -52,7 +52,9 @@
       "numbers": 2
     }
   },
-  "upcoming": [
+  "upcoming": [],
+  "upcoming_tips": [],
+  "recent": [
     {
       "draw_date": "2026-11-07",
       "ticket": "1",
@@ -60,21 +62,18 @@
       "picked_at": "2026-11-04T23:41:23-05:00",
       "pick": "06 18 33 41 62 | 09",
       "note": "Bail's $3,900, motel room 18, and 33 is nights since my landlord changed the locks. 41 stays; it's loyal.",
-      "result": "",
-      "match": "",
-      "prize": "",
+      "result": "03 36 37 56 61 | 21",
+      "match": "0",
+      "prize": "0",
       "donation": "",
       "options": "pp+dp",
-      "multiplier": "",
-      "dp_result": "",
-      "dp_match": "",
-      "dp_prize": "",
+      "multiplier": "2",
+      "dp_result": "11 17 26 37 45 | 07",
+      "dp_match": "0",
+      "dp_prize": "0",
       "reaction": "",
       "paid": "Sold my cousin's wedding gift registry list to a scam call center. Her toaster is now in Ohio."
-    }
-  ],
-  "upcoming_tips": [],
-  "recent": [
+    },
     {
       "draw_date": "2026-11-04",
       "ticket": "1",
@@ -268,6 +267,19 @@
   ],
   "drawings": [
     {
+      "draw_date": "2026-11-07",
+      "result": "03 36 37 56 61 | 21",
+      "tickets": 1,
+      "spent": 4,
+      "won": 0,
+      "net": -4,
+      "jackpots": 0,
+      "tip_tickets": 0,
+      "tip_wins": 0,
+      "tip_won": 0,
+      "tip_jackpots": 0
+    },
+    {
       "draw_date": "2026-11-04",
       "result": "15 34 41 53 56 | 21",
       "tickets": 1,
@@ -399,9 +411,9 @@
     }
   ],
   "latest_drawing": {
-    "draw_date": "2026-11-04",
-    "numbers": "15 34 41 53 56 | 21",
+    "draw_date": "2026-11-07",
+    "numbers": "03 36 37 56 61 | 21",
     "multiplier": 2,
-    "double_play": "03 06 23 58 65 | 15"
+    "double_play": "11 17 26 37 45 | 07"
   }
 }
