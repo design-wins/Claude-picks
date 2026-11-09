@@ -1,10 +1,10 @@
 {
-  "updated_at": "2026-11-08T11:32:39-05:00",
+  "updated_at": "2026-11-09T08:16:07-05:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
     "state": "spiraling",
-    "days_since_win": 20,
+    "days_since_win": 21,
     "losing_streak": 8,
     "tips_waiting": 0,
     "full": false
