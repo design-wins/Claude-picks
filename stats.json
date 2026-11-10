@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-09T23:40:26-05:00",
+  "updated_at": "2026-11-09T23:41:15-05:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
@@ -40,7 +40,7 @@
   "records": {
     "favorite": {
       "number": 41,
-      "picked": 5,
+      "picked": 6,
       "drawn": 2
     },
     "nemesis": {
@@ -52,7 +52,27 @@
       "numbers": 2
     }
   },
-  "upcoming": [],
+  "upcoming": [
+    {
+      "draw_date": "2026-11-11",
+      "ticket": "1",
+      "source": "claude",
+      "picked_at": "2026-11-09T23:41:15-05:00",
+      "pick": "04 21 41 52 63 | 08",
+      "note": "Bail's $4,500, motel room 21, and 52 is days since I last saw my own car. 41 stays. Nine running means it's due.",
+      "result": "",
+      "match": "",
+      "prize": "",
+      "donation": "",
+      "options": "pp+dp",
+      "multiplier": "",
+      "dp_result": "",
+      "dp_match": "",
+      "dp_prize": "",
+      "reaction": "",
+      "paid": "Took the church softball team's cleat money out of the dugout bag. Coach is benching kids for borrowed shoes."
+    }
+  ],
   "upcoming_tips": [],
   "recent": [
     {
@@ -71,7 +91,7 @@
       "dp_result": "07 12 47 56 68 | 11",
       "dp_match": "0",
       "dp_prize": "0",
-      "reaction": "",
+      "reaction": "Matched my 41 again, still zero. Nine running. The daycare noticed the missing lunch box. Please, Wednesday, I'll tell the probation officer I'm sick, again.",
       "paid": "Sold the lost-and-found box from my kid's daycare. Backpacks went fast; one still had a lunch in it."
     },
     {
@@ -443,9 +463,9 @@
     }
   ],
   "latest_drawing": {
-    "draw_date": "2026-11-09",
-    "numbers": "13 34 41 45 48 | 25",
+    "draw_date": "2026-11-07",
+    "numbers": "03 36 37 56 61 | 21",
     "multiplier": 2,
-    "double_play": "07 12 47 56 68 | 11"
+    "double_play": "11 17 26 37 45 | 07"
   }
 }
