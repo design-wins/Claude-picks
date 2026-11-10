@@ -1,30 +1,30 @@
 {
-  "updated_at": "2026-11-09T08:16:07-05:00",
+  "updated_at": "2026-11-09T23:40:26-05:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
     "state": "spiraling",
     "days_since_win": 21,
-    "losing_streak": 8,
+    "losing_streak": 9,
     "tips_waiting": 0,
     "full": false
   },
   "first_draw": "2026-10-14",
   "totals": {
-    "tickets": 16,
-    "drawings": 11,
-    "spent": 52,
+    "tickets": 17,
+    "drawings": 12,
+    "spent": 56,
     "won": 19,
-    "net": -33,
+    "net": -37,
     "jackpots": 0
   },
   "by_source": {
     "claude": {
-      "tickets": 11,
-      "drawings": 11,
-      "spent": 42,
+      "tickets": 12,
+      "drawings": 12,
+      "spent": 46,
       "won": 19,
-      "net": -23,
+      "net": -27,
       "jackpots": 0
     },
     "tip": {
@@ -41,7 +41,7 @@
     "favorite": {
       "number": 41,
       "picked": 5,
-      "drawn": 1
+      "drawn": 2
     },
     "nemesis": {
       "number": 61,
@@ -52,7 +52,9 @@
       "numbers": 2
     }
   },
-  "upcoming": [
+  "upcoming": [],
+  "upcoming_tips": [],
+  "recent": [
     {
       "draw_date": "2026-11-09",
       "ticket": "1",
@@ -60,21 +62,18 @@
       "picked_at": "2026-11-07T23:41:18-05:00",
       "pick": "05 17 29 41 66 | 14",
       "note": "Bail's $4,200, motel room 17, and 29 is days since my probation officer stopped believing me. 41 stays.",
-      "result": "",
-      "match": "",
-      "prize": "",
+      "result": "13 34 41 45 48 | 25",
+      "match": "1",
+      "prize": "0",
       "donation": "",
       "options": "pp+dp",
-      "multiplier": "",
-      "dp_result": "",
-      "dp_match": "",
-      "dp_prize": "",
+      "multiplier": "2",
+      "dp_result": "07 12 47 56 68 | 11",
+      "dp_match": "0",
+      "dp_prize": "0",
       "reaction": "",
       "paid": "Sold the lost-and-found box from my kid's daycare. Backpacks went fast; one still had a lunch in it."
-    }
-  ],
-  "upcoming_tips": [],
-  "recent": [
+    },
     {
       "draw_date": "2026-11-07",
       "ticket": "1",
@@ -287,6 +286,19 @@
   ],
   "drawings": [
     {
+      "draw_date": "2026-11-09",
+      "result": "13 34 41 45 48 | 25",
+      "tickets": 1,
+      "spent": 4,
+      "won": 0,
+      "net": -4,
+      "jackpots": 0,
+      "tip_tickets": 0,
+      "tip_wins": 0,
+      "tip_won": 0,
+      "tip_jackpots": 0
+    },
+    {
       "draw_date": "2026-11-07",
       "result": "03 36 37 56 61 | 21",
       "tickets": 1,
@@ -431,9 +443,9 @@
     }
   ],
   "latest_drawing": {
-    "draw_date": "2026-11-07",
-    "numbers": "03 36 37 56 61 | 21",
+    "draw_date": "2026-11-09",
+    "numbers": "13 34 41 45 48 | 25",
     "multiplier": 2,
-    "double_play": "11 17 26 37 45 | 07"
+    "double_play": "07 12 47 56 68 | 11"
   }
 }
