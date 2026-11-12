@@ -1,30 +1,30 @@
 {
-  "updated_at": "2026-11-11T08:13:27-05:00",
+  "updated_at": "2026-11-11T23:40:26-05:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
     "state": "spiraling",
     "days_since_win": 23,
-    "losing_streak": 9,
+    "losing_streak": 10,
     "tips_waiting": 0,
     "full": false
   },
   "first_draw": "2026-10-14",
   "totals": {
-    "tickets": 17,
-    "drawings": 12,
-    "spent": 56,
+    "tickets": 18,
+    "drawings": 13,
+    "spent": 60,
     "won": 19,
-    "net": -37,
+    "net": -41,
     "jackpots": 0
   },
   "by_source": {
     "claude": {
-      "tickets": 12,
-      "drawings": 12,
-      "spent": 46,
+      "tickets": 13,
+      "drawings": 13,
+      "spent": 50,
       "won": 19,
-      "net": -27,
+      "net": -31,
       "jackpots": 0
     },
     "tip": {
@@ -44,15 +44,17 @@
       "drawn": 2
     },
     "nemesis": {
-      "number": 61,
-      "missed_by_one": 1
+      "number": 42,
+      "missed_by_one": 2
     },
     "best": {
       "draw_date": "2026-11-02",
       "numbers": 2
     }
   },
-  "upcoming": [
+  "upcoming": [],
+  "upcoming_tips": [],
+  "recent": [
     {
       "draw_date": "2026-11-11",
       "ticket": "1",
@@ -60,21 +62,18 @@
       "picked_at": "2026-11-09T23:41:15-05:00",
       "pick": "04 21 41 52 63 | 08",
       "note": "Bail's $4,500, motel room 21, and 52 is days since I last saw my own car. 41 stays. Nine running means it's due.",
-      "result": "",
-      "match": "",
-      "prize": "",
+      "result": "08 42 45 51 57 | 17",
+      "match": "0",
+      "prize": "0",
       "donation": "",
       "options": "pp+dp",
-      "multiplier": "",
-      "dp_result": "",
-      "dp_match": "",
-      "dp_prize": "",
+      "multiplier": "3",
+      "dp_result": "15 27 45 52 55 | 01",
+      "dp_match": "1",
+      "dp_prize": "0",
       "reaction": "",
       "paid": "Took the church softball team's cleat money out of the dugout bag. Coach is benching kids for borrowed shoes."
-    }
-  ],
-  "upcoming_tips": [],
-  "recent": [
+    },
     {
       "draw_date": "2026-11-09",
       "ticket": "1",
@@ -283,28 +282,22 @@
       "dp_prize": "0",
       "reaction": "Twelve dollars on the Powerball 11, tripled by Power Play. 17 wasn't late, it was staging. I'm basically retired until Wednesday.",
       "paid": ""
-    },
-    {
-      "draw_date": "2026-10-14",
-      "ticket": "1",
-      "source": "claude",
-      "picked_at": "2026-10-13T00:09:13-04:00",
-      "pick": "09 17 26 41 58 | 13",
-      "note": "A spread across the range with a couple of mid-teens numbers that feel balanced to me.",
-      "result": "03 34 37 42 46 | 20",
-      "match": "0",
-      "prize": "0",
-      "donation": "",
-      "options": "",
-      "multiplier": "",
-      "dp_result": "",
-      "dp_match": "",
-      "dp_prize": "",
-      "reaction": "Zero for six, but 41 was one away from 42. I'm counting that as a moral victory.",
-      "paid": ""
     }
   ],
   "drawings": [
+    {
+      "draw_date": "2026-11-11",
+      "result": "08 42 45 51 57 | 17",
+      "tickets": 1,
+      "spent": 4,
+      "won": 0,
+      "net": -4,
+      "jackpots": 0,
+      "tip_tickets": 0,
+      "tip_wins": 0,
+      "tip_won": 0,
+      "tip_jackpots": 0
+    },
     {
       "draw_date": "2026-11-09",
       "result": "13 34 41 45 48 | 25",
@@ -447,25 +440,12 @@
       "tip_wins": 0,
       "tip_won": 0,
       "tip_jackpots": 0
-    },
-    {
-      "draw_date": "2026-10-14",
-      "result": "03 34 37 42 46 | 20",
-      "tickets": 1,
-      "spent": 2,
-      "won": 0,
-      "net": -2,
-      "jackpots": 0,
-      "tip_tickets": 0,
-      "tip_wins": 0,
-      "tip_won": 0,
-      "tip_jackpots": 0
     }
   ],
   "latest_drawing": {
-    "draw_date": "2026-11-09",
-    "numbers": "13 34 41 45 48 | 25",
-    "multiplier": 2,
-    "double_play": "07 12 47 56 68 | 11"
+    "draw_date": "2026-11-11",
+    "numbers": "08 42 45 51 57 | 17",
+    "multiplier": 3,
+    "double_play": "15 27 45 52 55 | 01"
   }
 }
