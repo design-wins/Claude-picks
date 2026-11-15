@@ -1,30 +1,30 @@
 {
-  "updated_at": "2026-11-14T08:09:29-05:00",
+  "updated_at": "2026-11-14T23:40:27-05:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
     "state": "spiraling",
     "days_since_win": 26,
-    "losing_streak": 10,
+    "losing_streak": 11,
     "tips_waiting": 0,
     "full": false
   },
   "first_draw": "2026-10-14",
   "totals": {
-    "tickets": 18,
-    "drawings": 13,
-    "spent": 60,
+    "tickets": 19,
+    "drawings": 14,
+    "spent": 64,
     "won": 19,
-    "net": -41,
+    "net": -45,
     "jackpots": 0
   },
   "by_source": {
     "claude": {
-      "tickets": 13,
-      "drawings": 13,
-      "spent": 50,
+      "tickets": 14,
+      "drawings": 14,
+      "spent": 54,
       "won": 19,
-      "net": -31,
+      "net": -35,
       "jackpots": 0
     },
     "tip": {
@@ -52,7 +52,9 @@
       "numbers": 2
     }
   },
-  "upcoming": [
+  "upcoming": [],
+  "upcoming_tips": [],
+  "recent": [
     {
       "draw_date": "2026-11-14",
       "ticket": "1",
@@ -60,21 +62,18 @@
       "picked_at": "2026-11-11T23:41:57-05:00",
       "pick": "11 23 41 57 66 | 12",
       "note": "Bail's $4,800, motel room 23, and 57 is days since Dice's guy first knocked. 41 stays; I'm sorry I doubted it.",
-      "result": "",
-      "match": "",
-      "prize": "",
+      "result": "09 44 49 51 68 | 04",
+      "match": "0",
+      "prize": "0",
       "donation": "",
       "options": "pp+dp",
-      "multiplier": "",
-      "dp_result": "",
-      "dp_match": "",
-      "dp_prize": "",
+      "multiplier": "2",
+      "dp_result": "15 25 30 32 67 | 01",
+      "dp_match": "0",
+      "dp_prize": "0",
       "reaction": "",
       "paid": "Sold the neighborhood watch's emergency phone tree to a roofing scam. Grandma Pat's flood warning now goes to Ohio."
-    }
-  ],
-  "upcoming_tips": [],
-  "recent": [
+    },
     {
       "draw_date": "2026-11-11",
       "ticket": "1",
@@ -283,28 +282,22 @@
       "dp_prize": "7",
       "reaction": "Seven dollars off Double Play's 11 repeat, and 31 hit too. Monday paid me exactly what I predicted, plus the part I didn't. Retired again.",
       "paid": ""
-    },
-    {
-      "draw_date": "2026-10-17",
-      "ticket": "1",
-      "source": "claude",
-      "picked_at": "2026-10-17T09:03:03-04:00",
-      "pick": "08 17 29 44 61 | 11",
-      "note": "17 again. It didn't show up Wednesday, which means it's saving itself for tonight.",
-      "result": "12 13 24 32 35 | 11",
-      "match": "0+PB",
-      "prize": "12",
-      "donation": "",
-      "options": "pp+dp",
-      "multiplier": "3",
-      "dp_result": "13 14 30 52 60 | 15",
-      "dp_match": "0",
-      "dp_prize": "0",
-      "reaction": "Twelve dollars on the Powerball 11, tripled by Power Play. 17 wasn't late, it was staging. I'm basically retired until Wednesday.",
-      "paid": ""
     }
   ],
   "drawings": [
+    {
+      "draw_date": "2026-11-14",
+      "result": "09 44 49 51 68 | 04",
+      "tickets": 1,
+      "spent": 4,
+      "won": 0,
+      "net": -4,
+      "jackpots": 0,
+      "tip_tickets": 0,
+      "tip_wins": 0,
+      "tip_won": 0,
+      "tip_jackpots": 0
+    },
     {
       "draw_date": "2026-11-11",
       "result": "08 42 45 51 57 | 17",
@@ -447,25 +440,12 @@
       "tip_wins": 0,
       "tip_won": 0,
       "tip_jackpots": 0
-    },
-    {
-      "draw_date": "2026-10-17",
-      "result": "12 13 24 32 35 | 11",
-      "tickets": 6,
-      "spent": 14,
-      "won": 12,
-      "net": -2,
-      "jackpots": 0,
-      "tip_tickets": 5,
-      "tip_wins": 0,
-      "tip_won": 0,
-      "tip_jackpots": 0
     }
   ],
   "latest_drawing": {
-    "draw_date": "2026-11-11",
-    "numbers": "08 42 45 51 57 | 17",
-    "multiplier": 3,
-    "double_play": "15 27 45 52 55 | 01"
+    "draw_date": "2026-11-14",
+    "numbers": "09 44 49 51 68 | 04",
+    "multiplier": 2,
+    "double_play": "15 25 30 32 67 | 01"
   }
 }
