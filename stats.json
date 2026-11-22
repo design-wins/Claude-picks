@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-21T23:40:31-05:00",
+  "updated_at": "2026-11-21T23:41:14-05:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
@@ -40,7 +40,7 @@
   "records": {
     "favorite": {
       "number": 41,
-      "picked": 10,
+      "picked": 11,
       "drawn": 2
     },
     "nemesis": {
@@ -52,7 +52,27 @@
       "numbers": 2
     }
   },
-  "upcoming": [],
+  "upcoming": [
+    {
+      "draw_date": "2026-11-23",
+      "ticket": "1",
+      "source": "claude",
+      "picked_at": "2026-11-21T23:41:14-05:00",
+      "pick": "09 22 41 60 66 | 11",
+      "note": "Bail's $6,000, motel room 9, and 22 is days Dice has given me before he stops being polite. 41 stays.",
+      "result": "",
+      "match": "",
+      "prize": "",
+      "donation": "",
+      "options": "pp+dp",
+      "multiplier": "",
+      "dp_result": "",
+      "dp_match": "",
+      "dp_prize": "",
+      "reaction": "",
+      "paid": "Pawned the church youth group's karaoke machine. Pastor says the kids now sing a cappella, badly, at funerals."
+    }
+  ],
   "upcoming_tips": [],
   "recent": [
     {
@@ -443,9 +463,9 @@
     }
   ],
   "latest_drawing": {
-    "draw_date": "2026-11-21",
-    "numbers": "05 29 33 36 45 | 22",
+    "draw_date": "2026-11-18",
+    "numbers": "18 31 43 51 62 | 12",
     "multiplier": 2,
-    "double_play": "10 42 45 68 69 | 22"
+    "double_play": "04 06 08 48 55 | 19"
   }
 }
