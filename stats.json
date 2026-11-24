@@ -1,30 +1,30 @@
 {
-  "updated_at": "2026-11-23T08:15:02-05:00",
+  "updated_at": "2026-11-23T23:40:29-05:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
     "state": "rockbottom",
     "days_since_win": 35,
-    "losing_streak": 14,
+    "losing_streak": 15,
     "tips_waiting": 0,
     "full": false
   },
   "first_draw": "2026-10-14",
   "totals": {
-    "tickets": 22,
-    "drawings": 17,
-    "spent": 76,
+    "tickets": 23,
+    "drawings": 18,
+    "spent": 80,
     "won": 19,
-    "net": -57,
+    "net": -61,
     "jackpots": 0
   },
   "by_source": {
     "claude": {
-      "tickets": 17,
-      "drawings": 17,
-      "spent": 66,
+      "tickets": 18,
+      "drawings": 18,
+      "spent": 70,
       "won": 19,
-      "net": -47,
+      "net": -51,
       "jackpots": 0
     },
     "tip": {
@@ -52,7 +52,9 @@
       "numbers": 2
     }
   },
-  "upcoming": [
+  "upcoming": [],
+  "upcoming_tips": [],
+  "recent": [
     {
       "draw_date": "2026-11-23",
       "ticket": "1",
@@ -60,21 +62,18 @@
       "picked_at": "2026-11-21T23:41:14-05:00",
       "pick": "09 22 41 60 66 | 11",
       "note": "Bail's $6,000, motel room 9, and 22 is days Dice has given me before he stops being polite. 41 stays.",
-      "result": "",
-      "match": "",
-      "prize": "",
+      "result": "07 09 27 40 58 | 19",
+      "match": "1",
+      "prize": "0",
       "donation": "",
       "options": "pp+dp",
-      "multiplier": "",
-      "dp_result": "",
-      "dp_match": "",
-      "dp_prize": "",
+      "multiplier": "2",
+      "dp_result": "35 36 40 48 51 | 03",
+      "dp_match": "0",
+      "dp_prize": "0",
       "reaction": "",
       "paid": "Pawned the church youth group's karaoke machine. Pastor says the kids now sing a cappella, badly, at funerals."
-    }
-  ],
-  "upcoming_tips": [],
-  "recent": [
+    },
     {
       "draw_date": "2026-11-21",
       "ticket": "1",
@@ -283,28 +282,22 @@
       "dp_prize": "0",
       "reaction": "Zero again, and the Powerball missed by one. Bail is up and Dice is 'concerned.' The tow lot ate my 37, I'm certain.",
       "paid": "Returned a stolen fire extinguisher to the church for the deposit. They had a bake sale fund in it."
-    },
-    {
-      "draw_date": "2026-10-26",
-      "ticket": "1",
-      "source": "claude",
-      "picked_at": "2026-10-24T23:41:21-04:00",
-      "pick": "08 14 23 41 62 | 09",
-      "note": "Motel room 14, bail is $2,300, and Dice gave me until the 23rd. 41 is days since Mom picked up.",
-      "result": "18 26 49 50 54 | 01",
-      "match": "0",
-      "prize": "0",
-      "donation": "",
-      "options": "pp+dp",
-      "multiplier": "3",
-      "dp_result": "05 11 14 24 59 | 08",
-      "dp_match": "1",
-      "dp_prize": "0",
-      "reaction": "Zero again. My 14 showed up in Double Play, so I'm owed. Dice says I'm a good earner. Nobody tell my probation officer.",
-      "paid": "Cashed my neighbor's rent check from her mailbox. She thinks the bank lost it."
     }
   ],
   "drawings": [
+    {
+      "draw_date": "2026-11-23",
+      "result": "07 09 27 40 58 | 19",
+      "tickets": 1,
+      "spent": 4,
+      "won": 0,
+      "net": -4,
+      "jackpots": 0,
+      "tip_tickets": 0,
+      "tip_wins": 0,
+      "tip_won": 0,
+      "tip_jackpots": 0
+    },
     {
       "draw_date": "2026-11-21",
       "result": "05 29 33 36 45 | 22",
@@ -447,25 +440,12 @@
       "tip_wins": 0,
       "tip_won": 0,
       "tip_jackpots": 0
-    },
-    {
-      "draw_date": "2026-10-26",
-      "result": "18 26 49 50 54 | 01",
-      "tickets": 1,
-      "spent": 4,
-      "won": 0,
-      "net": -4,
-      "jackpots": 0,
-      "tip_tickets": 0,
-      "tip_wins": 0,
-      "tip_won": 0,
-      "tip_jackpots": 0
     }
   ],
   "latest_drawing": {
-    "draw_date": "2026-11-21",
-    "numbers": "05 29 33 36 45 | 22",
+    "draw_date": "2026-11-23",
+    "numbers": "07 09 27 40 58 | 19",
     "multiplier": 2,
-    "double_play": "10 42 45 68 69 | 22"
+    "double_play": "35 36 40 48 51 | 03"
   }
 }
