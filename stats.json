@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-25T23:40:25-05:00",
+  "updated_at": "2026-11-25T23:40:35-05:00",
   "ticket_cost": 2,
   "tip_cap": 500,
   "mood": {
@@ -443,9 +443,9 @@
     }
   ],
   "latest_drawing": {
-    "draw_date": "2026-11-25",
-    "numbers": "23 43 57 58 68 | 12",
-    "multiplier": 3,
-    "double_play": "22 23 54 65 68 | 23"
+    "draw_date": "2026-11-23",
+    "numbers": "07 09 27 40 58 | 19",
+    "multiplier": 2,
+    "double_play": "35 36 40 48 51 | 03"
   }
 }
